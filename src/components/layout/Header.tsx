@@ -17,7 +17,7 @@ export function Header() {
                 <div className="flex items-center gap-4">
                     <Link
                         href="/enviar"
-                        className="hidden sm:flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-white transition-colors hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark shadow-sm"
+                        className="flex h-9 items-center justify-center rounded-lg bg-primary px-3 text-xs sm:text-sm sm:px-4 sm:flex font-medium text-white transition-colors hover:bg-primary-dark focus:outline-none shadow-sm"
                     >
                         Enviar Contribuição
                     </Link>
