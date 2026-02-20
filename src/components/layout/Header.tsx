@@ -28,16 +28,10 @@ export function Header() {
                         <Link href="/admin" className="text-gray-600 dark:text-gray-300 hover:text-brand-yellow dark:hover:text-brand-blue font-medium transition-colors border-b-2 border-transparent hover:border-brand-yellow pb-1">Admin</Link>
                     </div>
 
-                    <div className="hidden md:flex items-center gap-4">
-                        <Link href="/enviar" className="bg-brand-blue hover:bg-brand-darkBlue text-white px-5 py-2.5 rounded-full font-semibold shadow-lg shadow-brand-blue/25 transition-all transform hover:-translate-y-0.5 border-2 border-transparent hover:border-brand-yellow/50">
+                    <div className="flex items-center gap-4">
+                        <Link href="/enviar" className="bg-brand-blue hover:bg-brand-darkBlue text-white px-4 py-2 text-sm sm:px-5 sm:py-2.5 rounded-full font-semibold shadow-lg shadow-brand-blue/25 transition-all transform hover:-translate-y-0.5 border-2 border-transparent hover:border-brand-yellow/50 whitespace-nowrap">
                             Enviar Contribuição
                         </Link>
-                    </div>
-
-                    <div className="md:hidden flex items-center">
-                        <button className="text-gray-500 dark:text-gray-400 focus:outline-none">
-                            <span className="material-symbols-outlined text-3xl">menu</span>
-                        </button>
                     </div>
                 </div>
             </div>
