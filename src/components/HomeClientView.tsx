@@ -15,6 +15,9 @@ export const HomeClientView = ({ initialItems }: HomeClientViewProps) => {
     const [modalImageIdx, setModalImageIdx] = useState(0);
     const [visibleCount, setVisibleCount] = useState(9);
 
+    // Parallax Mouse State
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
     const categories = ['Todos', 'Laboratórios', 'Pesquisadores', 'Eventos', 'Convivência', 'Outros'];
 
     // Filter Logic
@@ -70,16 +73,38 @@ export const HomeClientView = ({ initialItems }: HomeClientViewProps) => {
         }
     };
 
+    const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+        // Calculate normalized mouse position relative to center of screen (-1 to 1)
+        if (typeof window !== 'undefined') {
+            const x = (e.clientX / window.innerWidth - 0.5) * 2;
+            const y = (e.clientY / window.innerHeight - 0.5) * 2;
+            setMousePos({ x, y });
+        }
+    };
+
     return (
         <>
-            <header className="relative pt-20 pb-32 overflow-hidden flex-shrink-0">
+            <header
+                className="relative pt-20 pb-32 overflow-hidden flex-shrink-0"
+                onMouseMove={handleMouseMove}
+                onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
+            >
                 <div className="absolute inset-0 bg-background-light dark:bg-background-dark -z-20"></div>
                 <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:30px_30px] opacity-10 dark:opacity-30 -z-10"></div>
 
                 {/* IDV Blobs */}
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-blue/20 dark:bg-brand-blue/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 animate-pulse"></div>
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-red/20 dark:bg-brand-red/30 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"></div>
-                <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-brand-yellow/20 dark:bg-brand-yellow/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+                <div
+                    className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-blue/20 dark:bg-brand-blue/40 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 animate-pulse transition-transform duration-700 ease-out z-0"
+                    style={{ transform: `translate(calc(-10% + ${mousePos.x * -120}px), calc(-20% + ${mousePos.y * -120}px))` }}
+                ></div>
+                <div
+                    className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-brand-red/20 dark:bg-brand-red/30 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4 transition-transform duration-700 ease-out delay-75"
+                    style={{ transform: `translate(calc(-25% + ${mousePos.x * 100}px), calc(33.333% + ${mousePos.y * 100}px))` }}
+                ></div>
+                <div
+                    className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-brand-yellow/20 dark:bg-brand-yellow/20 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-700 ease-out delay-150"
+                    style={{ transform: `translate(calc(-50% + ${mousePos.x * -160}px), calc(-50% + ${mousePos.y * -160}px))` }}
+                ></div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="max-w-3xl">
