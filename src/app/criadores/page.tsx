@@ -158,9 +158,9 @@ export default function CriadoresPage() {
                 </div>
 
                 <div className="w-full">
-                    <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 no-scrollbar pl-4 sm:pl-6 lg:pl-8 xl:pl-[calc((100vw-80rem)/2+2rem)] pr-4 sm:pr-6 lg:pr-8 xl:pr-[calc((100vw-80rem)/2+2rem)]">
+                    <div className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory gap-6 pb-8 no-scrollbar pl-6 md:pl-12 lg:pl-16 pr-6 md:pr-12 lg:pr-16">
                         {influencers.map((influencer, index) => (
-                            <div key={index} className="flex flex-col items-center text-center group snap-center shrink-0 w-[280px] p-6 bg-white dark:bg-card-dark rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 hover:-translate-y-2 hover:shadow-xl transition-all duration-300">
+                            <div key={index} className="flex flex-col items-center text-center group snap-center shrink-0 w-[260px] md:w-[300px] p-6 bg-white dark:bg-card-dark rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 hover:-translate-y-2 hover:shadow-xl transition-all duration-300">
                                 <div className={`relative w-28 h-28 rounded-full mb-5 flex items-center justify-center text-4xl font-bold text-white bg-${influencer.color} shadow-lg ring-4 ring-background-light dark:ring-background-dark outline outline-2 outline-gray-200 dark:outline-gray-800 transition-transform group-hover:scale-105 duration-300`}>
                                     {influencer.imagePlaceholder}
                                     <div className="absolute inset-0 rounded-full bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
