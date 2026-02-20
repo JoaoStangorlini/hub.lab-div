@@ -13,7 +13,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Arquivo Lab-Div - A Ciência Acontece Aqui",
+  title: "Hub de Comunicação Científica do Lab-Div",
   description: "O hub oficial de comunicação científica do Instituto de Física da Universidade de São Paulo.",
 };
 

@@ -13,7 +13,7 @@ export function Footer() {
                                 <div className="absolute w-5 h-5 bg-brand-yellow rounded-full top-2 left-2 z-20 shadow-sm border border-white dark:border-transparent"></div>
                             </div>
                             <div className="flex flex-col -space-y-0.5">
-                                <span className="font-sans font-bold text-lg text-gray-900 dark:text-white leading-tight">Arquivo <span className="text-brand-blue">Lab-Div</span></span>
+                                <span className="font-sans font-bold text-lg text-gray-900 dark:text-white leading-tight">Hub <span className="text-brand-blue">Lab-Div</span></span>
                                 <span className="text-[8px] uppercase tracking-wider text-gray-500 font-medium">Instituto de Física</span>
                             </div>
                         </div>

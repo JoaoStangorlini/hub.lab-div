@@ -140,7 +140,7 @@ export default function SubmitPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                     <button onClick={() => router.push('/')} className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-brand-blue dark:hover:text-brand-yellow transition-colors font-medium">
                         <span className="material-symbols-outlined text-xl">arrow_back</span>
-                        Voltar para o Arquivo
+                        Voltar para o Hub
                     </button>
                     <div className="flex items-center gap-3">
                         <div className="w-2 h-2 rounded-full bg-brand-blue"></div>
@@ -157,7 +157,7 @@ export default function SubmitPage() {
                     <div className="text-center space-y-4">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-red/10 dark:bg-brand-red/20 border border-brand-red/20 text-brand-red text-xs font-bold uppercase tracking-wide">
                             <span className="material-symbols-outlined text-[14px]">science</span>
-                            Participe do Arquivo
+                            Participe do Hub
                         </div>
                         <h1 className="font-display font-bold text-4xl md:text-5xl text-gray-900 dark:text-white tracking-tight">
                             Envie sua <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-brand-yellow">Contribuição</span>

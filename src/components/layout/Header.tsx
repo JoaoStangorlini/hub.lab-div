@@ -29,7 +29,7 @@ export function Header() {
                         </div>
                         <div className="flex flex-col justify-center -space-y-1">
                             <h1 className="font-sans font-bold text-2xl tracking-tight text-gray-900 dark:text-white">
-                                Arquivo <span className="text-brand-blue">Lab-Div</span>
+                                Hub <span className="text-brand-blue">Lab-Div</span>
                             </h1>
                             <p className="text-[10px] uppercase tracking-[0.05em] text-gray-400 font-semibold pt-0.5">INSTITUTO DE FÍSICA</p>
                         </div>
@@ -44,8 +44,8 @@ export function Header() {
                                     key={link.href}
                                     href={link.href}
                                     className={`font-medium transition-colors border-b-2 pb-1 ${isActive
-                                            ? 'text-brand-blue border-brand-blue'
-                                            : 'text-gray-600 dark:text-gray-300 border-transparent hover:text-brand-blue hover:border-brand-blue'
+                                        ? 'text-brand-blue border-brand-blue'
+                                        : 'text-gray-600 dark:text-gray-300 border-transparent hover:text-brand-blue hover:border-brand-blue'
                                         }`}
                                 >
                                     {link.name}
@@ -84,8 +84,8 @@ export function Header() {
                                     href={link.href}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className={`block px-3 py-3 rounded-xl text-base font-medium transition-colors ${isActive
-                                            ? 'bg-brand-blue/10 text-brand-blue'
-                                            : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-brand-blue'
+                                        ? 'bg-brand-blue/10 text-brand-blue'
+                                        : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-brand-blue'
                                         }`}
                                 >
                                     {link.name}
