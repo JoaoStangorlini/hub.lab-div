@@ -94,15 +94,15 @@ export const HomeClientView = ({ initialItems }: HomeClientViewProps) => {
 
                 {/* IDV Blobs */}
                 <div
-                    className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-blue/20 dark:bg-brand-blue/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 animate-pulse transition-transform duration-700 ease-out z-0"
+                    className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-blue/30 dark:bg-brand-blue/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 animate-blob-bounce transition-transform duration-700 ease-out z-0"
                     style={{ transform: `translate(calc(-10% + ${mousePos.x * -120}px), calc(-20% + ${mousePos.y * -120}px))` }}
                 ></div>
                 <div
-                    className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-brand-red/20 dark:bg-brand-red/10 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4 transition-transform duration-700 ease-out delay-75"
+                    className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-brand-red/30 dark:bg-brand-red/20 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4 animate-blob-bounce transition-transform duration-700 ease-out delay-75"
                     style={{ transform: `translate(calc(-25% + ${mousePos.x * 100}px), calc(33.333% + ${mousePos.y * 100}px))` }}
                 ></div>
                 <div
-                    className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-brand-yellow/20 dark:bg-brand-yellow/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-700 ease-out delay-150"
+                    className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-brand-yellow/30 dark:bg-brand-yellow/20 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 animate-blob-bounce transition-transform duration-700 ease-out delay-150"
                     style={{ transform: `translate(calc(-50% + ${mousePos.x * -160}px), calc(-50% + ${mousePos.y * -160}px))` }}
                 ></div>
 
