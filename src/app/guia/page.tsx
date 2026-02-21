@@ -100,7 +100,7 @@ export default function GuiaPage() {
                                 <span className="material-symbols-outlined text-brand-red mt-1">smart_display</span>
                                 <div>
                                     <strong>Vídeos:</strong> Não fazer upload de vídeos diretos. Eles devem ser upados no YouTube e o link deve ser compartilhado no formulário.<br />
-                                    <span className="text-sm text-gray-500">Explicação: Melhora o carregamento e aproveita o player do YouTube.</span>
+                                    <span className="text-sm text-gray-500">Explicação: Melhora o carregamento do site e aproveita o player do YouTube.</span>
                                 </div>
                             </li>
                             <li className="flex items-start gap-3">
