@@ -75,6 +75,7 @@ export async function fetchSubmissions({ page, limit, query, category, sort }: F
         external_link: sub.external_link,
         created_at: sub.created_at,
         technical_details: sub.technical_details,
+        alt_text: sub.alt_text,
     }));
 
     const hasMore = count ? from + submissions.length < count : false;

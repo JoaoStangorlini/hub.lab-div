@@ -16,6 +16,7 @@ export interface MediaCardProps {
     external_link?: string;
     created_at?: string;
     technical_details?: string;
+    alt_text?: string;
 }
 
 export const parseMediaUrl = (mediaUrl: string | string[]): string[] => {
@@ -105,7 +106,8 @@ export const MediaCard = ({
     category,
     avatarUrl,
     isFeatured,
-    likeCount: initialLikeCount = 0
+    likeCount: initialLikeCount = 0,
+    alt_text
 }: MediaCardProps) => {
 
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -182,7 +184,7 @@ export const MediaCard = ({
                                 e.currentTarget.src = e.currentTarget.src.replace('maxresdefault.jpg', 'hqdefault.jpg');
                             }
                         }}
-                        alt="Video Thumbnail"
+                        alt={alt_text || "Video Thumbnail"}
                         className="h-full w-full object-cover opacity-80"
                         loading="lazy"
                     />
@@ -196,7 +198,7 @@ export const MediaCard = ({
                 ) : displayUrl ? (
                     <img
                         src={displayUrl}
-                        alt={`${title} - image ${currentImageIndex + 1}`}
+                        alt={alt_text || `${title} - image ${currentImageIndex + 1}`}
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"
                     />
@@ -333,9 +335,14 @@ export const MediaCard = ({
                             <span className="uppercase">{authors.substring(0, 2)}</span>
                         )}
                     </div>
-                    <span className="text-xs font-semibold text-text-muted dark:text-gray-400 uppercase tracking-wide truncate flex-1">
+                    <a
+                        href={`/autor/${encodeURIComponent(authors)}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-xs font-semibold text-text-muted dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-yellow uppercase tracking-wide truncate flex-1 transition-colors"
+                        title={`Ver todas as submissões de ${authors}`}
+                    >
                         {authors}
-                    </span>
+                    </a>
                     <button
                         onClick={handleLike}
                         disabled={isLiking}

@@ -297,27 +297,38 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
                             <p className="text-gray-500 font-medium">Buscando itens na base de dados...</p>
                         </div>
                     ) : (
-                        <div className="masonry-grid">
-                            {items.length > 0 ? (
-                                items.map((item) => (
-                                    <div key={item.id} onClick={() => openModal(item)}>
-                                        <MediaCard {...item} />
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="col-span-1 sm:col-span-2 lg:col-span-3 text-center py-24 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center">
-                                    <span className="material-symbols-outlined text-5xl text-gray-300 dark:text-gray-600 mb-3">search_off</span>
-                                    <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300">Nenhum resultado encontrado</h3>
-                                    <p className="text-gray-500 mt-2">Tente ajustar seus filtros ou termo de busca.</p>
-                                    <button
-                                        onClick={() => { setSearchQuery(''); setSelectedCategory('Todos'); }}
-                                        className="mt-6 px-4 py-2 bg-primary/10 text-primary font-semibold rounded-lg hover:bg-primary/20 transition-colors"
-                                    >
-                                        Limpar Filtros
-                                    </button>
+                        <>
+                            {(debouncedQuery || selectedCategory !== 'Todos') && (
+                                <div className="mb-6 flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+                                    <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                                        {debouncedQuery ? `Resultados para "${debouncedQuery}"` : 'Resultados Exploratórios'}
+                                        {selectedCategory !== 'Todos' && <span className="text-brand-blue dark:text-brand-yellow font-extrabold ml-1">em {selectedCategory}</span>}
+                                    </h2>
+                                    <span className="text-sm font-semibold text-gray-500 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">{items.length} iten(s)</span>
                                 </div>
                             )}
-                        </div>
+                            <div className="masonry-grid">
+                                {items.length > 0 ? (
+                                    items.map((item) => (
+                                        <div key={item.id} onClick={() => openModal(item)}>
+                                            <MediaCard {...item} />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="col-span-1 sm:col-span-2 lg:col-span-3 text-center py-24 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center">
+                                        <span className="material-symbols-outlined text-5xl text-gray-300 dark:text-gray-600 mb-3">search_off</span>
+                                        <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300">Nenhum resultado encontrado</h3>
+                                        <p className="text-gray-500 mt-2">Tente ajustar seus filtros ou termo de busca.</p>
+                                        <button
+                                            onClick={() => { setSearchQuery(''); setSelectedCategory('Todos'); }}
+                                            className="mt-6 px-4 py-2 bg-primary/10 text-primary font-semibold rounded-lg hover:bg-primary/20 transition-colors"
+                                        >
+                                            Limpar Filtros
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </>
                     )}
 
                     {hasMore && !isLoading && (

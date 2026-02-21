@@ -21,6 +21,7 @@ export default function SubmitPage() {
     const [videoUrl, setVideoUrl] = useState('');
     const [externalLink, setExternalLink] = useState('');
     const [technicalDetails, setTechnicalDetails] = useState('');
+    const [altText, setAltText] = useState('');
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
     const [isLoading, setIsLoading] = useState(false);
@@ -149,6 +150,9 @@ export default function SubmitPage() {
             if (mediaType === 'pdf' && !externalLink) {
                 throw new Error("Para submissões de PDF, o link para o PDF completo é obrigatório.");
             }
+            if ((mediaType === 'image' || mediaType === 'video') && !altText) {
+                throw new Error("Para acessibilidade, o Texto Alternativo é obrigatório para imagens e vídeos.");
+            }
 
             let finalMediaUrl: string[] = [];
 
@@ -183,13 +187,21 @@ export default function SubmitPage() {
                 media_url: JSON.stringify(finalMediaUrl),
                 status: 'pendente',
                 external_link: externalLink || null,
-                technical_details: technicalDetails || null
+                technical_details: technicalDetails || null,
+                alt_text: altText || null
             }]);
 
             if (insertError) {
                 console.error("Supabase Error:", insertError);
                 throw new Error(`Erro ao salvar no banco: ${insertError.message || JSON.stringify(insertError)}`);
             }
+
+            // Trigger Email Notification (Non-blocking)
+            fetch('/api/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ authors, title, category })
+            }).catch(e => console.error("Sem resposta de notificação (ignorado)", e));
 
             alert('Submissão enviada com sucesso! Em breve passará por moderação.');
             router.push('/');
@@ -552,6 +564,28 @@ export default function SubmitPage() {
                                 )}
                             </div>
                         </div>
+
+                        {/* Accessibility block strictly required for Image and Video */}
+                        {(mediaType === 'image' || mediaType === 'video') && (
+                            <div className="mt-8 space-y-2 group">
+                                <label className="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300" htmlFor="alt_text">
+                                    <span className="material-symbols-outlined text-brand-blue text-[18px]">accessibility_new</span>
+                                    Texto Alternativo (Acessibilidade) <span className="text-brand-red">*</span>
+                                </label>
+                                <textarea
+                                    id="alt_text"
+                                    rows={2}
+                                    value={altText}
+                                    onChange={e => setAltText(e.target.value)}
+                                    className="w-full bg-gray-50 dark:bg-form-dark border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all resize-none text-sm"
+                                    placeholder={mediaType === 'image' ? "Descreva os principais elementos visuais destas fotos para um leitor de tela..." : "Descreva a cena principal deste vídeo para um leitor de tela..."}
+                                    required
+                                ></textarea>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 pl-1 border-l-2 border-brand-blue">
+                                    Obrigatório. Auxilia pessoas com deficiência visual a entenderem o conteúdo submetido através de leitores de tela.
+                                </p>
+                            </div>
+                        )}
 
                         <div className="mt-12 pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-t border-gray-100 dark:border-gray-800">
                             <label className="flex items-start gap-3 cursor-pointer group max-w-2xl">

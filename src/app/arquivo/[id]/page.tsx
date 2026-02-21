@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/Footer';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { ShareButtons } from './ShareButtons';
+import { CommentsSection, Comment } from './CommentsSection';
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -18,6 +19,22 @@ async function getSubmission(id: string) {
         .single();
 
     if (error || !data) return null;
+    return data;
+}
+
+async function getRelatedSubmissions(categoryId: string, currentSubmissionId: string) {
+    if (!categoryId) return [];
+
+    const { data, error } = await supabase
+        .from('submissions')
+        .select('*')
+        .eq('status', 'aprovado')
+        .eq('category', categoryId)
+        .neq('id', currentSubmissionId)
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+    if (error || !data) return [];
     return data;
 }
 
@@ -78,6 +95,30 @@ export default async function ArquivoItemPage({ params }: PageProps) {
     }
 
     const urls = parseMediaUrl(submission.media_url);
+    const relatedSubmissions = await getRelatedSubmissions(submission.category, submission.id);
+
+    // Fetch likes for related submissions
+    let likeMap: Record<string, number> = {};
+    if (relatedSubmissions.length > 0) {
+        const subIds = relatedSubmissions.map(s => s.id);
+        const { data: likes } = await supabase
+            .from('curtidas')
+            .select('submission_id')
+            .in('submission_id', subIds);
+
+        if (likes) {
+            likes.forEach(l => {
+                likeMap[l.submission_id] = (likeMap[l.submission_id] || 0) + 1;
+            });
+        }
+    }
+
+    // Fetch comments
+    const { data: routeComments } = await supabase
+        .from('comments')
+        .select('*')
+        .eq('submission_id', submission.id)
+        .order('created_at', { ascending: false });
 
     return (
         <div className="min-h-screen bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 flex flex-col">
@@ -158,8 +199,53 @@ export default async function ArquivoItemPage({ params }: PageProps) {
 
                         {/* Share Buttons */}
                         <ShareButtons title={submission.title} id={submission.id} />
+
+                        {/* Interactive Comments */}
+                        <CommentsSection submissionId={submission.id} initialComments={(routeComments as Comment[]) || []} />
                     </div>
                 </div>
+
+                {/* Related Materials Section */}
+                {relatedSubmissions.length > 0 && (
+                    <div className="mt-16 border-t border-gray-200 dark:border-gray-800 pt-12">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+                            <div>
+                                <h3 className="text-2xl font-bold font-display text-gray-900 dark:text-white">Materiais Relacionados</h3>
+                                <p className="text-gray-500 dark:text-gray-400">Outras submissões aprovadas na categoria <span className="font-semibold text-brand-blue">{submission.category}</span></p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {/* We need to import MediaCard at the top if we use it directly here, but let's just inline a simpler version or import it. 
+                                ACTUALLY I forgot to import MediaCard. Let's make sure it's imported at the top! */}
+                            {relatedSubmissions.map(rel => {
+                                const relUrls = parseMediaUrl(rel.media_url);
+                                const thumb = rel.media_type === 'video' ? formatYoutubeEmbed(relUrls[0] || '') : (relUrls[0] || ''); // fallback
+                                return (
+                                    <a key={rel.id} href={`/arquivo/${rel.id}`} className="group block bg-white dark:bg-card-dark rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1">
+                                        <div className="aspect-video bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
+                                            {rel.media_type === 'video' ? (
+                                                <div className="w-full h-full flex items-center justify-center bg-black">
+                                                    <span className="material-symbols-outlined text-4xl text-white/50">play_circle</span>
+                                                </div>
+                                            ) : rel.media_type === 'text' ? (
+                                                <div className="w-full h-full flex items-center justify-center bg-blue-50 dark:bg-blue-900/20">
+                                                    <span className="material-symbols-outlined text-4xl text-brand-blue/50">article</span>
+                                                </div>
+                                            ) : (
+                                                <img src={thumb.replace(/\.pdf$/i, '.jpg')} alt={rel.alt_text || rel.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                                            )}
+                                        </div>
+                                        <div className="p-4">
+                                            <h4 className="font-bold text-gray-900 dark:text-white line-clamp-1 group-hover:text-brand-blue transition-colors">{rel.title}</h4>
+                                            <p className="text-xs text-gray-500 mt-1 uppercase tracking-wide truncate">{rel.authors}</p>
+                                        </div>
+                                    </a>
+                                )
+                            })}
+                        </div>
+                    </div>
+                )}
             </main>
 
             <Footer />

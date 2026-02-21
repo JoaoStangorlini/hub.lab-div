@@ -206,3 +206,24 @@ CREATE POLICY "Admins can update oportunidades"
 CREATE POLICY "Admins can delete oportunidades"
   ON oportunidades FOR DELETE
   USING (auth.role() = 'authenticated');
+
+-- =============================================
+-- SPRINT 3 MIGRATION SCRIPT
+-- =============================================
+ALTER TABLE public.submissions ADD COLUMN IF NOT EXISTS alt_text text;
+
+
+-- Comments Table
+CREATE TABLE public.comments (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  submission_id uuid NOT NULL REFERENCES public.submissions(id) ON DELETE CASCADE,
+  author_name text NOT NULL,
+  content text NOT NULL,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can view comments" ON public.comments FOR SELECT USING (true);
+CREATE POLICY "Anyone can insert comments" ON public.comments FOR INSERT WITH CHECK (true);
+
