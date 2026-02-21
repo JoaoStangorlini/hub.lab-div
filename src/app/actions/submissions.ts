@@ -48,7 +48,7 @@ export async function fetchSubmissions({ page, limit, query, category, sort }: F
         return { items: [], hasMore: false };
     }
 
-    // Fetch like counts for ONLY the returned submissions efficiently 
+    // Fetch like counts for ONLY the returned submissions
     const submissionIds = submissions.map(s => s.id);
     const { data: likeCounts } = await supabase
         .from('curtidas')
@@ -57,9 +57,9 @@ export async function fetchSubmissions({ page, limit, query, category, sort }: F
 
     const likeMap: Record<string, number> = {};
     if (likeCounts) {
-        likeCounts.forEach(row => {
+        for (const row of likeCounts) {
             likeMap[row.submission_id] = (likeMap[row.submission_id] || 0) + 1;
-        });
+        }
     }
 
     const items: MediaCardProps[] = submissions.map(sub => ({

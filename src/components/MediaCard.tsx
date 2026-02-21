@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CATEGORY_STYLES, DEFAULT_STYLE } from '@/lib/constants';
 
 export interface MediaCardProps {
     id: string;
@@ -163,9 +162,12 @@ export const MediaCard = ({
         displayUrl = displayUrl.replace(/\.pdf$/i, '.jpg');
     }
 
-    const style = CATEGORY_STYLES[category || ''] || DEFAULT_STYLE;
-    const accentClass = style.accent;
-    const cardBadgeClass = style.cardBadge;
+    let accentClass = 'border-t-4 border-t-gray-100 dark:border-t-gray-700';
+    if (category === 'Laboratórios') accentClass = 'card-accent-yellow';
+    else if (category === 'Pesquisadores') accentClass = 'card-accent-red';
+    else if (category === 'Eventos') accentClass = 'card-accent-yellow';
+    else if (category === 'Convivência') accentClass = 'card-accent-red';
+    else if (category) accentClass = 'card-accent-blue'; // Default for others
 
     return (
         <div className={`masonry-item group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-card-dark shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl cursor-pointer border-x border-b border-gray-100 dark:border-gray-700 ${accentClass} ${sizeModifierStyles}`}>
@@ -182,6 +184,7 @@ export const MediaCard = ({
                         }}
                         alt="Video Thumbnail"
                         className="h-full w-full object-cover opacity-80"
+                        loading="lazy"
                     />
                 ) : mediaType === 'text' ? (
                     <div className="h-full w-full bg-gradient-to-br from-blue-50 to-sky-100 dark:from-blue-900/30 dark:to-sky-900/20 flex flex-col items-center justify-center p-6 text-center">
@@ -195,6 +198,7 @@ export const MediaCard = ({
                         src={displayUrl}
                         alt={`${title} - image ${currentImageIndex + 1}`}
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
                     />
                 ) : (
                     <div className="h-full w-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
@@ -294,7 +298,13 @@ export const MediaCard = ({
             <div className={`flex flex-col flex-1 p-5 ${hasMultipleImages ? 'bg-gradient-to-b from-white to-slate-50 dark:from-gray-800 dark:to-gray-800' : ''}`}>
                 <div className="flex flex-wrap items-center justify-between mb-3 gap-2">
                     {category && (
-                        <div className={`px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wide shadow-sm ${cardBadgeClass}`}>
+                        <div className={`px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wide shadow-sm 
+                            ${category === 'Laboratórios' ? 'bg-brand-yellow/90 text-black shadow-brand-yellow/50' :
+                                category === 'Pesquisadores' ? 'bg-brand-red/90 text-white shadow-brand-red/50' :
+                                    category === 'Eventos' ? 'bg-brand-yellow/90 text-black shadow-brand-yellow/50' :
+                                        category === 'Convivência' ? 'bg-brand-red/90 text-white shadow-brand-red/50' :
+                                            'bg-brand-blue/90 text-white shadow-brand-blue/50'}`}
+                        >
                             {category}
                         </div>
                     )}
@@ -318,7 +328,7 @@ export const MediaCard = ({
                 <div className="flex items-center gap-2 mt-auto pt-3 border-t border-gray-100 dark:border-gray-700">
                     <div className="h-7 w-7 rounded-full bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 overflow-hidden flex items-center justify-center text-[10px] font-bold text-primary shrink-0 transition-transform group-hover:scale-110">
                         {avatarUrl ? (
-                            <img src={avatarUrl} alt={authors} className="h-full w-full object-cover" />
+                            <img src={avatarUrl} alt={authors} className="h-full w-full object-cover" loading="lazy" />
                         ) : (
                             <span className="uppercase">{authors.substring(0, 2)}</span>
                         )}

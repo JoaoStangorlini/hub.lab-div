@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
 interface Pergunta {
@@ -23,7 +23,8 @@ export default function AdminPerguntasPage() {
     const [respondidoPor, setRespondidoPor] = useState('');
     const [isSaving, setIsSaving] = useState(false);
 
-    const fetchPerguntas = useCallback(async () => {
+    const fetchPerguntas = async () => {
+        setIsLoading(true);
         const { data, error } = await supabase
             .from('perguntas')
             .select('*')
@@ -35,16 +36,12 @@ export default function AdminPerguntasPage() {
         } else {
             setPerguntas(data || []);
         }
-    }, [filter]);
+        setIsLoading(false);
+    };
 
     useEffect(() => {
-        const load = async () => {
-            setIsLoading(true);
-            await fetchPerguntas();
-            setIsLoading(false);
-        };
-        load();
-    }, [fetchPerguntas]);
+        fetchPerguntas();
+    }, [filter]);
 
     const handleResponder = (p: Pergunta) => {
         setRespondingTo(p);
