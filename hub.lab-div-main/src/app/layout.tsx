@@ -15,7 +15,14 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Hub de Comunicação Científica do Lab-Div",
   description: "O hub oficial de comunicação científica do Instituto de Física da Universidade de São Paulo.",
-};
+  // Adicione estas linhas abaixo na sua metadata:
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "LabDiv",
+  }
+}
 
 export default function RootLayout({
   children,

@@ -194,9 +194,13 @@ export default function SubmitPage() {
             alert('Submissão enviada com sucesso! Em breve passará por moderação.');
             router.push('/');
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Full Submit Error:", err);
-            setErrorMsg(err?.message || (typeof err === 'object' ? JSON.stringify(err) : String(err)));
+            if (err instanceof Error) {
+                setErrorMsg(err.message);
+            } else {
+                setErrorMsg(String(err));
+            }
         } finally {
             setIsLoading(false);
         }

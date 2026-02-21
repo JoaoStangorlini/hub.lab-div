@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { CATEGORY_STYLES, DEFAULT_STYLE } from '@/lib/constants';
 
 export interface MediaCardProps {
     id: string;
@@ -162,12 +163,9 @@ export const MediaCard = ({
         displayUrl = displayUrl.replace(/\.pdf$/i, '.jpg');
     }
 
-    let accentClass = 'border-t-4 border-t-gray-100 dark:border-t-gray-700';
-    if (category === 'Laboratórios') accentClass = 'card-accent-yellow';
-    else if (category === 'Pesquisadores') accentClass = 'card-accent-red';
-    else if (category === 'Eventos') accentClass = 'card-accent-yellow';
-    else if (category === 'Convivência') accentClass = 'card-accent-red';
-    else if (category) accentClass = 'card-accent-blue'; // Default for others
+    const style = CATEGORY_STYLES[category || ''] || DEFAULT_STYLE;
+    const accentClass = style.accent;
+    const cardBadgeClass = style.cardBadge;
 
     return (
         <div className={`masonry-item group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-card-dark shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl cursor-pointer border-x border-b border-gray-100 dark:border-gray-700 ${accentClass} ${sizeModifierStyles}`}>
@@ -296,13 +294,7 @@ export const MediaCard = ({
             <div className={`flex flex-col flex-1 p-5 ${hasMultipleImages ? 'bg-gradient-to-b from-white to-slate-50 dark:from-gray-800 dark:to-gray-800' : ''}`}>
                 <div className="flex flex-wrap items-center justify-between mb-3 gap-2">
                     {category && (
-                        <div className={`px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wide shadow-sm 
-                            ${category === 'Laboratórios' ? 'bg-brand-yellow/90 text-black shadow-brand-yellow/50' :
-                                category === 'Pesquisadores' ? 'bg-brand-red/90 text-white shadow-brand-red/50' :
-                                    category === 'Eventos' ? 'bg-brand-yellow/90 text-black shadow-brand-yellow/50' :
-                                        category === 'Convivência' ? 'bg-brand-red/90 text-white shadow-brand-red/50' :
-                                            'bg-brand-blue/90 text-white shadow-brand-blue/50'}`}
-                        >
+                        <div className={`px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wide shadow-sm ${cardBadgeClass}`}>
                             {category}
                         </div>
                     )}

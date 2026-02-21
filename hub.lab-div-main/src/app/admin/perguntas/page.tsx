@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 
 interface Pergunta {
@@ -23,8 +23,7 @@ export default function AdminPerguntasPage() {
     const [respondidoPor, setRespondidoPor] = useState('');
     const [isSaving, setIsSaving] = useState(false);
 
-    const fetchPerguntas = async () => {
-        setIsLoading(true);
+    const fetchPerguntas = useCallback(async () => {
         const { data, error } = await supabase
             .from('perguntas')
             .select('*')
@@ -36,12 +35,16 @@ export default function AdminPerguntasPage() {
         } else {
             setPerguntas(data || []);
         }
-        setIsLoading(false);
-    };
+    }, [filter]);
 
     useEffect(() => {
-        fetchPerguntas();
-    }, [filter]);
+        const load = async () => {
+            setIsLoading(true);
+            await fetchPerguntas();
+            setIsLoading(false);
+        };
+        load();
+    }, [fetchPerguntas]);
 
     const handleResponder = (p: Pergunta) => {
         setRespondingTo(p);
@@ -105,8 +108,8 @@ export default function AdminPerguntasPage() {
                         <button
                             onClick={() => setFilter('pendente')}
                             className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${filter === 'pendente'
-                                    ? 'bg-white dark:bg-gray-700 text-brand-yellow shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                                ? 'bg-white dark:bg-gray-700 text-brand-yellow shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
                                 }`}
                         >
                             ⏳ Pendentes
@@ -114,8 +117,8 @@ export default function AdminPerguntasPage() {
                         <button
                             onClick={() => setFilter('respondida')}
                             className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${filter === 'respondida'
-                                    ? 'bg-white dark:bg-gray-700 text-brand-blue shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                                ? 'bg-white dark:bg-gray-700 text-brand-blue shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
                                 }`}
                         >
                             ✅ Respondidas
