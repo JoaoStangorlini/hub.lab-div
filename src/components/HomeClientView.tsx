@@ -589,6 +589,15 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
                             )}
 
                             <div className="pt-4 flex flex-col gap-3 mt-auto">
+                                <a
+                                    href={`/arquivo/${selectedItem.id}`}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="w-full bg-brand-blue hover:bg-brand-darkBlue text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group"
+                                >
+                                    Abrir Página Completa
+                                    <span className="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                </a>
+
                                 {selectedItem.mediaType === 'image' && (
                                     <a
                                         href={getDownloadUrl(parseMediaUrl(selectedItem.mediaUrl)[modalImageIdx])}
