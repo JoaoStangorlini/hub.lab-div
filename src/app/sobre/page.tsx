@@ -79,10 +79,39 @@ export default function SobrePage() {
                                 Este Hub é uma ferramenta desenhada para resolver um problema histórico: a falta de acessibilidade visual e narrativa sobre a pesquisa de base. Ao unificar criadores, arquivistas e a própria comunidade de pesquisadores em um só lugar, criamos um motor contínuo de difusão do conhecimento.
                             </p>
                         </div>
-                        <div className="hidden md:flex w-48 h-48 bg-white dark:bg-gray-800 rounded-full items-center justify-center shadow-lg flex-shrink-0 relative overflow-hidden border-4 border-white dark:border-gray-800">
-                            <div className="absolute w-20 h-24 bg-brand-blue rounded-sm top-4 left-6 z-0"></div>
-                            <div className="absolute w-20 h-24 bg-brand-red rounded-sm bottom-4 right-6 z-0"></div>
-                            <div className="absolute w-16 h-16 bg-brand-yellow rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 shadow-sm border-2 border-white dark:border-gray-800"></div>
+                        <div className="hidden md:flex w-48 h-48 bg-[#14477c] rounded-2xl items-center justify-center shadow-lg shadow-[#14477c]/20 flex-shrink-0 relative overflow-hidden border border-[#299adc]/20">
+                            <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] drop-shadow-sm">
+                                <defs>
+                                    <mask id="both-holes">
+                                        <rect width="100" height="100" fill="white" />
+                                        <circle cx="45" cy="55" r="8" fill="black" />
+                                        <circle cx="55" cy="55" r="8" fill="black" />
+                                    </mask>
+                                    <clipPath id="b-shape">
+                                        <rect x="20" y="20" width="15" height="55" />
+                                        <circle cx="45" cy="55" r="20" />
+                                    </clipPath>
+                                </defs>
+
+                                {/* Light blue rectangle */}
+                                <rect x="35" y="10" width="30" height="80" fill="#299adc" />
+
+                                <g mask="url(#both-holes)">
+                                    {/* b (Red) */}
+                                    <rect x="20" y="20" width="15" height="55" fill="#ec4e4e" />
+                                    <circle cx="45" cy="55" r="20" fill="#ec4e4e" />
+
+                                    {/* d (Yellow) */}
+                                    <rect x="65" y="20" width="15" height="55" fill="#ffba00" />
+                                    <circle cx="55" cy="55" r="20" fill="#ffba00" />
+
+                                    {/* Overlap area (Orange) */}
+                                    <g clipPath="url(#b-shape)">
+                                        <rect x="65" y="20" width="15" height="55" fill="#f58220" />
+                                        <circle cx="55" cy="55" r="20" fill="#f58220" />
+                                    </g>
+                                </g>
+                            </svg>
                         </div>
                     </div>
                 </div>
