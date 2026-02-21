@@ -39,10 +39,10 @@ export default function SobrePage() {
 
                     {/* Card 2: Arquivo Feito por Nós */}
                     <div className="bg-white dark:bg-card-dark rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col h-full hover:shadow-lg transition-shadow">
-                        <div className="w-14 h-14 bg-brand-blue/10 rounded-xl flex items-center justify-center mb-6">
-                            <span className="material-symbols-outlined text-3xl text-brand-blue">folder_special</span>
+                        <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 overflow-hidden">
+                            <Image src="/arquivo-logo.png" alt="Logo do Arquivo" width={56} height={56} className="object-contain" />
                         </div>
-                        <h3 className="text-2xl font-bold mb-4">O Acervo Oficial</h3>
+                        <h3 className="text-2xl font-bold mb-4">O Arquivo Oficial</h3>
                         <p className="text-gray-600 dark:text-gray-400 flex-1 leading-relaxed">
                             O coração do projeto é a construção de um grande Arquivo visual. Capturamos o cotidiano dos laboratórios, o maquinário e os bastidores das pesquisas de forma profissional. Nosso objetivo é ter um banco de imagens institucionais de alta qualidade, pronto para suprir demandas de jornalistas, designers e pesquisadores.
                         </p>
@@ -79,39 +79,8 @@ export default function SobrePage() {
                                 Este Hub é uma ferramenta desenhada para resolver um problema histórico: a falta de acessibilidade visual e narrativa sobre a pesquisa de base. Ao unificar criadores, arquivistas e a própria comunidade de pesquisadores em um só lugar, criamos um motor contínuo de difusão do conhecimento.
                             </p>
                         </div>
-                        <div className="hidden md:flex w-48 h-48 bg-[#14477c] rounded-2xl items-center justify-center shadow-lg shadow-[#14477c]/20 flex-shrink-0 relative overflow-hidden border border-[#299adc]/20">
-                            <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] drop-shadow-sm">
-                                <defs>
-                                    <mask id="both-holes">
-                                        <rect width="100" height="100" fill="white" />
-                                        <circle cx="39" cy="58" r="7.5" fill="black" />
-                                        <circle cx="59" cy="51" r="7.5" fill="black" />
-                                    </mask>
-                                    <clipPath id="b-shape">
-                                        <rect x="26" y="35" width="13" height="42" />
-                                        <circle cx="39" cy="58" r="19" />
-                                    </clipPath>
-                                </defs>
-
-                                {/* Light blue rectangle */}
-                                <rect x="37" y="24" width="24" height="53" fill="#299adc" />
-
-                                <g mask="url(#both-holes)">
-                                    {/* b (Red) */}
-                                    <rect x="26" y="35" width="13" height="42" fill="#ec4e4e" />
-                                    <circle cx="39" cy="58" r="19" fill="#ec4e4e" />
-
-                                    {/* d (Yellow) */}
-                                    <rect x="61" y="27" width="11" height="35" fill="#ffba00" />
-                                    <circle cx="59" cy="51" r="19" fill="#ffba00" />
-
-                                    {/* Overlap area (Orange) */}
-                                    <g clipPath="url(#b-shape)">
-                                        <rect x="61" y="27" width="11" height="35" fill="#f58220" />
-                                        <circle cx="59" cy="51" r="19" fill="#f58220" />
-                                    </g>
-                                </g>
-                            </svg>
+                        <div className="hidden md:flex w-48 h-48 rounded-2xl items-center justify-center flex-shrink-0 overflow-hidden">
+                            <Image src="/labdiv-logo.png" alt="Logo do Lab-Div" width={192} height={192} className="object-contain" />
                         </div>
                     </div>
                 </div>

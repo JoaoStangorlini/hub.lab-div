@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import Image from "next/image";
 
 export default function IniciativasPage() {
     return (
@@ -19,8 +20,8 @@ export default function IniciativasPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Iniciativa 1 */}
                     <div className="bg-white dark:bg-card-dark rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 p-8 hover:-translate-y-1 transition-transform group">
-                        <div className="w-16 h-16 bg-brand-blue/10 rounded-2xl flex items-center justify-center mb-6">
-                            <span className="material-symbols-outlined text-3xl text-brand-blue">science</span>
+                        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 overflow-hidden">
+                            <Image src="/labdiv-logo.png" alt="Logo do Lab-Div" width={64} height={64} className="object-contain" />
                         </div>
                         <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">Lab-Div</h2>
                         <p className="text-gray-600 dark:text-gray-400 mb-6">
@@ -41,6 +42,34 @@ export default function IniciativasPage() {
                             Iniciativa com foco na criação de experiências digitais, programação e conteúdos audiovisuais voltados para a popularização da ciência na internet.
                         </p>
                         <a href="#" className="inline-flex items-center text-brand-red font-semibold group-hover:opacity-80 transition-colors">
+                            Conhecer mais <span className="material-symbols-outlined text-[20px] ml-1 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </a>
+                    </div>
+
+                    {/* Iniciativa 3 */}
+                    <div className="bg-white dark:bg-card-dark rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 p-8 hover:-translate-y-1 transition-transform group">
+                        <div className="w-16 h-16 bg-brand-yellow/10 rounded-2xl flex items-center justify-center mb-6">
+                            <span className="material-symbols-outlined text-3xl text-brand-yellow">newspaper</span>
+                        </div>
+                        <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">Boletim Supernova</h2>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6">
+                            Publicação do Centro Acadêmico de Física (CEFISMA) que serve como espaço de diálogo crítico, político e cultural dentro do IFUSP. Traz textos produzidos por estudantes, artigos de opinião, relatos institucionais e expressões artísticas.
+                        </p>
+                        <a href="https://cefisma.com.br" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-brand-yellow font-semibold group-hover:opacity-80 transition-colors">
+                            Conhecer mais <span className="material-symbols-outlined text-[20px] ml-1 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </a>
+                    </div>
+
+                    {/* Iniciativa 4 */}
+                    <div className="bg-white dark:bg-card-dark rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 p-8 hover:-translate-y-1 transition-transform group">
+                        <div className="w-16 h-16 bg-brand-green/10 rounded-2xl flex items-center justify-center mb-6">
+                            <span className="material-symbols-outlined text-3xl text-brand-green">memory</span>
+                        </div>
+                        <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">Hackerspace IFUSP</h2>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6">
+                            Laboratório aberto e colaborativo dentro do IFUSP, um dos primeiros hackerspaces do Brasil. Oferece Arduinos, Raspberry Pis, impressoras 3D, osciloscópios e muito mais para projetos de eletrônica, robótica e desenvolvimento de jogos.
+                        </p>
+                        <a href="https://hackerspace.if.usp.br" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-brand-green font-semibold group-hover:opacity-80 transition-colors">
                             Conhecer mais <span className="material-symbols-outlined text-[20px] ml-1 group-hover:translate-x-1 transition-transform">arrow_forward</span>
                         </a>
                     </div>
