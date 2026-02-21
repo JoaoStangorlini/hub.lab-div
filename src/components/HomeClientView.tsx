@@ -1,26 +1,21 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MediaCard, MediaCardProps, parseMediaUrl, formatYoutubeUrl, getDownloadUrl, getPdfViewerUrl } from './MediaCard';
+import { MediaCard, MediaCardProps } from './MediaCard';
 import { fetchSubmissions } from '@/app/actions/submissions';
-import dynamic from 'next/dynamic';
-import ReactMarkdown from 'react-markdown';
-
-const CustomPdfViewer = dynamic(
-    () => import('./CustomPdfViewer').then((mod) => mod.CustomPdfViewer),
-    { ssr: false }
-);
+import { SubmissionModalContent } from './SubmissionModalContent';
 
 interface HomeClientViewProps {
     initialItems: MediaCardProps[];
     initialHasMore: boolean;
+    initialCategory?: string;
 }
 
-export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewProps) => {
+export const HomeClientView = ({ initialItems, initialHasMore, initialCategory = 'Todos' }: HomeClientViewProps) => {
     // Search & Filter State
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
-    const [selectedCategories, setSelectedCategories] = useState<string[]>(['Todos']);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([initialCategory]);
     const [selectedMediaTypes, setSelectedMediaTypes] = useState<string[]>([]);
     const [sortOrder, setSortOrder] = useState<'recentes' | 'antigas'>('recentes');
 
@@ -35,18 +30,26 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
     const [selectedItem, setSelectedItem] = useState<MediaCardProps | null>(null);
     const [modalImageIdx, setModalImageIdx] = useState(0);
 
-    // Citation copy feedback
-    const [citeCopied, setCiteCopied] = useState(false);
 
     // No need for mousePos React state anymore! Using CSS Variables for performance.
     const headerRef = useRef<HTMLElement>(null);
+    const filtersScrollRef = useRef<HTMLDivElement>(null);
 
-    const categories = ['Todos', 'Laboratórios', 'Pesquisadores', 'Eventos', 'Uso Didático', 'Bastidores da Ciência', 'Convivência', 'Outros'];
+    const scrollFilters = (direction: 'left' | 'right') => {
+        if (filtersScrollRef.current) {
+            const scrollAmount = 300;
+            filtersScrollRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+        }
+    };
+
+    const categories = ['Todos', 'Laboratórios', 'Pesquisadores', 'Eventos', 'Uso Didático', 'Bastidores da Ciência', 'Convivência', 'Mural do Deu Ruim', 'Guia de Sobrevivência', 'Física Fora da Caixa', 'Impacto e Conquistas', 'Central de Anotações', 'Outros'];
     const mediaTypeOptions = [
         { label: 'Imagens', value: 'image', icon: 'image' },
         { label: 'Vídeos', value: 'video', icon: 'videocam' },
         { label: 'PDFs', value: 'pdf', icon: 'picture_as_pdf' },
         { label: 'Textos', value: 'text', icon: 'article' },
+        { label: 'ZIPs', value: 'zip', icon: 'folder_zip' },
+        { label: 'Notas', value: 'sdocx', icon: 'edit_note' },
     ];
 
     // Debounce Search 
@@ -114,7 +117,6 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
     const openModal = (item: MediaCardProps) => {
         setSelectedItem(item);
         setModalImageIdx(0);
-        setCiteCopied(false);
     };
 
     const currentSubmissionIndex = selectedItem ? items.findIndex(i => i.id === selectedItem.id) : -1;
@@ -217,6 +219,10 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
                                 <span className="w-1.5 h-1.5 rounded-full bg-brand-blue shrink-0"></span>
                                 Você quer levar ciência para os alunos sem se preocupar com possíveis erros? Use o filtro <span className="font-semibold text-brand-blue cursor-pointer hover:underline" onClick={() => setSelectedCategories(['Uso Didático'])}>Uso Didático</span>.
                             </p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2 opacity-90 transition-opacity hover:opacity-100">
+                                <span className="w-1.5 h-1.5 rounded-full bg-brand-red shrink-0"></span>
+                                Procurando materiais de estudo? Explore a <span className="font-semibold text-brand-red cursor-pointer hover:underline" onClick={() => setSelectedCategories(['Central de Anotações'])}>Central de Anotações</span> para Drives e PDFs.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -233,6 +239,14 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
                         <div className="flex flex-wrap gap-2">
                             {mediaTypeOptions.map(option => {
                                 const isActive = selectedMediaTypes.includes(option.value);
+                                let colorClass = 'brand-blue';
+                                let textColor = 'text-white';
+                                if (option.value === 'video') { colorClass = 'brand-yellow'; textColor = 'text-black'; }
+                                if (option.value === 'pdf') { colorClass = 'brand-red'; textColor = 'text-white'; }
+                                if (option.value === 'text') { colorClass = 'brand-blue'; textColor = 'text-white'; }
+                                if (option.value === 'zip') { colorClass = 'brand-blue'; textColor = 'text-white'; }
+                                if (option.value === 'sdocx') { colorClass = 'brand-red'; textColor = 'text-white'; }
+
                                 return (
                                     <button
                                         key={option.value}
@@ -244,8 +258,8 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
                                             }
                                         }}
                                         className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${isActive
-                                            ? 'bg-brand-blue text-white border-brand-blue shadow-md shadow-brand-blue/20'
-                                            : 'bg-white dark:bg-form-dark text-gray-500 border-gray-200 dark:border-gray-700 hover:border-brand-blue hover:text-brand-blue hover:bg-brand-blue/5'}`}
+                                            ? `bg-${colorClass} ${textColor} border-${colorClass} shadow-md shadow-${colorClass}/20`
+                                            : `bg-white dark:bg-form-dark text-gray-500 border-gray-200 dark:border-gray-700 hover:border-${colorClass} hover:text-${colorClass} hover:bg-${colorClass}/5`}`}
                                     >
                                         <span className="material-symbols-outlined text-[16px]">{option.icon}</span>
                                         {option.label}
@@ -256,13 +270,18 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
                     </div>
 
                     {/* Category Filters */}
-                    <div className="flex items-center justify-between overflow-x-auto no-scrollbar gap-4">
-                        <div className="flex gap-2 items-center">
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mr-2 sm:block hidden">Categorias:</span>
+                    <div className="flex items-center gap-2 w-full pt-1">
+                        <span className="text-xs font-bold text-gray-400 flex-shrink-0 uppercase tracking-widest mr-2 sm:block hidden">Categorias:</span>
+
+                        <button onClick={() => scrollFilters('left')} className="p-1.5 mr-1 rounded-full bg-white dark:bg-card-dark border border-gray-200 dark:border-gray-700 hover:bg-gray-100 hidden sm:flex shrink-0">
+                            <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                        </button>
+
+                        <div ref={filtersScrollRef} className="flex flex-1 items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth">
                             {categories.map(cat => {
                                 const isActive = selectedCategories.includes(cat);
-                                const isYellow = cat === 'Laboratórios' || cat === 'Eventos';
-                                const isRed = cat === 'Pesquisadores' || cat === 'Convivência';
+                                const isYellow = cat === 'Laboratórios' || cat === 'Eventos' || cat === 'Guia de Sobrevivência';
+                                const isRed = cat === 'Pesquisadores' || cat === 'Convivência' || cat === 'Impacto e Conquistas' || cat === 'Mural do Deu Ruim';
 
                                 let activeClass = '';
                                 if (isActive) {
@@ -300,15 +319,19 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
                                             }
                                             setSelectedCategories(next);
                                         }}
-                                        className={`px-4 py-2 rounded-full text-sm transition-colors whitespace-nowrap border ${activeClass}`}
+                                        className={`px-4 py-2 rounded-full text-sm transition-colors whitespace-nowrap border ${activeClass} shrink-0`}
                                     >
                                         {cat}
                                     </button>
                                 );
                             })}
                         </div>
-                        <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                            <span className="font-medium text-brand-blue">Ordenar por:</span>
+
+                        <button onClick={() => scrollFilters('right')} className="p-1.5 ml-1 rounded-full bg-white dark:bg-card-dark border border-gray-200 dark:border-gray-700 hover:bg-gray-100 hidden sm:flex shrink-0">
+                            <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                        </button>
+
+                        <div className="hidden lg:flex items-center gap-2 shrink-0 ml-4 pl-4 border-l border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
                             <select
                                 value={sortOrder}
                                 onChange={(e) => setSortOrder(e.target.value as 'recentes' | 'antigas')}
@@ -426,260 +449,17 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
                 </div>
             </section>
 
-            {/* Lightbox / Modal */}
             {selectedItem && (
-                <div
-                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 md:p-6 lg:p-12 transition-opacity"
-                    onClick={() => setSelectedItem(null)}
-                >
-                    <button
-                        className="absolute top-4 right-4 md:top-6 md:right-6 text-white hover:text-red-400 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-all flex items-center justify-center backdrop-blur-md z-[110]"
-                        onClick={(e) => { e.stopPropagation(); setSelectedItem(null); }}
-                        aria-label="Close modal"
-                    >
-                        <span className="material-symbols-outlined text-3xl">close</span>
-                    </button>
-
-                    {/* Global Nav Left */}
-                    {hasPrevSubmission && (
-                        <button
-                            onClick={handlePrevSubmission}
-                            className="hidden md:flex fixed left-4 lg:left-8 top-1/2 -translate-y-1/2 z-[110] bg-white/10 hover:bg-white/30 text-white rounded-full p-3 lg:p-4 backdrop-blur-md transition-all hover:scale-110 shadow-xl"
-                            aria-label="Submissão Anterior"
-                        >
-                            <span className="material-symbols-outlined text-3xl lg:text-4xl">chevron_left</span>
-                        </button>
-                    )}
-
-                    {/* Global Nav Right */}
-                    {hasNextSubmission && (
-                        <button
-                            onClick={handleNextSubmission}
-                            className="hidden md:flex fixed right-4 lg:right-8 top-1/2 -translate-y-1/2 z-[110] bg-white/10 hover:bg-white/30 text-white rounded-full p-3 lg:p-4 backdrop-blur-md transition-all hover:scale-110 shadow-xl"
-                            aria-label="Próxima Submissão"
-                        >
-                            <span className="material-symbols-outlined text-3xl lg:text-4xl">chevron_right</span>
-                        </button>
-                    )}
-
-                    <div
-                        className="w-full max-w-5xl xl:max-w-6xl max-h-full bg-white dark:bg-gray-900 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl flex flex-col lg:flex-row relative z-[105]"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-
-                        {/* Mobile Global Nav Overlay (Visible only on small screens) */}
-                        <div className="md:hidden absolute inset-y-0 left-0 w-16 z-[106] flex items-center px-1 pointer-events-none">
-                            {hasPrevSubmission && (
-                                <button onClick={handlePrevSubmission} className="pointer-events-auto bg-black/40 hover:bg-black/60 text-white rounded-r-lg p-2 backdrop-blur-sm transition-colors">
-                                    <span className="material-symbols-outlined text-3xl">chevron_left</span>
-                                </button>
-                            )}
-                        </div>
-                        <div className="md:hidden absolute inset-y-0 right-0 w-16 z-[106] flex items-center justify-end px-1 pointer-events-none">
-                            {hasNextSubmission && (
-                                <button onClick={handleNextSubmission} className="pointer-events-auto bg-black/40 hover:bg-black/60 text-white rounded-l-lg p-2 backdrop-blur-sm transition-colors">
-                                    <span className="material-symbols-outlined text-3xl">chevron_right</span>
-                                </button>
-                            )}
-                        </div>
-
-                        {/* Media Section */}
-                        <div className="flex-1 bg-black flex items-center justify-center relative min-h-[30vh] lg:min-h-full group">
-                            {selectedItem.mediaType === 'video' ? (
-                                (() => {
-                                    const rawUrls = parseMediaUrl(selectedItem.mediaUrl);
-                                    const videoUrl = rawUrls.length > 0 ? formatYoutubeUrl(rawUrls[0]) : '';
-                                    return videoUrl ? (
-                                        <iframe
-                                            src={videoUrl}
-                                            className="w-full h-full min-h-[400px] aspect-video"
-                                            allowFullScreen
-                                            frameBorder="0"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        />
-                                    ) : (
-                                        <span className="text-white">Vídeo não encontrado</span>
-                                    );
-                                })()
-                            ) : selectedItem.mediaType === 'pdf' ? (
-                                (() => {
-                                    const rawUrls = parseMediaUrl(selectedItem.mediaUrl);
-                                    const pdfUrl = rawUrls.length > 0 ? getPdfViewerUrl(rawUrls[0]) : '';
-                                    return pdfUrl ? (
-                                        <div className="w-full h-full min-h-[60vh] md:min-h-full bg-white rounded-l-2xl md:rounded-l-3xl overflow-hidden relative">
-                                            <CustomPdfViewer fileUrl={pdfUrl} title={selectedItem.title} />
-                                        </div>
-                                    ) : (
-                                        <span className="text-white">PDF não encontrado</span>
-                                    );
-                                })()
-                            ) : selectedItem.mediaType === 'text' ? (
-                                <div className="w-full h-full min-h-[60vh] md:min-h-full bg-white dark:bg-gray-900 rounded-l-2xl md:rounded-l-3xl overflow-auto p-8 md:p-12">
-                                    <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-display">
-                                        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6">{selectedItem.title}</h2>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-base">person</span>
-                                            {selectedItem.authors}
-                                        </p>
-                                        <div className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed">
-                                            <ReactMarkdown>{selectedItem.description || ''}</ReactMarkdown>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                (() => {
-                                    const urls = parseMediaUrl(selectedItem.mediaUrl);
-                                    if (urls.length === 0) return <span className="text-white">Imagem não encontrada</span>;
-
-                                    return (
-                                        <div className="relative w-full h-full flex items-center justify-center">
-                                            <img src={urls[modalImageIdx]} alt={selectedItem.title} className="max-w-full max-h-[80vh] object-contain" />
-                                            {urls.length > 1 && (
-                                                <>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); setModalImageIdx(p => (p - 1 + urls.length) % urls.length) }}
-                                                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 text-white rounded-full p-3 backdrop-blur-md transition-all hover:scale-110"
-                                                    >
-                                                        <span className="material-symbols-outlined text-3xl">chevron_left</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); setModalImageIdx(p => (p + 1) % urls.length) }}
-                                                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 text-white rounded-full p-3 backdrop-blur-md transition-all hover:scale-110"
-                                                    >
-                                                        <span className="material-symbols-outlined text-3xl">chevron_right</span>
-                                                    </button>
-
-                                                    <div className="absolute bottom-6 flex gap-2 bg-black/40 px-3 py-2 rounded-full backdrop-blur-md">
-                                                        {urls.map((_, i) => (
-                                                            <div
-                                                                key={i}
-                                                                className={`h-2.5 rounded-full cursor-pointer hover:bg-white transition-all ${i === modalImageIdx ? 'w-8 bg-white' : 'w-2.5 bg-white/50'}`}
-                                                                onClick={(e) => { e.stopPropagation(); setModalImageIdx(i); }}
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                </>
-                                            )}
-                                        </div>
-                                    )
-                                })()
-                            )}
-                        </div>
-
-                        {/* Details Section */}
-                        <div className="w-full lg:w-[400px] xl:w-[450px] shrink-0 bg-white dark:bg-gray-900 p-6 md:p-8 overflow-y-auto flex flex-col gap-6 max-h-[50vh] lg:max-h-full border-t lg:border-t-0 lg:border-l border-gray-100 dark:border-gray-800">
-                            <div className="flex flex-wrap items-center gap-2">
-                                <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-text-muted dark:text-gray-300 rounded-full text-xs font-bold tracking-wide uppercase">
-                                    {selectedItem.category}
-                                </span>
-                                {selectedItem.isFeatured && (
-                                    <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold tracking-wide uppercase">
-                                        Destaque
-                                    </span>
-                                )}
-                            </div>
-
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight">
-                                {selectedItem.title}
-                            </h2>
-
-                            <div className="flex items-center gap-3 py-4 border-y border-gray-100 dark:border-gray-800">
-                                <div className="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm uppercase shrink-0">
-                                    {selectedItem.authors.substring(0, 2)}
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">Autor</span>
-                                    <span className="text-sm font-bold text-gray-900 dark:text-white">{selectedItem.authors}</span>
-                                </div>
-                            </div>
-
-                            {selectedItem.description && selectedItem.mediaType !== 'text' && (
-                                <div className="flex-1">
-                                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2 uppercase tracking-wide">Descrição do Trabalho</h3>
-                                    <div className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none">
-                                        <ReactMarkdown>{selectedItem.description}</ReactMarkdown>
-                                    </div>
-                                </div>
-                            )}
-
-                            {selectedItem.external_link && (
-                                <div className="mt-4">
-                                    <a
-                                        href={selectedItem.external_link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-full bg-brand-blue hover:bg-brand-darkBlue text-white font-semibold py-3 flex items-center justify-center gap-2 rounded-xl transition-colors shadow-lg hover:shadow-xl group"
-                                    >
-                                        <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">open_in_new</span>
-                                        Acessar PDF Completo
-                                    </a>
-                                </div>
-                            )}
-
-
-
-                            {/* Technical Details */}
-                            {selectedItem.technical_details && (
-                                <div className="flex-1">
-                                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2 uppercase tracking-wide flex items-center gap-1.5">
-                                        <span className="material-symbols-outlined text-brand-yellow text-[16px]">build</span>
-                                        Bastidores Técnicos
-                                    </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed whitespace-pre-line">
-                                        {selectedItem.technical_details}
-                                    </p>
-                                </div>
-                            )}
-
-                            <div className="pt-4 flex flex-col gap-3 mt-auto">
-                                {/* ABNT Citation Button moved here */}
-                                <button
-                                    onClick={async () => {
-                                        const year = selectedItem.created_at ? new Date(selectedItem.created_at).getFullYear() : new Date().getFullYear();
-                                        const citation = `${selectedItem.authors.toUpperCase()}. ${selectedItem.title}. Hub Lab-Div IF-USP, ${year}. Disponível em: ${window.location.origin}/arquivo/${selectedItem.id}`;
-                                        try {
-                                            await navigator.clipboard.writeText(citation);
-                                        } catch {
-                                            const textarea = document.createElement('textarea');
-                                            textarea.value = citation;
-                                            document.body.appendChild(textarea);
-                                            textarea.select();
-                                            document.execCommand('copy');
-                                            document.body.removeChild(textarea);
-                                        }
-                                        setCiteCopied(true);
-                                        setTimeout(() => setCiteCopied(false), 2000);
-                                    }}
-                                    className="w-full bg-brand-yellow/10 hover:bg-brand-yellow/20 text-brand-yellow border border-brand-yellow/30 font-semibold py-3 flex items-center justify-center gap-2 rounded-xl transition-colors text-sm"
-                                >
-                                    <span className="material-symbols-outlined text-[18px]">{citeCopied ? 'check' : 'format_quote'}</span>
-                                    {citeCopied ? 'Citação copiada!' : 'Copiar Citação ABNT'}
-                                </button>
-
-                                <a
-                                    href={`/arquivo/${selectedItem.id}`}
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="w-full bg-brand-blue hover:bg-brand-darkBlue text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group"
-                                >
-                                    Abrir Página Completa
-                                    <span className="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                                </a>
-
-                                {selectedItem.mediaType === 'image' && (
-                                    <a
-                                        href={getDownloadUrl(parseMediaUrl(selectedItem.mediaUrl)[modalImageIdx])}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-full bg-brand-red hover:bg-red-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
-                                    >
-                                        <span className="material-symbols-outlined text-[24px]">download</span> Baixar Imagem
-                                    </a>
-                                )}
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
+                <SubmissionModalContent
+                    item={selectedItem}
+                    imageIdx={modalImageIdx}
+                    setImageIdx={setModalImageIdx}
+                    onClose={() => setSelectedItem(null)}
+                    hasPrev={hasPrevSubmission}
+                    hasNext={hasNextSubmission}
+                    onPrev={handlePrevSubmission}
+                    onNext={handleNextSubmission}
+                />
             )}
         </>
     );

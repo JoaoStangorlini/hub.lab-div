@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { logout } from '@/app/actions/auth';
+import { signOut } from '@/app/actions/auth';
 
 export default function AdminLayout({
     children,
@@ -14,14 +14,11 @@ export default function AdminLayout({
 
     const navLinks = [
         { name: 'Visão Geral', href: '/admin', icon: 'pie_chart' },
-        { name: 'Pendentes', href: '/admin/pendentes', icon: 'assignment' },
-        { name: 'Aprovados', href: '/admin/aprovados', icon: 'check_circle' },
-        { name: 'Negadas', href: '/admin/negadas', icon: 'cancel' },
-        { name: 'Moderar Comentários', href: '/admin/comentarios', icon: 'forum' },
-        { name: 'Filtrar por Autor', href: '/admin/autores', icon: 'person_search' },
-        { name: 'Editar Submissões', href: '/admin/editar', icon: 'edit_square' },
+        { name: 'Formulário de Envio', href: '/admin/pendentes', icon: 'assignment' },
+        { name: 'Pergunte a um Cientista', href: '/admin/perguntas', icon: 'quiz' },
+        { name: 'Moderação de Comentários', href: '/admin/comentarios', icon: 'forum' },
+        { name: 'Moderação de Reproduções', href: '/admin/reproducoes', icon: 'cameraswitch' },
         { name: 'Ranking', href: '/admin/ranking', icon: 'trending_up' },
-        { name: 'Perguntas', href: '/admin/perguntas', icon: 'quiz' },
         { name: 'Oportunidades', href: '/admin/oportunidades', icon: 'event' },
     ];
 
@@ -45,7 +42,6 @@ export default function AdminLayout({
             </div>
 
             <aside className={`${isMobileMenuOpen ? 'flex' : 'hidden'} md:flex w-full md:w-72 bg-neutral-900 border-r border-gray-800 flex-col justify-between shrink-0 h-[calc(100vh-73px)] md:h-screen overflow-hidden md:sticky top-0 absolute inset-x-0 bottom-0 z-50 md:z-40 transition-colors shadow-2xl`}>
-                {/* Interactive Background Elements for Sidebar */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-blue/10 dark:hidden rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
                 <div className="absolute bottom-0 left-0 w-40 h-40 bg-brand-red/10 dark:hidden rounded-full blur-2xl translate-y-1/3 -translate-x-1/3 pointer-events-none"></div>
 
@@ -88,7 +84,7 @@ export default function AdminLayout({
 
                 <div className="p-6 border-t border-gray-800 transition-colors relative z-10">
                     <button
-                        onClick={() => logout()}
+                        onClick={() => signOut()}
                         className="flex items-center gap-3 px-4 py-3 w-full text-sm font-medium text-gray-400 rounded-xl hover:bg-gray-800 hover:text-brand-red transition-colors border border-transparent group focus:outline-none"
                     >
                         <span className="material-symbols-outlined text-[20px] text-gray-500 group-hover:text-brand-red transition-colors">logout</span>

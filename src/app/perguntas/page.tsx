@@ -66,6 +66,17 @@ export default function PerguntasPage() {
             setSubmitError('Erro ao enviar pergunta. Tente novamente.');
             console.error(error);
         } else {
+            // Send notification
+            fetch('/api/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'question',
+                    userName: nome.trim(),
+                    question: perguntaText.trim()
+                })
+            }).catch(() => { });
+
             setSubmitSuccess(true);
             setNome('');
             setEmail('');

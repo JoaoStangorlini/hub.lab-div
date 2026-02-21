@@ -78,13 +78,44 @@ export async function fetchSubmissions({ page, limit, query, categories, mediaTy
         category: sub.category,
         isFeatured: sub.featured,
         likeCount: likeMap[sub.id] || 0,
-        external_link: sub.external_link,
+        external_link: sub.external_link || null,
         created_at: sub.created_at,
-        technical_details: sub.technical_details,
-        alt_text: sub.alt_text,
+        technical_details: sub.technical_details || null,
+        alt_text: sub.alt_text || null,
     }));
 
     const hasMore = count ? from + submissions.length < count : false;
 
     return { items, hasMore };
+}
+
+export async function fetchUserSubmissions(userId: string): Promise<MediaCardProps[]> {
+    const { data: submissions, error } = await supabase
+        .from('submissions')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+    if (error || !submissions) {
+        console.error('Error fetching user submissions', error);
+        return [];
+    }
+
+    return submissions.map(sub => ({
+        id: sub.id,
+        title: sub.title,
+        description: sub.description,
+        authors: sub.authors,
+        mediaType: sub.media_type,
+        mediaUrl: sub.media_url,
+        category: sub.category,
+        isFeatured: sub.featured,
+        likeCount: 0, // Simplified for profile view
+        external_link: sub.external_link || null,
+        created_at: sub.created_at,
+        technical_details: sub.technical_details || null,
+        alt_text: sub.alt_text || null,
+        admin_feedback: sub.admin_feedback || null,
+        status: sub.status // Explicitly adding status for the user to see
+    }));
 }

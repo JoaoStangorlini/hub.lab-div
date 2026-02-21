@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
+import { parseMediaUrl, formatYoutubeUrl, getYoutubeThumbnail, getDownloadUrl, getPdfViewerUrl } from '@/lib/media-utils';
 
 export interface MediaCardProps {
     id: string;
     title: string;
     description?: string;
     authors: string;
-    mediaType: 'image' | 'video' | 'pdf' | 'text';
+    mediaType: 'image' | 'video' | 'pdf' | 'text' | 'zip' | 'sdocx';
     mediaUrl: string | string[]; // Can be a string or JSON array
     category?: string;
     avatarUrl?: string;
@@ -17,84 +18,11 @@ export interface MediaCardProps {
     created_at?: string;
     technical_details?: string;
     alt_text?: string;
+    status?: 'pendente' | 'aprovado' | 'rejeitado';
+    admin_feedback?: string;
 }
 
-export const parseMediaUrl = (mediaUrl: string | string[]): string[] => {
-    let parsedUrls: string[] = [];
-    try {
-        if (Array.isArray(mediaUrl)) {
-            parsedUrls = mediaUrl;
-        } else if (typeof mediaUrl === 'string') {
-            if (mediaUrl.startsWith('[') && mediaUrl.endsWith(']')) {
-                parsedUrls = JSON.parse(mediaUrl);
-            } else {
-                parsedUrls = [mediaUrl];
-            }
-        }
-    } catch {
-        parsedUrls = [typeof mediaUrl === 'string' ? mediaUrl : ''];
-    }
-    return parsedUrls.filter(Boolean);
-};
-
-export const formatYoutubeUrl = (url: string) => {
-    if (url.includes('/embed/')) return url;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    const videoId = (match && match[2].length === 11) ? match[2] : null;
-    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
-};
-
-export const getYoutubeThumbnail = (url: string) => {
-    if (!url) return "https://images.unsplash.com/photo-1616423640778-28d1b53229bd?auto=format&fit=crop&q=80&w=800";
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    const videoId = (match && match[2].length === 11) ? match[2] : null;
-    return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : "https://images.unsplash.com/photo-1616423640778-28d1b53229bd?auto=format&fit=crop&q=80&w=800";
-};
-
-export const getDownloadUrl = (url: string) => {
-    if (!url) return '';
-    if (url.includes('cloudinary.com') && url.includes('/upload/')) {
-        // Cloudinary URLs typically have a version tag like /v1234567890/
-        // Transformations are placed between /upload/ and this version tag.
-        // We find the version tag, and rebuild the URL ignoring any existing transformations, 
-        // applying ONLY the 'fl_attachment' flag to force a raw file download.
-        const versionMatch = url.match(/\/v\d+\//);
-        if (versionMatch) {
-            const parts = url.split(versionMatch[0]);
-            const uploadIndex = parts[0].indexOf('/upload/') + 8;
-            const base = parts[0].substring(0, uploadIndex);
-
-            return `${base}fl_attachment${versionMatch[0]}${parts[1]}`;
-        } else {
-            // Fallback if no version tag is present
-            return url.replace('/upload/', '/upload/fl_attachment/')
-                .replace(/f_[a-zA-Z0-9_]+\//g, '')
-                .replace(/q_[a-zA-Z0-9_]+\//g, '');
-        }
-    }
-    return url;
-};
-
-export const getPdfViewerUrl = (url: string) => {
-    if (!url) return '';
-    let viewerUrl = url;
-
-    // Strip ALL Cloudinary transformations between /upload/ and the /vXXX/ version tag.
-    // Cloudinary URLs look like: .../upload/f_auto,q_auto/v1234567/file.pdf
-    // The transformations (f_auto,q_auto, fl_attachment, etc.) are comma-separated between /upload/ and /vXXX/.
-    // We need the raw PDF without any transformations, otherwise Cloudinary converts it to WebP/JPEG.
-    if (viewerUrl.includes('/upload/')) {
-        viewerUrl = viewerUrl.replace(/\/upload\/.*?(\/v\d+\/)/, '/upload$1');
-    }
-
-    // If it's a generated jpg thumbnail from Cloudinary, switch it back to .pdf
-    if (viewerUrl.toLowerCase().endsWith('.jpg')) {
-        viewerUrl = viewerUrl.replace(/\.jpg$/i, '.pdf');
-    }
-    return viewerUrl;
-};
+// Utility functions moved to @/lib/media-utils.ts
 
 export const MediaCard = ({
     id,
@@ -164,12 +92,14 @@ export const MediaCard = ({
         displayUrl = displayUrl.replace(/\.pdf$/i, '.jpg');
     }
 
-    let accentClass = 'border-t-4 border-t-gray-100 dark:border-t-gray-700';
-    if (category === 'Laboratórios') accentClass = 'card-accent-yellow';
-    else if (category === 'Pesquisadores') accentClass = 'card-accent-red';
-    else if (category === 'Eventos') accentClass = 'card-accent-yellow';
-    else if (category === 'Convivência') accentClass = 'card-accent-red';
-    else if (category) accentClass = 'card-accent-blue'; // Default for others
+    const categoryStyles = {
+        'Laboratórios': 'card-accent-yellow',
+        'Pesquisadores': 'card-accent-red',
+        'Eventos': 'card-accent-yellow',
+        'Convivência': 'card-accent-red',
+    } as Record<string, string>;
+
+    const accentClass = category ? (categoryStyles[category] || 'card-accent-blue') : 'border-t-4 border-t-gray-100 dark:border-t-gray-700';
 
     return (
         <div className={`masonry-item group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-card-dark shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl cursor-pointer border-x border-b border-gray-100 dark:border-gray-700 ${accentClass} ${sizeModifierStyles}`}>
@@ -188,11 +118,24 @@ export const MediaCard = ({
                         className="h-full w-full object-cover opacity-80"
                         loading="lazy"
                     />
-                ) : mediaType === 'text' ? (
-                    <div className="h-full w-full bg-gradient-to-br from-blue-50 to-sky-100 dark:from-blue-900/30 dark:to-sky-900/20 flex flex-col items-center justify-center p-6 text-center">
-                        <span className="material-symbols-outlined text-5xl text-brand-blue/60 mb-3">article</span>
-                        <p className="text-xs text-blue-800/60 dark:text-blue-300/60 line-clamp-4 leading-relaxed max-w-full">
-                            {(description || 'Texto completo').replace(/[#*>\-_`~\[\]]/g, '').replace(/\n{2,}/g, ' ').trim()}
+                ) : mediaType === 'text' || mediaType === 'zip' || mediaType === 'sdocx' ? (
+                    <div className={`h-full w-full flex flex-col items-center justify-center p-6 text-center ${mediaType === 'zip' ? 'bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/20' :
+                        mediaType === 'sdocx' ? 'bg-gradient-to-br from-red-50 to-orange-100 dark:from-red-900/30 dark:to-orange-900/20' :
+                            'bg-gradient-to-br from-blue-50 to-sky-100 dark:from-blue-900/30 dark:to-sky-900/20'
+                        }`}>
+                        <span className={`material-symbols-outlined text-5xl mb-3 ${mediaType === 'zip' ? 'text-brand-blue/60' :
+                            mediaType === 'sdocx' ? 'text-brand-red/60' :
+                                'text-brand-blue/60'
+                            }`}>
+                            {mediaType === 'zip' ? 'folder_zip' : mediaType === 'sdocx' ? 'edit_note' : 'article'}
+                        </span>
+                        <p className={`text-xs line-clamp-4 leading-relaxed max-w-full ${mediaType === 'zip' ? 'text-indigo-800/60 dark:text-indigo-300/60' :
+                            mediaType === 'sdocx' ? 'text-red-800/60 dark:text-red-300/60' :
+                                'text-blue-800/60 dark:text-blue-300/60'
+                            }`}>
+                            {mediaType === 'zip' ? 'Conteúdo Compactado (.ZIP)' :
+                                mediaType === 'sdocx' ? 'Notas do Samsung Notes (.SDOCX)' :
+                                    (description || 'Texto completo').replace(/[#*>\-_`~\[\]]/g, '').replace(/\n{2,}/g, ' ').trim()}
                         </p>
                     </div>
                 ) : displayUrl ? (
@@ -261,14 +204,24 @@ export const MediaCard = ({
                                 <span className="material-symbols-outlined text-[14px]">picture_as_pdf</span> PDF
                             </div>
                         )}
-                        {(mediaType === 'image' || mediaType === 'pdf') && displayUrl && (
+                        {mediaType === 'zip' && (
+                            <div className="rounded-full bg-brand-blue/90 px-2 flex items-center gap-1 py-1 text-[10px] font-bold tracking-wider uppercase text-white backdrop-blur-sm shadow-sm">
+                                <span className="material-symbols-outlined text-[14px]">folder_zip</span> ZIP
+                            </div>
+                        )}
+                        {mediaType === 'sdocx' && (
+                            <div className="rounded-full bg-brand-red/90 px-2 flex items-center gap-1 py-1 text-[10px] font-bold tracking-wider uppercase text-white backdrop-blur-sm shadow-sm">
+                                <span className="material-symbols-outlined text-[14px]">edit_note</span> SDOCX
+                            </div>
+                        )}
+                        {(mediaType === 'image' || mediaType === 'pdf' || mediaType === 'zip' || mediaType === 'sdocx') && displayUrl && (
                             <a
                                 href={getDownloadUrl(displayUrl)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={e => e.stopPropagation()}
                                 className="rounded-full bg-black/60 hover:bg-black/80 p-1.5 text-white backdrop-blur-sm shadow-sm transition-colors flex items-center justify-center"
-                                title="Baixar Imagem"
+                                title="Baixar Arquivo"
                             >
                                 <span className="material-symbols-outlined text-[16px]">download</span>
                             </a>
@@ -301,11 +254,9 @@ export const MediaCard = ({
                 <div className="flex flex-wrap items-center justify-between mb-3 gap-2">
                     {category && (
                         <div className={`px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wide shadow-sm 
-                            ${category === 'Laboratórios' ? 'bg-brand-yellow/90 text-black shadow-brand-yellow/50' :
-                                category === 'Pesquisadores' ? 'bg-brand-red/90 text-white shadow-brand-red/50' :
-                                    category === 'Eventos' ? 'bg-brand-yellow/90 text-black shadow-brand-yellow/50' :
-                                        category === 'Convivência' ? 'bg-brand-red/90 text-white shadow-brand-red/50' :
-                                            'bg-brand-blue/90 text-white shadow-brand-blue/50'}`}
+                            ${['Laboratórios', 'Eventos', 'Uso Didático'].includes(category) ? 'bg-brand-yellow/90 text-black shadow-brand-yellow/50' :
+                                ['Pesquisadores', 'Convivência', 'Mural do Deu Ruim'].includes(category) ? 'bg-brand-red/90 text-white shadow-brand-red/50' :
+                                    'bg-brand-blue/90 text-white shadow-brand-blue/50'}`}
                         >
                             {category}
                         </div>

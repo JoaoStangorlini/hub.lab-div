@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { addComment } from '@/app/actions/comments';
+import { triggerNotification } from '@/lib/notifications';
 
 export interface Comment {
     id: string;
@@ -10,7 +11,7 @@ export interface Comment {
     created_at: string;
 }
 
-export function CommentsSection({ submissionId, initialComments }: { submissionId: string, initialComments: Comment[] }) {
+export function CommentsSection({ submissionId, submissionTitle, initialComments }: { submissionId: string, submissionTitle: string, initialComments: Comment[] }) {
     const [comments, setComments] = useState<Comment[]>(initialComments);
     const [name, setName] = useState('');
     const [content, setContent] = useState('');
@@ -26,6 +27,15 @@ export function CommentsSection({ submissionId, initialComments }: { submissionI
 
         try {
             await addComment(submissionId, name, content);
+
+            // Send notification
+            triggerNotification({
+                type: 'comment',
+                userName: name,
+                submissionTitle: submissionTitle,
+                content: content
+            });
+
             setSuccessMsg('Seu comentário foi enviado com sucesso e será publicado após uma breve moderação da equipe.');
             setName('');
             setContent('');

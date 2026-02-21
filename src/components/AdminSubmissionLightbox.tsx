@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { parseMediaUrl, formatYoutubeUrl, getDownloadUrl, getPdfViewerUrl } from './MediaCard';
+import { parseMediaUrl, formatYoutubeUrl, getDownloadUrl, getPdfViewerUrl } from '@/lib/media-utils';
 import dynamic from 'next/dynamic';
 import ReactMarkdown from 'react-markdown';
 
@@ -23,6 +23,8 @@ export interface AdminSubmission {
     status?: string;
     external_link?: string;
     technical_details?: string;
+    user_id?: string;
+    admin_feedback?: string;
 }
 
 interface AdminSubmissionLightboxProps {
@@ -36,9 +38,10 @@ interface AdminSubmissionLightboxProps {
     onNext: (e: React.MouseEvent) => void;
 
     // Actions
-    onApprove?: (id: string) => void;
-    onReject?: (id: string) => void;
+    onApprove?: (id: string, feedback?: string) => void;
+    onReject?: (id: string, feedback?: string) => void;
     onToggleFeatured?: (id: string, current: boolean) => void;
+    onEdit?: (item: AdminSubmission) => void;
 
     // Local State controls passed from parent 
     modalImageIdx: number;
@@ -50,11 +53,13 @@ interface AdminSubmissionLightboxProps {
 
 export function AdminSubmissionLightbox({
     item, onClose, hasPrev, hasNext, onPrev, onNext,
-    onApprove, onReject, onToggleFeatured,
+    onApprove, onReject, onToggleFeatured, onEdit,
     modalImageIdx, setModalImageIdx, statusType
 }: AdminSubmissionLightboxProps) {
 
     const [citeCopied, setCiteCopied] = useState(false);
+    const [feedback, setFeedback] = useState(item.status === 'pendente' ? '' : (item as any).admin_feedback || '');
+    const [isActioning, setIsActioning] = useState(false);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -286,7 +291,7 @@ export function AdminSubmissionLightbox({
 
                     {/* Technical Details */}
                     {item.technical_details && (
-                        <div className="flex-1">
+                        <div>
                             <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2 uppercase tracking-wide flex items-center gap-1.5">
                                 <span className="material-symbols-outlined text-brand-yellow text-[16px]">build</span>
                                 Bastidores Técnicos
@@ -297,19 +302,58 @@ export function AdminSubmissionLightbox({
                         </div>
                     )}
 
-                    <div className="pt-4 flex flex-wrap gap-2 mt-auto">
+                    {/* Admin Feedback Input (only if pending) */}
+                    {statusType === 'pendente' && (
+                        <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+                            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2 uppercase tracking-wide flex items-center gap-1.5">
+                                <span className="material-symbols-outlined text-brand-blue text-[16px]">history_edu</span>
+                                Retorno ao Autor (Opcional)
+                            </h3>
+                            <textarea
+                                value={feedback}
+                                onChange={(e) => setFeedback(e.target.value)}
+                                placeholder="Dê uma dica ou explique o motivo da decisão..."
+                                className="w-full p-4 text-sm bg-gray-50 dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue outline-none transition-all min-h-[100px] text-gray-700 dark:text-gray-300"
+                            />
+                        </div>
+                    )}
+
+                    {/* Main Edit Action */}
+                    <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <button
+                            onClick={() => onEdit?.(item)}
+                            className="w-full bg-brand-blue/10 hover:bg-brand-blue/20 text-brand-blue border border-brand-blue/30 font-bold py-3.5 flex items-center justify-center gap-2 rounded-2xl transition-all shadow-sm hover:shadow-md active:scale-[0.98]"
+                        >
+                            <span className="material-symbols-outlined text-[22px]">edit</span>
+                            Editar Informações
+                        </button>
+                    </div>
+
+                    <div className="pt-4 flex flex-wrap gap-2">
                         {/* Dynamic Action Buttons based on status */}
                         {statusType === 'pendente' && (
                             <>
                                 <button
-                                    onClick={() => { onApprove?.(item.id); onClose(); }}
-                                    className="flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400 transition-colors text-sm font-medium"
+                                    disabled={isActioning}
+                                    onClick={async () => {
+                                        setIsActioning(true);
+                                        await onApprove?.(item.id, feedback);
+                                        setIsActioning(false);
+                                        onClose();
+                                    }}
+                                    className="flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400 transition-colors text-sm font-medium disabled:opacity-50"
                                 >
                                     <span className="material-symbols-outlined text-[18px]">check</span> Aprovar
                                 </button>
                                 <button
-                                    onClick={() => { onReject?.(item.id); onClose(); }}
-                                    className="flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 transition-colors text-sm font-medium"
+                                    disabled={isActioning}
+                                    onClick={async () => {
+                                        setIsActioning(true);
+                                        await onReject?.(item.id, feedback);
+                                        setIsActioning(false);
+                                        onClose();
+                                    }}
+                                    className="flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 transition-colors text-sm font-medium disabled:opacity-50"
                                 >
                                     <span className="material-symbols-outlined text-[18px]">close</span> Rejeitar
                                 </button>

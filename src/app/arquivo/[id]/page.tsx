@@ -5,6 +5,10 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { ShareButtons } from './ShareButtons';
 import { CommentsSection, Comment } from './CommentsSection';
+import { ReproductionSection } from './ReproductionSection';
+import { ImageCarouselClient } from './ImageCarouselClient';
+import { fetchReproductionsBySubmission } from '@/app/actions/reproductions';
+import { getDownloadUrl, parseMediaUrl, formatYoutubeUrl } from '@/lib/media-utils';
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -67,24 +71,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
 }
 
-function parseMediaUrl(mediaUrl: string | string[]): string[] {
-    try {
-        if (Array.isArray(mediaUrl)) return mediaUrl;
-        if (typeof mediaUrl === 'string') {
-            if (mediaUrl.startsWith('[') && mediaUrl.endsWith(']')) return JSON.parse(mediaUrl);
-            return [mediaUrl];
-        }
-    } catch { /* ignore */ }
-    return [];
-}
-
-function formatYoutubeEmbed(url: string) {
-    if (url.includes('/embed/')) return url;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    const videoId = match && match[2].length === 11 ? match[2] : null;
-    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
-}
+// Utility functions moved to @/lib/media-utils.ts
 
 export default async function ArquivoItemPage({ params }: PageProps) {
     const { id } = await params;
@@ -113,6 +100,9 @@ export default async function ArquivoItemPage({ params }: PageProps) {
         }
     }
 
+    // Fetch reproductions
+    const routeReproductions = await fetchReproductionsBySubmission(submission.id);
+
     // Fetch comments
     const { data: routeComments } = await supabase
         .from('comments')
@@ -133,7 +123,7 @@ export default async function ArquivoItemPage({ params }: PageProps) {
                         {submission.media_type === 'video' ? (
                             urls.length > 0 ? (
                                 <iframe
-                                    src={formatYoutubeEmbed(urls[0])}
+                                    src={formatYoutubeUrl(urls[0])}
                                     className="w-full aspect-video"
                                     allowFullScreen
                                     frameBorder="0"
@@ -143,20 +133,7 @@ export default async function ArquivoItemPage({ params }: PageProps) {
                                 <span className="text-white">Vídeo não encontrado</span>
                             )
                         ) : (
-                            urls.length > 0 ? (
-                                <div className="w-full">
-                                    {urls.map((url, i) => (
-                                        <img
-                                            key={i}
-                                            src={url}
-                                            alt={`${submission.title} - ${i + 1}`}
-                                            className="w-full object-contain max-h-[70vh]"
-                                        />
-                                    ))}
-                                </div>
-                            ) : (
-                                <span className="text-white">Imagem não encontrada</span>
-                            )
+                            <ImageCarouselClient urls={urls} title={submission.title} />
                         )}
                     </div>
 
@@ -198,11 +175,43 @@ export default async function ArquivoItemPage({ params }: PageProps) {
                             </div>
                         )}
 
+                        {/* Download and Security Notice */}
+                        {(submission.media_type === 'image' || submission.media_type === 'pdf' || submission.media_type === 'zip' || submission.media_type === 'sdocx') && urls.length > 0 && (
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-gray-50 dark:bg-background-dark/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-800">
+                                <a
+                                    href={getDownloadUrl(urls[0])}
+                                    className="px-6 py-2.5 bg-brand-blue hover:bg-brand-darkBlue text-white font-bold rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2 text-sm"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <span className="material-symbols-outlined text-[20px]">download</span>
+                                    Baixar arquivo
+                                </a>
+                                <div className="flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-brand-green text-[20px]">verified_user</span>
+                                    <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">
+                                        Segurança: Arquivo verificado contra vírus pela curadoria administrativa.
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Share Buttons */}
                         <ShareButtons title={submission.title} id={submission.id} />
 
+                        {/* Eu Reproduzi! Section */}
+                        <ReproductionSection
+                            submissionId={submission.id}
+                            submissionTitle={submission.title}
+                            initialReproductions={routeReproductions}
+                        />
+
                         {/* Interactive Comments */}
-                        <CommentsSection submissionId={submission.id} initialComments={(routeComments as Comment[]) || []} />
+                        <CommentsSection
+                            submissionId={submission.id}
+                            submissionTitle={submission.title}
+                            initialComments={(routeComments as Comment[]) || []}
+                        />
                     </div>
                 </div>
 
@@ -221,7 +230,7 @@ export default async function ArquivoItemPage({ params }: PageProps) {
                                 ACTUALLY I forgot to import MediaCard. Let's make sure it's imported at the top! */}
                             {relatedSubmissions.map(rel => {
                                 const relUrls = parseMediaUrl(rel.media_url);
-                                const thumb = rel.media_type === 'video' ? formatYoutubeEmbed(relUrls[0] || '') : (relUrls[0] || ''); // fallback
+                                const thumb = rel.media_type === 'video' ? formatYoutubeUrl(relUrls[0] || '') : (relUrls[0] || ''); // fallback
                                 return (
                                     <a key={rel.id} href={`/arquivo/${rel.id}`} className="group block bg-white dark:bg-card-dark rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1">
                                         <div className="aspect-video bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
@@ -234,7 +243,7 @@ export default async function ArquivoItemPage({ params }: PageProps) {
                                                     <span className="material-symbols-outlined text-4xl text-brand-blue/50">article</span>
                                                 </div>
                                             ) : (
-                                                <img src={thumb.replace(/\.pdf$/i, '.jpg')} alt={rel.alt_text || rel.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                                                <img src={typeof thumb === 'string' && thumb ? thumb.replace(/\.pdf$/i, '.jpg') : '/placeholder.jpg'} alt={rel.alt_text || rel.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                                             )}
                                         </div>
                                         <div className="p-4">

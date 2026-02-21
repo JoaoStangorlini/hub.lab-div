@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import dynamic from 'next/dynamic';
-import { MediaCardProps, parseMediaUrl, formatYoutubeUrl, getDownloadUrl, getPdfViewerUrl } from './MediaCard';
+import { MediaCardProps } from './MediaCard';
+import { parseMediaUrl, formatYoutubeUrl, getDownloadUrl, getPdfViewerUrl } from '@/lib/media-utils';
 
 const CustomPdfViewer = dynamic(
     () => import('./CustomPdfViewer').then((mod) => mod.CustomPdfViewer),
@@ -260,15 +261,25 @@ export const SubmissionLightbox = ({
                     )}
 
                     <div className="pt-4 flex flex-col gap-3 mt-auto">
-                        {selectedItem.mediaType === 'image' && mediaUrls.length > 0 && (
-                            <a
-                                href={getDownloadUrl(mediaUrls[modalImageIdx])}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm"
-                            >
-                                <span className="material-symbols-outlined">download</span> Baixar Imagem
-                            </a>
+                        {(selectedItem.mediaType === 'image' || selectedItem.mediaType === 'pdf' || selectedItem.mediaType === 'zip' || selectedItem.mediaType === 'sdocx') && mediaUrls.length > 0 && (
+                            <div className="space-y-3">
+                                <a
+                                    href={getDownloadUrl(mediaUrls[modalImageIdx])}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm"
+                                >
+                                    <span className="material-symbols-outlined">download</span>
+                                    {selectedItem.mediaType === 'image' ? 'Baixar Imagem' : 'Baixar Arquivo'}
+                                </a>
+
+                                <div className="flex items-center gap-2 px-3 py-2 bg-brand-green/5 border border-brand-green/20 rounded-lg">
+                                    <span className="material-symbols-outlined text-brand-green text-[18px]">verified_user</span>
+                                    <span className="text-[11px] text-brand-green font-medium">
+                                        Segurança: Arquivo verificado contra vírus pela curadoria administrativa.
+                                    </span>
+                                </div>
+                            </div>
                         )}
                     </div>
                 </div>

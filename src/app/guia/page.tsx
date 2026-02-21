@@ -110,6 +110,53 @@ export default function GuiaPage() {
                         </ul>
                     </section>
 
+                    {/* Novo: Seção de Comunidade */}
+                    <section className="bg-gradient-to-br from-brand-blue/5 to-brand-yellow/5 dark:from-brand-blue/10 dark:to-brand-yellow/10 rounded-2xl p-8 shadow-sm border border-brand-blue/10 dark:border-brand-blue/20 relative overflow-hidden group">
+                        <div className="flex items-center gap-4 mb-6 relative z-10">
+                            <span className="material-symbols-outlined text-4xl text-brand-blue">groups</span>
+                            <h2 className="text-3xl m-0">Comunidade e Engajamento</h2>
+                        </div>
+
+                        <div className="space-y-4 max-w-2xl">
+                            <div className="flex items-center gap-2 font-bold text-gray-900 dark:text-white uppercase text-xs tracking-widest">
+                                <span className="material-symbols-outlined text-brand-yellow text-sm">edit_note</span>
+                                Central de Anotações
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                Deseja compartilhar um Drive com materiais de estudo ou notas de aula? Use o formulário principal e selecione a categoria <strong>"Central de Anotações"</strong>. Certifique-se de que o link do Drive esteja configurado como "Qualquer pessoa com o link pode ler". Você também pode subir arquivos <strong>.zip</strong> ou <strong>.sdocx</strong> diretamente.
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* Novo: Seção de Agrupamento */}
+                    <section className="bg-white dark:bg-card-dark rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
+                        <div className="flex items-center gap-4 mb-6 relative z-10">
+                            <span className="material-symbols-outlined text-4xl text-brand-blue">inventory_2</span>
+                            <h2 className="text-3xl m-0">Agrupamento e Notas Acadêmicas</h2>
+                        </div>
+
+                        <ul className="space-y-4">
+                            <li className="flex items-start gap-3">
+                                <span className="material-symbols-outlined text-brand-blue mt-1">folder_zip</span>
+                                <div>
+                                    <strong>Arquivos ZIP:</strong> Ideais para agrupar várias listas de exercícios, datasets pequenos ou uma coleção de documentos relacionados em um único envio.
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <span className="material-symbols-outlined text-brand-red mt-1">edit_note</span>
+                                <div>
+                                    <strong>Samsung Notes (.SDOCX):</strong> Suporte nativo para estudantes que fazem anotações em tablets. Você pode subir o arquivo original diretamente para facilitar o download por outros colegas com dispositivos compatíveis.
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <span className="material-symbols-outlined text-brand-yellow mt-1">cloud_upload</span>
+                                <div>
+                                    <strong>Limite de 10MB:</strong> Para arquivos diretos, mantemos um limite estrito de 10MB. Se o seu arquivo ZIP ou Notas for maior que isso, utilize o campo <strong>"Link Externo"</strong> apontando para o seu Google Drive ou Nuvem.
+                                </div>
+                            </li>
+                        </ul>
+                    </section>
+
                     {/* Seção de Upload */}
                     <section className="bg-white dark:bg-card-dark rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-brand-yellow/5 dark:hidden rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none transition-transform group-hover:scale-150"></div>
@@ -139,7 +186,7 @@ export default function GuiaPage() {
                                 <div>
                                     <strong>PDFs e Artigos:</strong> Faça o upload apenas da <strong>capa (primeira página)</strong> do seu artigo como PDF (máximo <strong>10MB</strong>). Essa capa será a imagem de pré-visualização no site.<br />
                                     <span className="text-sm text-gray-500">Dica: Use sites como <a href="https://www.ilovepdf.com/pt/dividir_pdf" target="_blank" rel="noopener noreferrer" className="underline">iLovePDF</a> ou <a href="https://smallpdf.com/pt/dividir-pdf" target="_blank" rel="noopener noreferrer" className="underline">SmallPDF</a> para extrair apenas a primeira página do seu PDF.</span><br />
-                                    <span className="text-sm text-gray-500">Obrigatório: Cole o link do documento completo no campo &quot;Link para PDF Completo&quot; (Google Drive, Dropbox ou repositório institucional).</span>
+                                    <span className="text-sm text-gray-500"><strong>Link Externo:</strong> Use o campo dedicado <strong>"Link Externo"</strong> para colar o link do documento completo (Google Drive, Dropbox ou repositório institucional) se o arquivo for pesado.</span>
                                 </div>
                             </li>
                             <li className="flex items-start gap-3">
@@ -152,7 +199,7 @@ export default function GuiaPage() {
                             <li className="flex items-start gap-3">
                                 <span className="material-symbols-outlined text-brand-green mt-1">person</span>
                                 <div>
-                                    <strong>Autoria:</strong> O usuário deve preencher nome e contato para mantermos a rede de comunicação.
+                                    <strong>Autoria e Contato:</strong> O usuário deve preencher nome e contato de **WhatsApp** para que possamos dar o retorno da curadoria ou solicitar ajustes se necessário.
                                 </div>
                             </li>
                             <li className="flex items-start gap-3">

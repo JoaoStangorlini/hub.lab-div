@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { CATEGORIES } from '@/app/enviar/constants';
 
 interface Submission {
     id: string;
@@ -109,7 +110,7 @@ export default function EditarPage() {
                                 submissions.map(item => (
                                     <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                         <td className="px-4 py-3 whitespace-nowrap">
-                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${item.status === 'aprovado' ? 'bg-green-100 text-green-700' :
+                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${item.status === 'aprovado' ? 'bg-brand-blue/10 text-brand-blue' :
                                                 item.status === 'rejeitado' ? 'bg-red-100 text-red-700' :
                                                     'bg-yellow-100 text-yellow-700'
                                                 }`}>
@@ -214,13 +215,9 @@ export default function EditarPage() {
                                         onChange={e => setEditingItem({ ...editingItem, category: e.target.value })}
                                         className="w-full rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-form-dark text-slate-900 dark:text-white py-2 px-3 focus:ring-primary focus:border-primary sm:text-sm"
                                     >
-                                        <option value="Laboratórios">Laboratórios</option>
-                                        <option value="Pesquisadores">Pesquisadores</option>
-                                        <option value="Eventos">Eventos</option>
-                                        <option value="Uso Didático">Uso Didático</option>
-                                        <option value="Bastidores da Ciência">Bastidores da Ciência</option>
-                                        <option value="Convivência">Convivência</option>
-                                        <option value="Outros">Outros</option>
+                                        {CATEGORIES.map(cat => (
+                                            <option key={cat.id} value={cat.id}>{cat.title}</option>
+                                        ))}
                                     </select>
                                 </div>
 

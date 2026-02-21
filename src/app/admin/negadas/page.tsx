@@ -36,12 +36,15 @@ export default function NegadasPage() {
         fetchNegadas();
     }, []);
 
-    const handleApprove = async (id: string) => {
+    const handleApprove = async (id: string, feedback?: string) => {
         if (!confirm('Deseja restaurar esta submissão e marcá-la como Aprovada?')) return;
 
         const { error } = await supabase
             .from('submissions')
-            .update({ status: 'aprovado' })
+            .update({
+                status: 'aprovado',
+                admin_feedback: feedback
+            })
             .eq('id', id);
 
         if (error) {
@@ -124,7 +127,7 @@ export default function NegadasPage() {
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={() => handleApprove(item.id)}
-                                            className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/40 border border-green-200 dark:border-green-800 transition-colors text-sm font-medium"
+                                            className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-brand-blue/10 text-brand-blue hover:bg-brand-blue/20 border border-brand-blue/20 transition-colors text-sm font-medium"
                                             title="Desfazer e Aprovar"
                                         >
                                             <span className="material-symbols-outlined text-[18px]">restore</span>

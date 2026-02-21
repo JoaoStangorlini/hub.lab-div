@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { MediaCard, MediaCardProps, parseMediaUrl, formatYoutubeUrl, getDownloadUrl } from '@/components/MediaCard';
+import { MediaCard, MediaCardProps } from '@/components/MediaCard';
+import { parseMediaUrl, formatYoutubeUrl, getDownloadUrl } from '@/lib/media-utils';
 
 interface Submission {
     id: string;
@@ -87,7 +88,7 @@ export default function AutoresPage() {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'aprovado':
-                return <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-[10px] font-bold uppercase tracking-wider">Aprovado</span>;
+                return <span className="px-2 py-0.5 bg-brand-blue/10 text-brand-blue rounded text-[10px] font-bold uppercase tracking-wider">Aprovado</span>;
             case 'rejeitado':
                 return <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[10px] font-bold uppercase tracking-wider">Rejeitado</span>;
             default:
