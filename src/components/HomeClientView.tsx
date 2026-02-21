@@ -548,32 +548,7 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
                                 </div>
                             )}
 
-                            {/* ABNT Citation Button */}
-                            <div className="mt-4">
-                                <button
-                                    onClick={async () => {
-                                        const year = selectedItem.created_at ? new Date(selectedItem.created_at).getFullYear() : new Date().getFullYear();
-                                        const citation = `${selectedItem.authors.toUpperCase()}. ${selectedItem.title}. Hub Lab-Div IF-USP, ${year}. Disponível em: ${window.location.origin}/arquivo/${selectedItem.id}`;
-                                        try {
-                                            await navigator.clipboard.writeText(citation);
-                                        } catch {
-                                            // Fallback for HTTP contexts
-                                            const textarea = document.createElement('textarea');
-                                            textarea.value = citation;
-                                            document.body.appendChild(textarea);
-                                            textarea.select();
-                                            document.execCommand('copy');
-                                            document.body.removeChild(textarea);
-                                        }
-                                        setCiteCopied(true);
-                                        setTimeout(() => setCiteCopied(false), 2000);
-                                    }}
-                                    className="w-full bg-brand-yellow/10 hover:bg-brand-yellow/20 text-brand-yellow border border-brand-yellow/30 font-semibold py-3 flex items-center justify-center gap-2 rounded-xl transition-colors text-sm"
-                                >
-                                    <span className="material-symbols-outlined text-[18px]">{citeCopied ? 'check' : 'format_quote'}</span>
-                                    {citeCopied ? 'Citação copiada!' : 'Copiar Citação ABNT'}
-                                </button>
-                            </div>
+
 
                             {/* Technical Details */}
                             {selectedItem.technical_details && (
@@ -589,6 +564,30 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
                             )}
 
                             <div className="pt-4 flex flex-col gap-3 mt-auto">
+                                {/* ABNT Citation Button moved here */}
+                                <button
+                                    onClick={async () => {
+                                        const year = selectedItem.created_at ? new Date(selectedItem.created_at).getFullYear() : new Date().getFullYear();
+                                        const citation = `${selectedItem.authors.toUpperCase()}. ${selectedItem.title}. Hub Lab-Div IF-USP, ${year}. Disponível em: ${window.location.origin}/arquivo/${selectedItem.id}`;
+                                        try {
+                                            await navigator.clipboard.writeText(citation);
+                                        } catch {
+                                            const textarea = document.createElement('textarea');
+                                            textarea.value = citation;
+                                            document.body.appendChild(textarea);
+                                            textarea.select();
+                                            document.execCommand('copy');
+                                            document.body.removeChild(textarea);
+                                        }
+                                        setCiteCopied(true);
+                                        setTimeout(() => setCiteCopied(false), 2000);
+                                    }}
+                                    className="w-full bg-brand-yellow/10 hover:bg-brand-yellow/20 text-brand-yellow border border-brand-yellow/30 font-semibold py-3 flex items-center justify-center gap-2 rounded-xl transition-colors text-sm"
+                                >
+                                    <span className="material-symbols-outlined text-[18px]">{citeCopied ? 'check' : 'format_quote'}</span>
+                                    {citeCopied ? 'Citação copiada!' : 'Copiar Citação ABNT'}
+                                </button>
+
                                 <a
                                     href={`/arquivo/${selectedItem.id}`}
                                     onClick={(e) => e.stopPropagation()}
@@ -603,9 +602,9 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
                                         href={getDownloadUrl(parseMediaUrl(selectedItem.mediaUrl)[modalImageIdx])}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm"
+                                        className="w-full bg-brand-red hover:bg-red-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
                                     >
-                                        <span className="material-symbols-outlined">download</span> Baixar Imagem
+                                        <span className="material-symbols-outlined text-[24px]">download</span> Baixar Imagem
                                     </a>
                                 )}
                             </div>
