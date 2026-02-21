@@ -5,130 +5,93 @@ import Image from "next/image";
 export default function CriadoresPage() {
     const creators = [
         {
-            name: 'Prof. Pedro Alvarez',
-            role: 'Pesquisador Titular & Diretor Lab-Div',
-            bio: 'Físico experimental apaixonado por levar a mecânica quântica para as escolas de forma simples e visual.',
-            imagePlaceholder: 'P',
+            name: 'Cmdr. Orion Branco',
+            role: 'Piloto de Teste Estelar',
+            bio: 'Sou o primeiro a testar as dobras espaciais da frota. Sobrevivi a 14 buracos de minhoca e conto tudo aqui.',
+            imagePlaceholder: 'O',
             color: 'brand-blue'
         },
         {
-            name: 'Ana Silva',
-            role: 'Bolsista DigitalLab',
-            bio: 'Estudante de Astronomia, produz os reels semanais sobre o céu de São Paulo e dicas de observação.',
-            imagePlaceholder: 'A',
+            name: 'Dione Alpha',
+            role: 'Tradutora de Sinais',
+            bio: 'Analiso ruídos de rádio do espaço profundo para encontrar receitas de bolo alienígenas.',
+            imagePlaceholder: 'D',
             color: 'brand-yellow'
         },
         {
-            name: 'Lucas Martins',
-            role: 'Monitor Acervo Histórico',
-            bio: 'Investigador da história da física no Brasil. Responsável por digitalizar e comentar as fotos dos anos 60 do IF.',
+            name: 'Lexa Centauri',
+            role: 'Engenheira de Antimatéria',
+            bio: 'Consertando reatores com fita adesiva estelar desde 2084.',
             imagePlaceholder: 'L',
             color: 'brand-red'
         },
         {
-            name: 'Mariana Costa',
-            role: 'Professora Convidada',
-            bio: 'Desenvolve materiais didáticos open-source com simulações computacionais em Python interativo.',
-            imagePlaceholder: 'M',
+            name: 'Chronos',
+            role: 'Mecânico de Tempo',
+            bio: 'Você perdeu suas chaves ontém amanhã? Eu ajudo você a encontrá-las na linha temporal correta.',
+            imagePlaceholder: 'C',
             color: 'brand-blue'
         }
     ];
 
     const influencers = [
         {
-            name: 'Agnessa',
-            role: 'Estudante & TikToker',
-            bio: 'Descomplicando a ciência e mostrando o dia a dia universitário de forma leve.',
-            imagePlaceholder: 'A',
+            name: 'Lumus Quasar',
+            role: 'Viajante Espacial',
+            bio: 'Mostrando os bastidores do meu estágio intergaláctico no cinturão de Órion para meus seguidores da Terra.',
+            imagePlaceholder: 'L',
             color: 'brand-blue',
-            platform: 'tiktok'
+            platform: 'hologram'
         },
         {
-            name: 'Canoa',
-            role: 'Criador de Conteúdo',
-            bio: 'Curiosidades da física e vida acadêmica levadas de forma descontraída ao público.',
-            imagePlaceholder: 'C',
-            color: 'brand-yellow',
-            platform: 'youtube'
-        },
-        {
-            name: 'Pleade',
-            role: 'YouTuber & Estudante',
-            bio: 'Vídeos interativos, vlogs da rotina e dicas de estudos diretamente do IFUSP.',
-            imagePlaceholder: 'P',
+            name: 'Doutor Paradoxo',
+            role: 'Explicador de Multiversos',
+            bio: 'Física interdimensional e por que você não deveria acariciar o gato de Schrödinger.',
+            imagePlaceholder: 'D',
             color: 'brand-red',
-            platform: 'youtube'
+            platform: 'neuro-net'
         },
         {
-            name: 'Saficadafisica',
-            role: 'Influenciadora Científica',
-            bio: 'Popularizando a ciência com criatividade, bom humor e muito conhecimento nas redes.',
+            name: 'Sintonia Gamma',
+            role: 'Caçadora de Radiação',
+            bio: 'Buscando fontes de energia cósmica no meu quintal e postando no canal.',
             imagePlaceholder: 'S',
-            color: 'brand-blue',
-            platform: 'instagram'
-        },
-        {
-            name: 'Física na Veia',
-            role: 'Canal de Divulgação',
-            bio: 'Trazendo curiosidades de mecânica clássica e termodinâmica com muito visual.',
-            imagePlaceholder: 'F',
             color: 'brand-yellow',
-            platform: 'instagram'
+            platform: 'wave-cast'
         },
         {
-            name: 'Astro IF',
-            role: 'Astrônomos Amadores',
-            bio: 'Dicas práticas de como usar telescópios e registrar astrofotografia.',
-            imagePlaceholder: 'A',
-            color: 'brand-red',
-            platform: 'youtube'
-        },
-        {
-            name: 'Minuto Quântico',
-            role: 'TikToker',
-            bio: 'Física moderna e relatividade explicadas em vídeos rápidos de 1 minuto.',
+            name: 'Mestre da Inércia',
+            role: 'Ativista Estático',
+            bio: 'Lutando pelo direito de manter objetos em repouso exatamente onde estão.',
             imagePlaceholder: 'M',
             color: 'brand-blue',
-            platform: 'tiktok'
+            platform: 'gravity-feed'
         },
         {
-            name: 'Ciência Todo Dia',
-            role: 'Canal de Divulgação',
-            bio: 'Explorando os mistérios do universo, física e astronomia de forma acessível para todos.',
-            imagePlaceholder: 'C',
-            color: 'brand-yellow',
-            platform: 'youtube'
-        },
-        {
-            name: 'Física e Afins',
-            role: 'Doutora em Física',
-            bio: 'Desmistificando a física quântica e combatendo pseudociências com base no método científico.',
-            imagePlaceholder: 'F',
+            name: 'Zeta Bits',
+            role: 'Pesquisador Quântico',
+            bio: 'Descobrindo o universo em 8bits e simulando buracos negros no meu fliperama antigo.',
+            imagePlaceholder: 'Z',
             color: 'brand-red',
-            platform: 'youtube'
+            platform: 'hologram'
         },
         {
-            name: 'Manual do Mundo',
-            role: 'Criador de Conteúdo',
-            bio: 'Experiências práticas, física e curiosidades científicas explicadas de forma muito didática.',
-            imagePlaceholder: 'M',
-            color: 'brand-blue',
-            platform: 'youtube'
+            name: 'Entropia Positiva',
+            role: 'Criadora do Caos',
+            bio: 'Dicas práticas de como aumentar a desordem do seu quarto de forma cientificamente provada.',
+            imagePlaceholder: 'E',
+            color: 'brand-yellow',
+            platform: 'neuro-net'
         }
     ];
 
 
     const getPlatformIcon = (platform: string) => {
-        if (platform === 'youtube') return (
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" /></svg>
-        );
-        if (platform === 'instagram') return (
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-        );
-        if (platform === 'tiktok') return (
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.12-3.44-3.17-3.8-5.46-.4-2.51.36-5.17 2.05-7.11 1.57-1.79 4.11-2.9 6.55-2.73 0 1.34.02 2.69 0 4.03-1.07-.15-2.18.06-3.12.63-1.08.66-1.85 1.83-2.02 3.1-.15 1.14.07 2.34.61 3.32.78 1.45 2.58 2.36 4.19 2.03 2.15-.46 3.65-2.42 3.65-4.66.01-4.8.01-9.61 0-14.41-.01-.57-.01-1.14-.01-1.71h.01z" /></svg>
-        );
-        return <span className="material-symbols-outlined text-[18px]">open_in_new</span>;
+        if (platform === 'hologram') return <span className="material-symbols-outlined text-[18px]">view_in_ar</span>;
+        if (platform === 'neuro-net') return <span className="material-symbols-outlined text-[18px]">psychology</span>;
+        if (platform === 'wave-cast') return <span className="material-symbols-outlined text-[18px]">cell_tower</span>;
+        if (platform === 'gravity-feed') return <span className="material-symbols-outlined text-[18px]">public</span>;
+        return <span className="material-symbols-outlined text-[18px]">rocket_launch</span>;
     };
 
     return (
