@@ -37,93 +37,98 @@ export default function CriadoresPage() {
     const influencers = [
         {
             name: 'Lumus Quasar',
-            role: 'Viajante Espacial',
+            role: 'Vídeos de Rotina Acadêmica',
             bio: 'Mostrando os bastidores do meu estágio intergaláctico no cinturão de Órion para meus seguidores da Terra.',
             imagePlaceholder: 'L',
             color: 'brand-blue',
-            platform: 'hologram'
+            platform: 'youtube'
         },
         {
             name: 'Doutor Paradoxo',
-            role: 'Explicador de Multiversos',
+            role: 'Divulgação Científica no TikTok',
             bio: 'Física interdimensional e por que você não deveria acariciar o gato de Schrödinger.',
             imagePlaceholder: 'D',
             color: 'brand-red',
-            platform: 'neuro-net'
+            platform: 'tiktok'
         },
         {
             name: 'Sintonia Gamma',
-            role: 'Caçadora de Radiação',
+            role: 'Pesquisador no Instagram',
             bio: 'Buscando fontes de energia cósmica no meu quintal e postando no canal.',
             imagePlaceholder: 'S',
             color: 'brand-yellow',
-            platform: 'wave-cast'
+            platform: 'instagram'
         },
         {
             name: 'Mestre da Inércia',
-            role: 'Ativista Estático',
+            role: 'Dailyvlogs no Laboratório',
             bio: 'Lutando pelo direito de manter objetos em repouso exatamente onde estão.',
             imagePlaceholder: 'M',
             color: 'brand-blue',
-            platform: 'gravity-feed'
+            platform: 'youtube'
         },
         {
             name: 'Zeta Bits',
-            role: 'Pesquisador Quântico',
+            role: 'Explicações de Artigos',
             bio: 'Descobrindo o universo em 8bits e simulando buracos negros no meu fliperama antigo.',
             imagePlaceholder: 'Z',
             color: 'brand-red',
-            platform: 'hologram'
+            platform: 'youtube'
         },
         {
             name: 'Entropia Positiva',
-            role: 'Criadora do Caos',
+            role: 'Curiosidades da Física',
             bio: 'Dicas práticas de como aumentar a desordem do seu quarto de forma cientificamente provada.',
             imagePlaceholder: 'E',
             color: 'brand-yellow',
-            platform: 'neuro-net'
+            platform: 'tiktok'
         },
         {
             name: 'Dr. Tachyon',
-            role: 'Físico Experimental',
+            role: 'Experimentos Práticos',
             bio: 'Testando os limites da velocidade da luz nos finais de semana e desmentindo mitos warp.',
             imagePlaceholder: 'T',
             color: 'brand-blue',
-            platform: 'wave-cast'
+            platform: 'instagram'
         },
         {
             name: 'Nova Estelar',
-            role: 'Astro-Biologista',
+            role: 'Astronomia Amadora',
             bio: 'Cultivando batatas marcianas e discutindo formas de vida baseadas em silício.',
             imagePlaceholder: 'N',
             color: 'brand-yellow',
-            platform: 'hologram'
+            platform: 'youtube'
         },
         {
             name: 'Pulsar XP',
-            role: 'DJ Cósmico',
+            role: 'Notícias de Ciência',
             bio: 'Transformando radiação cósmica de fundo em lofi hip-hop para estudar no espaço.',
             imagePlaceholder: 'P',
             color: 'brand-red',
-            platform: 'neuro-net'
+            platform: 'instagram'
         },
         {
             name: 'Capitã Órbita',
-            role: 'Navegadora Orbital',
+            role: 'Dicas de Estudo e Pesquisa',
             bio: 'Mostrando os melhores ângulos de Júpiter enquanto desvio de lixo estelar.',
             imagePlaceholder: 'C',
             color: 'brand-blue',
-            platform: 'gravity-feed'
+            platform: 'tiktok'
         }
     ];
 
 
     const getPlatformIcon = (platform: string) => {
-        if (platform === 'hologram') return <span className="material-symbols-outlined text-[18px]">view_in_ar</span>;
-        if (platform === 'neuro-net') return <span className="material-symbols-outlined text-[18px]">psychology</span>;
-        if (platform === 'wave-cast') return <span className="material-symbols-outlined text-[18px]">cell_tower</span>;
-        if (platform === 'gravity-feed') return <span className="material-symbols-outlined text-[18px]">public</span>;
-        return <span className="material-symbols-outlined text-[18px]">rocket_launch</span>;
+        if (platform === 'youtube') return (
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" /></svg>
+        );
+        if (platform === 'instagram') return (
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+        );
+        if (platform === 'tiktok') return (
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.12-3.44-3.17-3.8-5.46-.4-2.51.36-5.17 2.05-7.11 1.57-1.79 4.11-2.9 6.55-2.73 0 1.34.02 2.69 0 4.03-1.07-.15-2.18.06-3.12.63-1.08.66-1.85 1.83-2.02 3.1-.15 1.14.07 2.34.61 3.32.78 1.45 2.58 2.36 4.19 2.03 2.15-.46 3.65-2.42 3.65-4.66.01-4.8.01-9.61 0-14.41-.01-.57-.01-1.14-.01-1.71h.01z" /></svg>
+        );
+        return <span className="material-symbols-outlined text-[18px]">open_in_new</span>;
     };
 
     return (
