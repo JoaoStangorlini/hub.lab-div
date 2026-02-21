@@ -183,18 +183,23 @@ export const MediaCard = ({
                         alt="Video Thumbnail"
                         className="h-full w-full object-cover opacity-80"
                     />
+                ) : mediaType === 'text' ? (
+                    <div className="h-full w-full bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/20 flex flex-col items-center justify-center p-6 text-center">
+                        <span className="material-symbols-outlined text-5xl text-green-500/60 mb-3">article</span>
+                        <p className="text-xs text-green-800/60 dark:text-green-300/60 line-clamp-4 leading-relaxed max-w-full">
+                            {description || 'Texto completo'}
+                        </p>
+                    </div>
+                ) : displayUrl ? (
+                    <img
+                        src={displayUrl}
+                        alt={`${title} - image ${currentImageIndex + 1}`}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
                 ) : (
-                    displayUrl ? (
-                        <img
-                            src={displayUrl}
-                            alt={`${title} - image ${currentImageIndex + 1}`}
-                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                    ) : (
-                        <div className="h-full w-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-4xl text-slate-400">broken_image</span>
-                        </div>
-                    )
+                    <div className="h-full w-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-4xl text-slate-400">broken_image</span>
+                    </div>
                 )}
 
                 {/* Multiple Images Carousel Controls */}

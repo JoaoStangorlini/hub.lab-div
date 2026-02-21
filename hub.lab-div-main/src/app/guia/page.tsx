@@ -92,7 +92,7 @@ export default function GuiaPage() {
                             <li className="flex items-start gap-3">
                                 <span className="material-symbols-outlined text-brand-blue mt-1">photo_library</span>
                                 <div>
-                                    <strong>Limites:</strong> Máximo de 10 fotos por envio e tamanho máximo de 10MB.<br />
+                                    <strong>Fotos:</strong> Máximo de 10 fotos por envio e tamanho máximo de 10MB por arquivo.<br />
                                     <span className="text-sm text-gray-500">Explicação: Garante que o site continue rápido e não estoure os limites do servidor.</span>
                                 </div>
                             </li>
@@ -101,6 +101,14 @@ export default function GuiaPage() {
                                 <div>
                                     <strong>Vídeos:</strong> Não fazer upload de vídeos diretos. Eles devem ser upados no YouTube e o link deve ser compartilhado no formulário.<br />
                                     <span className="text-sm text-gray-500">Explicação: Melhora o carregamento do site e aproveita o player do YouTube.</span>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <span className="material-symbols-outlined text-brand-yellow mt-1">picture_as_pdf</span>
+                                <div>
+                                    <strong>PDFs e Artigos:</strong> Faça o upload apenas da <strong>capa (primeira página)</strong> do seu artigo como PDF (máximo <strong>10MB</strong>). Essa capa será a imagem de pré-visualização no site.<br />
+                                    <span className="text-sm text-gray-500">Dica: Use sites como <a href="https://www.ilovepdf.com/pt/dividir_pdf" target="_blank" rel="noopener noreferrer" className="underline">iLovePDF</a> ou <a href="https://smallpdf.com/pt/dividir-pdf" target="_blank" rel="noopener noreferrer" className="underline">SmallPDF</a> para extrair apenas a primeira página do seu PDF.</span><br />
+                                    <span className="text-sm text-gray-500">Obrigatório: Cole o link do documento completo no campo &quot;Link para PDF Completo&quot; (Google Drive, Dropbox ou repositório institucional).</span>
                                 </div>
                             </li>
                             <li className="flex items-start gap-3">

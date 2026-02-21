@@ -421,6 +421,19 @@ export const HomeClientView = ({ initialItems, initialHasMore }: HomeClientViewP
                                         <span className="text-white">PDF não encontrado</span>
                                     );
                                 })()
+                            ) : selectedItem.mediaType === 'text' ? (
+                                <div className="w-full h-full min-h-[60vh] md:min-h-full bg-white dark:bg-gray-900 rounded-l-2xl md:rounded-l-3xl overflow-auto p-8 md:p-12">
+                                    <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-display">
+                                        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6">{selectedItem.title}</h2>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-base">person</span>
+                                            {selectedItem.authors}
+                                        </p>
+                                        <div className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed">
+                                            {selectedItem.description}
+                                        </div>
+                                    </div>
+                                </div>
                             ) : (
                                 (() => {
                                     const urls = parseMediaUrl(selectedItem.mediaUrl);

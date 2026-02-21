@@ -15,7 +15,7 @@ export default function SubmitPage() {
     const [email, setEmail] = useState('');
     const [whatsapp, setWhatsapp] = useState('');
 
-    const [mediaType, setMediaType] = useState<'image' | 'video' | 'pdf'>('image');
+    const [mediaType, setMediaType] = useState<'image' | 'video' | 'pdf' | 'text'>('image');
     const [videoUrl, setVideoUrl] = useState('');
     const [externalLink, setExternalLink] = useState('');
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -107,7 +107,13 @@ export default function SubmitPage() {
 
             let finalMediaUrl: string[] = [];
 
-            if (mediaType === 'image' || mediaType === 'pdf') {
+            if (mediaType === 'text') {
+                if (!description || description.trim().length < 50) {
+                    throw new Error("O corpo do texto deve ter pelo menos 50 caracteres.");
+                }
+                // Text posts don't need media upload - the content goes in description
+                finalMediaUrl = [];
+            } else if (mediaType === 'image' || mediaType === 'pdf') {
                 if (selectedFiles.length === 0) throw new Error(`Selecione pelo menos ${mediaType === 'image' ? 'uma imagem' : 'um PDF'} para upload`);
 
                 // Upload all selected files in parallel
@@ -296,17 +302,23 @@ export default function SubmitPage() {
 
                             <div className="space-y-2 group">
                                 <label className="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300" htmlFor="description">
-                                    <span className="material-symbols-outlined text-gray-500 text-[18px]">description</span>
-                                    Descrição ou Contexto
+                                    <span className="material-symbols-outlined text-gray-500 text-[18px]">{mediaType === 'text' ? 'article' : 'description'}</span>
+                                    {mediaType === 'text' ? (<>Corpo do Texto <span className="text-brand-red">*</span></>) : 'Descrição ou Contexto'}
                                 </label>
                                 <textarea
                                     id="description"
-                                    rows={4}
+                                    rows={mediaType === 'text' ? 12 : 4}
                                     value={description}
                                     onChange={e => setDescription(e.target.value)}
                                     className="w-full bg-gray-50 dark:bg-form-dark border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all resize-none"
-                                    placeholder="Detalhe o contexto da submissão..."
+                                    placeholder={mediaType === 'text' ? 'Escreva aqui o corpo completo do seu texto ou artigo...' : 'Detalhe o contexto da submissão...'}
+                                    required={mediaType === 'text'}
                                 ></textarea>
+                                {mediaType === 'text' && (
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 pl-1 border-l-2 border-brand-blue">
+                                        Mínimo de 50 caracteres. Este texto será exibido diretamente no site como um artigo.
+                                    </p>
+                                )}
                             </div>
 
                             {mediaType === 'pdf' && (
@@ -337,9 +349,9 @@ export default function SubmitPage() {
                             <div className="flex flex-col gap-1 mb-4">
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                     <span className="material-symbols-outlined text-brand-blue">perm_media</span>
-                                    Mídia Visual <span className="text-brand-red">*</span>
+                                    Tipo de Conteúdo <span className="text-brand-red">*</span>
                                 </h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Adicione as imagens ou o link do vídeo explicativo do trabalho.</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Escolha o formato da sua submissão.</p>
                             </div>
 
                             <div className="flex p-1.5 bg-gray-100/50 dark:bg-form-dark/50 rounded-2xl w-full mb-6 border border-gray-200/50 dark:border-gray-700/50 overflow-x-auto" role="tablist">
@@ -373,10 +385,28 @@ export default function SubmitPage() {
                                         PDF
                                     </div>
                                 </button>
+                                <button
+                                    onClick={() => { setMediaType('text'); setSelectedFiles([]); }}
+                                    aria-selected={mediaType === 'text'}
+                                    className={`flex-1 min-w-[120px] py-3 text-sm font-bold rounded-xl transition-all ${mediaType === 'text' ? 'bg-white dark:bg-gray-700 text-green-600 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                                >
+                                    <div className="flex items-center justify-center gap-2">
+                                        <span className="material-symbols-outlined text-[20px]">article</span>
+                                        Texto
+                                    </div>
+                                </button>
                             </div>
 
                             <div className="mt-4">
-                                {mediaType === 'image' || mediaType === 'pdf' ? (
+                                {mediaType === 'text' ? (
+                                    <div className="flex justify-center rounded-2xl border-2 border-dashed border-green-300 dark:border-green-700 px-6 py-8 bg-green-50/50 dark:bg-green-900/10">
+                                        <div className="text-center">
+                                            <span className="material-symbols-outlined text-4xl text-green-500 mb-2">edit_note</span>
+                                            <p className="text-sm text-green-700 dark:text-green-400 font-medium">Modo Texto ativo</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Escreva o conteúdo no campo &quot;Corpo do Texto&quot; acima. Nenhum arquivo é necessário.</p>
+                                        </div>
+                                    </div>
+                                ) : mediaType === 'image' || mediaType === 'pdf' ? (
                                     <div className="flex justify-center rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 px-6 py-12 bg-gray-50/50 dark:bg-form-dark/50 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer group relative overflow-hidden">
                                         <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/5 to-brand-yellow/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         <div className="text-center relative z-10">
