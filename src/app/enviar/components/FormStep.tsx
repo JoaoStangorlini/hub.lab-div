@@ -56,9 +56,13 @@ export function FormStep() {
             testimonial: '',
             readGuide: false,
             acceptedCC: false,
+            tags: [],
+            readingTime: 0,
             coAuthors: []
         }
     });
+
+    const [tagInput, setTagInput] = useState('');
 
 
 
@@ -110,6 +114,36 @@ export function FormStep() {
         const current = watchedValues.coAuthors || [];
         setValue('coAuthors', current.filter(c => c.id !== id), { shouldDirty: true });
     };
+
+    // Tag management
+    const handleTagKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const tag = tagInput.trim().replace(/^#/, '');
+            if (tag && !(watchedValues.tags || []).includes(tag)) {
+                setValue('tags', [...(watchedValues.tags || []), tag], { shouldDirty: true });
+            }
+            setTagInput('');
+        } else if (e.key === 'Backspace' && !tagInput && (watchedValues.tags || []).length > 0) {
+            const newTags = [...(watchedValues.tags || [])];
+            newTags.pop();
+            setValue('tags', newTags, { shouldDirty: true });
+        }
+    };
+
+    const removeTag = (tagToRemove: string) => {
+        setValue('tags', (watchedValues.tags || []).filter(t => t !== tagToRemove), { shouldDirty: true });
+    };
+
+    // Reading time calculation
+    useEffect(() => {
+        const text = watchedValues.description || '';
+        const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+        const time = Math.max(1, Math.ceil(words / 200));
+        if (watchedValues.readingTime !== time) {
+            setValue('readingTime', time);
+        }
+    }, [watchedValues.description, setValue, watchedValues.readingTime]);
 
     React.useEffect(() => {
         const fetchUser = async () => {
@@ -309,7 +343,9 @@ export function FormStep() {
                 alt_text: data.altText || null,
                 testimonial: data.testimonial || null,
                 user_id: session.user.id,
-                co_authors: data.coAuthors || []
+                co_authors: data.coAuthors || [],
+                tags: data.tags || [],
+                reading_time: data.readingTime || 0
             }]);
 
 
@@ -522,6 +558,35 @@ export function FormStep() {
                         placeholder="(11) 99999-9999"
                     />
                 </div>
+
+                {/* Tags Input (Chips) */}
+                <div className="space-y-3 lg:col-span-2">
+                    <label className="text-sm font-black uppercase tracking-widest flex items-center justify-between text-brand-yellow">
+                        <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-xl">sell</span>
+                            Tags / Palavras-chave
+                        </div>
+                        <span className="text-[10px] text-gray-400">Pressione Enter ou Espaço para adicionar</span>
+                    </label>
+                    <div className={`flex flex-wrap gap-2 p-3 bg-white dark:bg-form-dark border-2 border-gray-100 dark:border-gray-800 rounded-2xl focus-within:border-brand-yellow focus-within:ring-4 focus-within:ring-brand-yellow/10 transition-all`}>
+                        {watchedValues.tags?.map((tag: string) => (
+                            <span key={tag} className="flex items-center gap-1.5 px-3 py-1 bg-brand-yellow/10 text-brand-yellow border border-brand-yellow/20 rounded-xl text-xs font-bold animate-in fade-in zoom-in duration-200">
+                                #{tag}
+                                <button type="button" onClick={() => removeTag(tag)} className="hover:text-brand-red transition-colors">
+                                    <span className="material-symbols-outlined text-[14px] font-black">close</span>
+                                </button>
+                            </span>
+                        ))}
+                        <input
+                            type="text"
+                            value={tagInput}
+                            onChange={(e) => setTagInput(e.target.value)}
+                            onKeyDown={handleTagKeyDown}
+                            className="flex-grow bg-transparent outline-none text-sm dark:text-white placeholder:text-gray-400 min-w-[150px]"
+                            placeholder={watchedValues.tags?.length ? "Adicionar mais..." : "Física, Óptica, Experimento..."}
+                        />
+                    </div>
+                </div>
             </motion.div>
 
             {/* Co-Authorship Section */}
@@ -613,9 +678,17 @@ export function FormStep() {
                         <span className="material-symbols-outlined text-xl">{isTextMode ? 'article' : 'description'}</span>
                         {isTextMode ? 'Seu Texto (Markdown) *' : 'Descrição e Contexto'}
                     </div>
-                    <span className={`text-[10px] ${(watchedValues.description || '').length > 2000 ? 'text-red-500' : 'text-gray-400'}`}>
-                        {(watchedValues.description || '').length}/2000
-                    </span>
+                    <div className="flex items-center gap-4">
+                        {watchedValues.description?.length > 0 && (
+                            <span className="flex items-center gap-1 text-[10px] font-bold text-brand-blue dark:text-brand-yellow uppercase tracking-widest bg-brand-blue/5 dark:bg-brand-yellow/10 px-2 py-0.5 rounded-full border border-brand-blue/10 dark:border-brand-yellow/20 transition-all animate-in fade-in duration-300">
+                                <span className="material-symbols-outlined text-[14px]">schedule</span>
+                                {watchedValues.readingTime || 1} min de leitura
+                            </span>
+                        )}
+                        <span className={`text-[10px] ${(watchedValues.description || '').length > 2000 ? 'text-red-500' : 'text-gray-400'}`}>
+                            {(watchedValues.description || '').length}/2000
+                        </span>
+                    </div>
 
                 </label>
                 <div className="relative group">
@@ -934,7 +1007,7 @@ export function FormStep() {
                 </button>
                 <button
                     type="button"
-                    onClick={handleSubmit(onFormSubmit)}
+                    onClick={handleSubmit(onFormSubmit as any)}
                     disabled={isLoading}
                     className={`group relative overflow-hidden px-12 py-5 rounded-2xl font-black uppercase tracking-widest shadow-2xl transition-all flex items-center gap-3 ${isLoading ? 'opacity-50 grayscale cursor-not-allowed' : 'hover:-translate-y-1 hover:shadow-brand-red/20 active:translate-y-0'}`}
                 >

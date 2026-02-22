@@ -13,6 +13,8 @@ export const submissionSchema = z.object({
     testimonial: z.string(),
     readGuide: z.boolean().refine(v => v === true, 'Você deve ler o guia'),
     acceptedCC: z.boolean().refine(v => v === true, 'Você deve aceitar a licença'),
+    tags: z.array(z.string()),
+    readingTime: z.number(),
     coAuthors: z.array(z.object({
         id: z.string(),
         full_name: z.string(),
