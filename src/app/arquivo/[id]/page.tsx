@@ -169,6 +169,16 @@ export default async function ArquivoItemPage({ params }: PageProps) {
                             <div className="flex flex-col">
                                 <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">Autore(s)</span>
                                 <span className="text-base font-bold text-gray-900 dark:text-white">{submission.authors}</span>
+
+                                {submission.co_authors && Array.isArray(submission.co_authors) && submission.co_authors.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mt-1">
+                                        {submission.co_authors.map((co: any, idx: number) => (
+                                            <span key={idx} className="text-[10px] bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
+                                                {co.full_name} {co.email && `(${co.email})`}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
