@@ -6,6 +6,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { parseMediaUrl, formatYoutubeUrl, getYoutubeThumbnail, getDownloadUrl, getPdfViewerUrl } from '@/lib/media-utils';
 import { ShareMenu } from './ShareMenu';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import rehypeSanitize from 'rehype-sanitize';
 
 export interface MediaCardProps {
     id: string;
@@ -213,9 +217,11 @@ export const MediaCard = ({
                             <span className="material-symbols-outlined text-brand-blue dark:text-brand-yellow text-sm">visibility</span>
                             <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Prévia Rápida</span>
                         </div>
-                        <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed font-medium">
-                            {description.length > 300 ? description.substring(0, 300) + '...' : description}
-                        </p>
+                        <div className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed font-medium prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-headings:my-2 prose-a:text-brand-blue prose-img:rounded-md">
+                            <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex, rehypeSanitize]}>
+                                {description}
+                            </ReactMarkdown>
+                        </div>
                         <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white dark:from-card-dark to-transparent"></div>
                     </motion.div>
                 )}
@@ -280,11 +286,14 @@ export const MediaCard = ({
                     />
                 ) : mediaType === 'text' || mediaType === 'zip' || mediaType === 'sdocx' ? (
                     <div className={`h-full w-full flex flex-col items-center justify-center p-8 text-center bg-slate-100 dark:bg-slate-800`}>
-                        <p className={`text-sm font-medium leading-relaxed max-w-full text-slate-700 dark:text-slate-200 line-clamp-6`}>
-                            {mediaType === 'zip' ? 'Conteúdo Compactado (.ZIP)' :
-                                mediaType === 'sdocx' ? 'Notas do Samsung Notes (.SDOCX)' :
-                                    (description || 'Texto completo').replace(/[#*>\-_`~\[\]]/g, '').replace(/\n{2,}/g, ' ').trim()}
-                        </p>
+                        <div className={`text-sm font-medium leading-relaxed max-w-full text-slate-700 dark:text-slate-200 relative overflow-hidden h-[9rem] prose prose-sm dark:prose-invert max-w-none`}>
+                            {mediaType === 'zip' ? <p className="mt-8">Conteúdo Compactado (.ZIP)</p> :
+                                mediaType === 'sdocx' ? <p className="mt-8">Notas do Samsung Notes (.SDOCX)</p> :
+                                    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex, rehypeSanitize]}>
+                                        {description || 'Texto completo'}
+                                    </ReactMarkdown>}
+                            <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-slate-100 dark:from-slate-800 to-transparent"></div>
+                        </div>
                     </div>
                 ) : displayUrl ? (
                     <img
@@ -357,16 +366,16 @@ export const MediaCard = ({
                             <span className="material-symbols-outlined text-[32px]">
                                 favorite
                             </span>
-                            {likes > 0 && (
-                                <span className={`absolute inset-0 flex items-center justify-center text-[10px] sm:text-[11px] font-bold pb-0.5 ${liked ? 'text-brand-red' : 'text-gray-700 dark:text-gray-200'}`}>
+                            {likes >= 0 && (
+                                <span className={`absolute inset-[1px] flex items-center justify-center text-[10px] sm:text-[11px] font-bold pb-0.5 ${liked ? 'text-brand-red' : 'text-gray-700 dark:text-gray-200'}`}>
                                     {likes > 99 ? '99+' : likes}
                                 </span>
                             )}
                         </button>
                         <Link href={`/arquivo/${id}#comments`} onClick={(e) => e.stopPropagation()} className="text-gray-700 dark:text-gray-200 hover:text-brand-blue transition-transform active:scale-90 relative flex items-center justify-center">
                             <span className="material-symbols-outlined text-[32px]">chat_bubble</span>
-                            {comments > 0 && (
-                                <span className="absolute inset-0 flex items-center justify-center text-[10px] sm:text-[11px] font-bold pb-1.5 opacity-90">
+                            {comments >= 0 && (
+                                <span className="absolute inset-[1px] flex items-center justify-center text-[10px] sm:text-[11px] font-bold pb-1.5 opacity-90">
                                     {comments}
                                 </span>
                             )}
@@ -400,8 +409,8 @@ export const MediaCard = ({
                         <span className={`material-symbols-outlined text-[32px]`}>
                             bookmark
                         </span>
-                        {saves > 0 && (
-                            <span className={`absolute inset-0 flex items-center justify-center text-[10px] sm:text-[11px] font-bold pt-1 opacity-90 ${saved ? 'text-brand-blue' : 'text-gray-700 dark:text-gray-200'}`}>
+                        {saves >= 0 && (
+                            <span className={`absolute inset-[1px] flex items-center justify-center text-[10px] sm:text-[11px] font-bold pt-1 opacity-90 ${saved ? 'text-brand-blue' : 'text-gray-700 dark:text-gray-200'}`}>
                                 {saves}
                             </span>
                         )}
@@ -415,9 +424,12 @@ export const MediaCard = ({
                         <span className="font-bold text-gray-800 dark:text-gray-100">{title}</span>
                     </div>
                     {description && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed">
-                            {description}
-                        </p>
+                        <div className="text-sm text-gray-600 dark:text-gray-400 overflow-hidden max-h-[2.5rem] relative prose prose-sm dark:prose-invert prose-p:my-0 prose-headings:my-0 prose-ul:my-0 max-w-none leading-tight">
+                            <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex, rehypeSanitize]}>
+                                {description}
+                            </ReactMarkdown>
+                            <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white dark:from-card-dark to-transparent"></div>
+                        </div>
                     )}
                 </div>
 
