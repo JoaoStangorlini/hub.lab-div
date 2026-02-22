@@ -141,13 +141,24 @@ export function Header() {
 
                             {/* Mobile Menu Toggle */}
                             <button
-                                className="lg:hidden text-gray-500 hover:text-brand-blue dark:text-gray-400 focus:outline-none p-2"
+                                className="lg:hidden w-12 h-12 flex flex-col items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all focus:outline-none group relative overflow-hidden"
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                aria-label="Menu"
                             >
-                                <span className="material-symbols-outlined text-3xl">
-                                    {isMobileMenuOpen ? 'close' : 'menu'}
-                                </span>
+                                {isMobileMenuOpen ? (
+                                    <div className="relative w-6 h-6 flex items-center justify-center">
+                                        <span className="absolute block w-6 h-0.5 bg-brand-blue rotate-45 transition-transform"></span>
+                                        <span className="absolute block w-6 h-0.5 bg-brand-red -rotate-45 transition-transform"></span>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <span className="block w-6 h-0.5 bg-brand-blue rounded-full transition-all group-hover:w-5"></span>
+                                        <span className="block w-6 h-0.5 bg-brand-yellow rounded-full transition-all"></span>
+                                        <span className="block w-6 h-0.5 bg-brand-red rounded-full transition-all group-hover:w-5"></span>
+                                    </>
+                                )}
                             </button>
+
                         </div>
                     </div>
                 </div>
