@@ -2,6 +2,8 @@
 
 import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
+import Link from 'next/link';
+
 
 export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +14,7 @@ export default function LoginPage() {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: `${window.location.origin}/`,
+                    redirectTo: `${window.location.origin}/auth/callback`,
                 },
             });
             if (error) throw error;
@@ -22,10 +24,19 @@ export default function LoginPage() {
         }
     };
 
+
     return (
         <main className="min-h-[80vh] flex items-center justify-center p-4 bg-gray-50 dark:bg-background-dark/30">
             <div className="max-w-md w-full bg-white dark:bg-card-dark rounded-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <div className="p-8 sm:p-12">
+                <div className="p-8 sm:p-12 relative">
+                    <Link
+                        href="/"
+                        className="absolute top-6 left-6 flex items-center gap-1 text-gray-400 hover:text-brand-blue transition-colors text-[10px] font-black uppercase tracking-widest group"
+                    >
+                        <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">west</span>
+                        Voltar
+                    </Link>
+
                     <div className="flex flex-col items-center text-center space-y-4 mb-10">
                         <div className="relative w-16 h-16 mb-4">
                             <div className="absolute w-10 h-12 bg-brand-blue rounded-[1px] top-0 left-0 z-0"></div>
