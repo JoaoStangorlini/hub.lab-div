@@ -5,15 +5,26 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { MediaCard, MediaCardProps } from './MediaCard';
 import { fetchSubmissions } from '@/app/actions/submissions';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TrendingTags } from './TrendingTags';
+import { FeaturedCarousel } from './FeaturedCarousel';
 
 interface HomeClientViewProps {
     initialItems: MediaCardProps[];
     initialHasMore: boolean;
     initialCategory?: string;
     trendingItems?: MediaCardProps[];
+    featuredItems?: MediaCardProps[];
+    trendingTags?: string[];
 }
 
-export const HomeClientView = ({ initialItems, initialHasMore, initialCategory = 'Todos', trendingItems = [] }: HomeClientViewProps) => {
+export const HomeClientView = ({
+    initialItems,
+    initialHasMore,
+    initialCategory = 'Todos',
+    trendingItems = [],
+    featuredItems = [],
+    trendingTags = []
+}: HomeClientViewProps) => {
     const searchParams = useSearchParams();
     const router = useRouter();
     const authorFilter = searchParams.get('autor');
@@ -76,6 +87,14 @@ export const HomeClientView = ({ initialItems, initialHasMore, initialCategory =
         return () => clearTimeout(timer);
     }, [searchQuery]);
 
+    const handleTrendingTagClick = (tag: string) => {
+        setSearchQuery(`#${tag}`);
+        setIsSearchFocused(false);
+        if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
     // Fetch new results when filters change
     const isFirstRender = useRef(true);
     useEffect(() => {
@@ -92,7 +111,7 @@ export const HomeClientView = ({ initialItems, initialHasMore, initialCategory =
                     limit: 12,
                     query: debouncedQuery,
                     categories: selectedCategories.filter(c => c !== 'Todos' && c !== 'Destaques'),
-                    featured: selectedCategories.includes('Destaques') ? true : undefined,
+                    is_featured: selectedCategories.includes('Destaques') ? true : undefined,
                     mediaTypes: selectedMediaTypes,
                     sort: sortOrder,
                     author: authorFilter || undefined
@@ -119,7 +138,7 @@ export const HomeClientView = ({ initialItems, initialHasMore, initialCategory =
                 limit: 12,
                 query: debouncedQuery,
                 categories: selectedCategories.filter(c => c !== 'Todos' && c !== 'Destaques'),
-                featured: selectedCategories.includes('Destaques') ? true : undefined,
+                is_featured: selectedCategories.includes('Destaques') ? true : undefined,
                 mediaTypes: selectedMediaTypes,
                 sort: sortOrder,
                 author: authorFilter || undefined
@@ -392,7 +411,7 @@ export const HomeClientView = ({ initialItems, initialHasMore, initialCategory =
                                 let activeClass = '';
                                 if (isActive) {
                                     activeClass = isDestaques
-                                        ? 'bg-gradient-to-r from-brand-red to-brand-yellow border-transparent text-white font-bold shadow-md'
+                                        ? 'relative overflow-hidden bg-gradient-to-r from-brand-red to-brand-yellow border-transparent text-white font-black uppercase tracking-wider shadow-[0_0_15px_rgba(230,57,70,0.4)] scale-105'
                                         : isYellow
                                             ? 'bg-brand-yellow hover:bg-yellow-500 border-transparent text-black font-medium shadow-md'
                                             : isRed
@@ -400,7 +419,7 @@ export const HomeClientView = ({ initialItems, initialHasMore, initialCategory =
                                                 : 'bg-brand-blue hover:bg-brand-darkBlue border-transparent text-white font-medium shadow-md';
                                 } else {
                                     activeClass = isDestaques
-                                        ? 'bg-white dark:bg-form-dark text-brand-red hover:bg-brand-red/5 dark:hover:bg-brand-red/10 border-brand-red/20 hover:border-brand-red'
+                                        ? 'relative overflow-hidden bg-white dark:bg-form-dark text-brand-red border-brand-red/30 hover:border-brand-red font-bold uppercase tracking-wider'
                                         : isYellow
                                             ? 'bg-white dark:bg-form-dark text-gray-600 dark:text-gray-300 hover:bg-brand-yellow/10 dark:hover:bg-brand-yellow/20 hover:text-brand-yellow-700 dark:hover:text-brand-yellow border-gray-200 dark:border-gray-700 hover:border-brand-yellow'
                                             : isRed
@@ -429,9 +448,12 @@ export const HomeClientView = ({ initialItems, initialHasMore, initialCategory =
                                             }
                                             setSelectedCategories(next);
                                         }}
-                                        className={`px-4 py-2 rounded-full text-sm transition-colors whitespace-nowrap border ${activeClass} shrink-0`}
+                                        className={`flex-shrink-0 px-4 py-2 rounded-full text-sm transition-all border ${activeClass}`}
                                     >
-                                        {cat}
+                                        <span className="relative z-10">{cat}</span>
+                                        {isDestaques && (
+                                            <span className="absolute inset-0 animate-metallic-shine opacity-40 group-hover:opacity-60 transition-opacity"></span>
+                                        )}
                                     </button>
                                 );
                             })}
@@ -457,6 +479,19 @@ export const HomeClientView = ({ initialItems, initialHasMore, initialCategory =
             {/* Main Feed Section */}
             <section className="bg-background-subtle dark:bg-background-dark py-12 transition-colors flex-grow">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+                    {!authorFilter && trendingTags.length > 0 && (
+                        <TrendingTags
+                            tags={trendingTags}
+                            onTagClick={handleTrendingTagClick}
+                            activeTag={debouncedQuery.startsWith('#') ? debouncedQuery : undefined}
+                        />
+                    )}
+
+                    {!authorFilter && featuredItems.length > 0 && (
+                        <FeaturedCarousel items={featuredItems} />
+                    )}
+
                     {authorFilter && (
                         <div className="mb-8 flex flex-col sm:flex-row items-center justify-between p-6 bg-white dark:bg-card-dark rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm gap-4">
                             <div className="flex items-center gap-4">

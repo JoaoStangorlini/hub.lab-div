@@ -13,6 +13,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeSanitize from 'rehype-sanitize';
+import { ViewTracker } from '@/components/ViewTracker';
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -120,6 +121,7 @@ export default async function ArquivoItemPage({ params }: PageProps) {
             <Header />
 
             <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+                <ViewTracker submissionId={id} />
                 <div className="bg-white dark:bg-card-dark rounded-2xl md:rounded-3xl overflow-hidden shadow-xl border border-gray-100 dark:border-gray-800">
 
                     {/* Media Section - skip for text/zip/sdocx */}

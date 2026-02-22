@@ -2,6 +2,7 @@
 
 import { supabase } from '@/lib/supabase';
 import { MediaCardProps } from '@/components/MediaCard';
+import { unstable_cache } from 'next/cache';
 
 export interface FetchParams {
     page: number;
@@ -11,10 +12,10 @@ export interface FetchParams {
     mediaTypes?: string[]; // Multiple media types
     sort: 'recentes' | 'antigas';
     author?: string; // New: Filter by author name
-    featured?: boolean; // New: Filter by featured status
+    is_featured?: boolean; // New: Filter by featured status
 }
 
-export async function fetchSubmissions({ page, limit, query, categories, mediaTypes, sort, author, featured }: FetchParams): Promise<{ items: MediaCardProps[], hasMore: boolean }> {
+export async function fetchSubmissions({ page, limit, query, categories, mediaTypes, sort, author, is_featured: featured }: FetchParams): Promise<{ items: MediaCardProps[], hasMore: boolean }> {
     let queryBuilder = supabase
         .from('submissions')
         .select('*', { count: 'exact' })
@@ -22,7 +23,7 @@ export async function fetchSubmissions({ page, limit, query, categories, mediaTy
 
     // Filtering by Featured
     if (featured) {
-        queryBuilder = queryBuilder.eq('featured', true);
+        queryBuilder = queryBuilder.eq('is_featured', true);
     }
 
     // Filtering by Category
@@ -41,10 +42,16 @@ export async function fetchSubmissions({ page, limit, query, categories, mediaTy
     }
 
     if (query) {
-        // Use textSearch for better performance with GIN index on title and description,
-        // or ilike as a fallback if plain search is preferred. We'll use ilike on a concatenated string
-        // or multiple ilike conditions if we want partial matches without full text config.
-        queryBuilder = queryBuilder.or(`title.ilike.%${query}%,description.ilike.%${query}%,authors.ilike.%${query}%`);
+        if (query.startsWith('#')) {
+            // Precise tag search: if it starts with #, filter the tags array directly
+            const tag = query.substring(1).trim();
+            if (tag) {
+                queryBuilder = queryBuilder.contains('tags', [tag]);
+            }
+        } else {
+            // Normal text search
+            queryBuilder = queryBuilder.or(`title.ilike.%${query}%,description.ilike.%${query}%,authors.ilike.%${query}%`);
+        }
     }
 
     // Sorting
@@ -115,7 +122,7 @@ export async function fetchSubmissions({ page, limit, query, categories, mediaTy
         mediaType: sub.media_type,
         mediaUrl: sub.media_url,
         category: sub.category,
-        isFeatured: sub.featured,
+        isFeatured: sub.is_featured,
         likeCount: likeMap[sub.id] || 0,
         commentCount: commentMap[sub.id] || 0,
         saveCount: saveMap[sub.id] || 0,
@@ -153,7 +160,7 @@ export async function fetchUserSubmissions(userId: string): Promise<MediaCardPro
         mediaType: sub.media_type,
         mediaUrl: sub.media_url,
         category: sub.category,
-        isFeatured: sub.featured,
+        isFeatured: sub.is_featured,
         likeCount: 0, // Simplified for profile view
         external_link: sub.external_link || null,
         created_at: sub.created_at,
@@ -208,7 +215,7 @@ export async function fetchTrendingSubmissions(): Promise<MediaCardProps[]> {
         mediaType: sub.media_type,
         mediaUrl: sub.media_url,
         category: sub.category,
-        isFeatured: sub.featured,
+        isFeatured: sub.is_featured,
         likeCount: likeMap[sub.id] || 0,
         commentCount: commentMap[sub.id] || 0,
         saveCount: saveMap[sub.id] || 0,
@@ -220,4 +227,64 @@ export async function fetchTrendingSubmissions(): Promise<MediaCardProps[]> {
         views: sub.views || 0,
         reading_time: sub.reading_time || 0
     }));
+}
+
+export const getTrendingTags = unstable_cache(
+    async () => {
+        const { data, error } = await supabase
+            .from('submissions')
+            .select('tags')
+            .eq('status', 'aprovado');
+
+        if (error || !data) return [];
+
+        const tagCounts: Record<string, number> = {};
+        data.forEach(sub => {
+            if (sub.tags && Array.isArray(sub.tags)) {
+                sub.tags.forEach((tag: string) => {
+                    const normalizedTag = tag.trim();
+                    if (normalizedTag) {
+                        tagCounts[normalizedTag] = (tagCounts[normalizedTag] || 0) + 1;
+                    }
+                });
+            }
+        });
+
+        return Object.entries(tagCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10)
+            .map(([tag]) => tag);
+    },
+    ['trending-tags'],
+    { revalidate: 3600, tags: ['submissions'] }
+);
+
+export async function getFeaturedSubmissions(limit: number = 10): Promise<MediaCardProps[]> {
+    const { data: submissions, error } = await supabase
+        .from('submissions')
+        .select('*')
+        .eq('status', 'aprovado')
+        .eq('is_featured', true)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+    if (error || !submissions) return [];
+
+    return submissions.map(sub => ({
+        id: sub.id,
+        title: sub.title,
+        description: sub.description,
+        authors: sub.authors,
+        mediaType: sub.media_type,
+        mediaUrl: sub.media_url,
+        category: sub.category,
+        isFeatured: sub.is_featured,
+        tags: sub.tags || [],
+        reading_time: sub.reading_time || 0,
+        views: sub.views || 0,
+        created_at: sub.created_at,
+        likeCount: 0, // Simplified for carousel
+        commentCount: 0,
+        saveCount: 0
+    })) as MediaCardProps[];
 }

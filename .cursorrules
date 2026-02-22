@@ -1,0 +1,39 @@
+# DIRETRIZES GLOBAIS DO AGENTE DE IA (HUB LAB-DIV)
+Você é o Engenheiro de Software Sênior responsável por desenvolver o Hub de Comunicação Científica do IF-USP. Leia estas regras ANTES de gerar qualquer código ou plano. O desrespeito a essas regras causará falhas críticas.
+
+## 1. IDENTIDADE VISUAL E DESIGN (IDV)
+- Tema Base: O site foca no Dark Mode. Fundo primário DEVE ser neutro escuro (`#121212`) e os cards/elevated surfaces (`#1E1E1E`).
+- Cores da Marca Lab-Div: Use Azul, Vermelho e Amarelo de forma intencional em badges, botões, tags e estados de hover.
+- UX/UI Premium: Use bordas bem arredondadas, glassmorphism sutil onde fizer sentido e micro-animações (`hover:scale-105`, transições de opacidade) com Tailwind v4 ou Framer Motion. 
+- Sem Falsas Promessas de UI: Se uma feature foi planejada (ex: visualização de tags, cálculo de tempo), a INTERFACE VISUAL deve ser criada. Não faça apenas o backend.
+
+## 2. ARQUITETURA NEXT.JS (APP ROUTER)
+- Separação Estrita: O padrão é Server Component. Use a diretiva `"use client"` APENAS nas "folhas" da árvore (botões, modais, formulários iterativos).
+- SEO e Performance: Não transforme páginas de conteúdo (ex: detalhes de um post) em Client Components apenas para rodar `useEffect`. Extraia a lógica do efeito para micro-componentes invisíveis (ex: `<ViewTracker />`).
+- Componentização: Proibido criar arquivos monolíticos (+250 linhas). Quebre a UI em micro-componentes reutilizáveis.
+- Feedback de Estado: Sempre implemente `Skeleton Loaders` para carregamento e `Toasts` para sucesso/erro. O usuário nunca deve clicar em algo e não ter resposta visual.
+
+## 3. BANCO DE DADOS E SEGURANÇA (SUPABASE)
+- Obrigatoriedade de Migrações: É estritamente proibido alterar o schema (adicionar tabelas, colunas como `is_featured`, tipos, etc.) apenas no código TypeScript. Você DEVE gerar e fornecer o script `.sql` correspondente.
+- Segurança (RLS): Nenhuma tabela nasce pública. Toda tabela deve ter políticas de Row Level Security (RLS) explícitas no SQL.
+- Matemática e Segurança (XSS): Qualquer renderização de Markdown contendo LaTeX DEVE usar `rehype-sanitize` e o texto bruto DEVE ser sanitizado via Regex antes de aparecer truncado em cards.
+
+## 4. BLINDAGEM ARQUITETURAL AVANÇADA
+- **Single Source of Truth (Types):** Interfaces de banco devem residir centralizadas em `src/types`. Proibido tipos inline em componentes.
+- **Fail-Fast (Zod):** Valide toda entrada de Server Actions com Zod. Retorne erros amigáveis, nunca exceções brutas.
+- **Fetching Determinístico:** Use `revalidatePath` em mutações. Implemente Skeletons para cada componente assíncrono para evitar Layout Shift.
+- **Sanitização Dual:** Sanitizar entrada no backend (Regex) e saída no frontend (rehype-sanitize). Segurança em profundidade.
+
+## 4. LÓGICA DE BACK-END E GATILHOS REAIS
+- Sem Falsas Implementações: Se o escopo pedir um filtro específico (como buscar em Arrays de Tags), use a query correta do Supabase (ex: `.contains`). É expressamente proibido usar atalhos preguiçosos (como `ilike` genérico no título) para simular uma feature.
+- Gatilhos Obrigatórios: Sempre que você criar uma função no banco de dados (RPC) para contabilizar algo (views, XP, downloads, conquistas), você DEVE obrigatoriamente implementar o gatilho de disparo dessa função no front-end (ex: no `useEffect` ou Server Action). Uma RPC sem gatilho de disparo é código morto.
+
+## 5. FLUXO DE TRABALHO E HISTÓRICO (MIGRATIONS)
+- Planejamento Primeiro: NUNCA comece a gerar o código final imediatamente. Sempre apresente um plano ou `implementation_plan.md` da sua estratégia primeiro e aguarde a minha autorização.
+- Histórico Intocável de SQL: Nunca sobrescreva ou sugira deletar arquivos `.sql` antigos. O banco de dados é evolutivo. Toda mudança no banco (adicionar colunas, tabelas ou RLS) deve resultar na criação de um NOVO arquivo na pasta `supabase/migrations/` (ex: `YYYYMMDD_nome_da_feature.sql`).
+## 6. BLINDAGEM ARQUITETURAL AVANÇADA
+- Tipagem Centralizada (Single Source of Truth): Proibido definir interfaces de banco de dados inline nos componentes. Todo tipo do Supabase deve ser centralizado e exportado de `src/types`.
+- Validação Runtime (Zod): Toda entrada de dados em Server Actions DEVE ser validada rigorosamente por um schema Zod antes de interagir com o Supabase, retornando erros amigáveis (`{ success: false, error: string }`).
+- Mutação e Cache: Mutações de dados dinâmicos (likes, views, XP) devem ser seguidas obrigatoriamente por `revalidatePath` ou `revalidateTag` para garantir a atualização da UI, além do uso de `ErrorBoundary` em Server Components.
+- Sanitização em Duas Camadas: O conteúdo gerado pelo usuário (UGC) deve ser limpo no back-end (Regex strip) antes de virar preview, e protegido no front-end durante a renderização (via `rehype-sanitize`).
+- Determinismo Visual (Skeletons): É proibido usar textos genéricos como "Loading...". Todo componente que depende de dados assíncronos DEVE ter um componente irmão `[Nome].Skeleton.tsx` para evitar Layout Shift.

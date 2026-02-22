@@ -132,4 +132,63 @@
   .animate-heart-pop {
     animation: heart-pop 0.8s ease-out forwards;
   }
+
+  @keyframes metallic-shine {
+    0% {
+      background-position: -200% center;
+    }
+
+    100% {
+      background-position: 200% center;
+    }
+  }
+
+  .animate-metallic-shine {
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 255, 255, 0) 100%);
+    background-size: 200% 100%;
+    animation: metallic-shine 3s infinite linear;
+  }
+
+  @keyframes premium-glow {
+
+    0%,
+    100% {
+      filter: drop-shadow(0 0 5px rgba(255, 179, 0, 0.3));
+    }
+
+    50% {
+      filter: drop-shadow(0 0 15px rgba(255, 57, 70, 0.5));
+    }
+  }
+
+  .animate-premium-glow {
+    animation: premium-glow 4s infinite ease-in-out;
+  }
+
+  @keyframes shimmer-text {
+    0% {
+      background-position: 100% 0;
+    }
+
+    100% {
+      background-position: -100% 0;
+    }
+  }
+
+  .shimmer-text {
+    background: linear-gradient(90deg,
+        #FFB300 0%,
+        #E63946 25%,
+        #FFB300 50%,
+        #E63946 75%,
+        #FFB300 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer-text 5s linear infinite;
+  }
 }

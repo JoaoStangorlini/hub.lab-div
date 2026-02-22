@@ -10,6 +10,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeSanitize from 'rehype-sanitize';
+import { stripMarkdownAndLatex } from '@/lib/utils';
 
 export interface MediaCardProps {
     id: string;
@@ -199,7 +200,7 @@ export const MediaCard = ({
     const buttonColorClass = ['bg-brand-blue text-white', 'bg-brand-red text-white', 'bg-brand-yellow text-gray-900'][colorNum];
     return (
         <div
-            className={`masonry-item group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-card-dark shadow-sm transition-all hover:shadow-xl border border-gray-100 dark:border-gray-800 ${sizeModifierStyles}`}
+            className={`masonry-item group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-card-dark shadow-sm transition-all hover:shadow-xl border ${isFeatured ? 'border-brand-yellow/50 animate-premium-glow z-10' : 'border-gray-100 dark:border-gray-800'} ${sizeModifierStyles}`}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
@@ -218,7 +219,7 @@ export const MediaCard = ({
                             <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Prévia Rápida</span>
                         </div>
                         <div className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed font-medium prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-headings:my-2 prose-a:text-brand-blue prose-img:rounded-md">
-                            <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex, rehypeSanitize]}>
+                            <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeSanitize, rehypeKatex]}>
                                 {description}
                             </ReactMarkdown>
                         </div>
@@ -289,7 +290,7 @@ export const MediaCard = ({
                         <div className={`text-sm font-medium leading-relaxed max-w-full text-slate-700 dark:text-slate-200 relative overflow-hidden h-[9rem] prose prose-sm dark:prose-invert max-w-none`}>
                             {mediaType === 'zip' ? <p className="mt-8">Conteúdo Compactado (.ZIP)</p> :
                                 mediaType === 'sdocx' ? <p className="mt-8">Notas do Samsung Notes (.SDOCX)</p> :
-                                    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex, rehypeSanitize]}>
+                                    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeSanitize, rehypeKatex]}>
                                         {description || 'Texto completo'}
                                     </ReactMarkdown>}
                             <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-slate-100 dark:from-slate-800 to-transparent"></div>
@@ -412,10 +413,8 @@ export const MediaCard = ({
                         <span className="font-bold text-gray-800 dark:text-gray-100">{title}</span>
                     </div>
                     {description && (
-                        <div className="text-sm text-gray-600 dark:text-gray-400 overflow-hidden max-h-[2.5rem] relative prose prose-sm dark:prose-invert prose-p:my-0 prose-headings:my-0 prose-ul:my-0 max-w-none leading-tight">
-                            <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex, rehypeSanitize]}>
-                                {description}
-                            </ReactMarkdown>
+                        <div className="text-sm text-gray-600 dark:text-gray-400 overflow-hidden max-h-[2.5rem] relative leading-tight">
+                            {stripMarkdownAndLatex(description)}
                             <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white dark:from-card-dark to-transparent"></div>
                         </div>
                     )}
@@ -433,8 +432,9 @@ export const MediaCard = ({
                         </span>
                     )}
                     {isFeatured && (
-                        <span className="px-2 py-0.5 bg-gradient-to-r from-brand-red/10 to-brand-yellow/10 text-brand-red text-[10px] font-bold rounded-md uppercase tracking-wide border border-brand-red/20">
-                            Destaque
+                        <span className="relative overflow-hidden px-2.5 py-1 bg-gradient-to-r from-brand-red to-brand-yellow text-white text-[10px] font-black rounded-lg uppercase tracking-wider shadow-[0_0_10px_rgba(230,57,70,0.3)] group-hover:shadow-[0_0_15px_rgba(255,179,0,0.5)] transition-all">
+                            <span className="relative z-10">Destaque</span>
+                            <span className="absolute inset-0 animate-metallic-shine opacity-60"></span>
                         </span>
                     )}
                     {tags && tags.map((tag, idx) => {

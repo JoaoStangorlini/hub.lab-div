@@ -1,7 +1,7 @@
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { HomeClientView } from '@/components/HomeClientView';
-import { fetchSubmissions, fetchTrendingSubmissions } from '@/app/actions/submissions';
+import { fetchSubmissions, fetchTrendingSubmissions, getFeaturedSubmissions, getTrendingTags } from '@/app/actions/submissions';
 
 // Helper to ensure stability before we have real data
 export const revalidate = 0;
@@ -16,11 +16,13 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
     limit: 12, // Starting with 12 items initially
     query: '',
     categories: initialCategory === 'Todos' || initialCategory === 'Destaques' ? [] : [initialCategory],
-    featured: initialCategory === 'Destaques' ? true : undefined,
+    is_featured: initialCategory === 'Destaques' ? true : undefined,
     sort: 'recentes'
   });
 
   const trendingItems = await fetchTrendingSubmissions();
+  const featuredItems = await getFeaturedSubmissions(10);
+  const trendingTags = await getTrendingTags();
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-text-main dark:text-gray-100 min-h-screen flex flex-col">
@@ -31,6 +33,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
           initialHasMore={initialHasMore}
           initialCategory={initialCategory}
           trendingItems={trendingItems}
+          featuredItems={featuredItems}
+          trendingTags={trendingTags}
         />
       </main>
       <Footer />
