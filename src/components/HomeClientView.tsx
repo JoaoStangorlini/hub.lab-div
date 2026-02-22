@@ -189,7 +189,7 @@ export const HomeClientView = ({ initialItems, initialHasMore, initialCategory =
                             <span className="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></span>
                             Excelência em Pesquisa
                         </div>
-                        <h2 className="font-display font-bold text-5xl md:text-7xl tracking-tight mb-6 text-gray-900 dark:text-white leading-[1.1]">
+                        <h2 className="font-display font-bold text-4xl sm:text-5xl md:text-7xl tracking-tight mb-6 text-gray-900 dark:text-white leading-[1.1]">
                             A Ciência <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-brand-yellow to-brand-red">Acontece Aqui</span>
                         </h2>
@@ -210,26 +210,40 @@ export const HomeClientView = ({ initialItems, initialHasMore, initialCategory =
                                 />
                             </div>
                         </div>
-                        <div className="mt-5 space-y-2 pl-2">
-                            <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2 opacity-90 transition-opacity hover:opacity-100">
-                                <span className="w-1.5 h-1.5 rounded-full bg-brand-yellow shrink-0"></span>
-                                Experimente o filtro <span className="font-semibold text-brand-yellow cursor-pointer hover:underline" onClick={() => setSelectedCategories(['Bastidores da Ciência'])}>Bastidores da Ciência</span> para ver as gambiarras e Easter eggs da ciência.
+                        <div className="mt-5 space-y-3 pl-2">
+                            <p className="text-sm text-gray-600 dark:text-gray-400 flex sm:items-center gap-2 opacity-90 transition-opacity hover:opacity-100 flex-col sm:flex-row">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-brand-yellow shrink-0"></span>
+                                    <span>Experimente o filtro</span>
+                                </div>
+                                <span className="font-semibold text-brand-yellow cursor-pointer hover:underline sm:ml-0 ml-3.5" onClick={() => setSelectedCategories(['Bastidores da Ciência'])}>Bastidores da Ciência</span>
+                                <span className="sm:ml-0 ml-3.5">para ver as gambiarras e Easter eggs da ciência.</span>
                             </p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2 opacity-90 transition-opacity hover:opacity-100">
-                                <span className="w-1.5 h-1.5 rounded-full bg-brand-blue shrink-0"></span>
-                                Você quer levar ciência para os alunos sem se preocupar com possíveis erros? Use o filtro <span className="font-semibold text-brand-blue cursor-pointer hover:underline" onClick={() => setSelectedCategories(['Uso Didático'])}>Uso Didático</span>.
+                            <p className="text-sm text-gray-600 dark:text-gray-400 flex sm:items-center gap-2 opacity-90 transition-opacity hover:opacity-100 flex-col sm:flex-row">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-brand-blue shrink-0"></span>
+                                    <span>Você quer levar ciência para os alunos?</span>
+                                </div>
+                                <span className="font-semibold text-brand-blue cursor-pointer hover:underline sm:ml-0 ml-3.5" onClick={() => setSelectedCategories(['Uso Didático'])}>Uso Didático</span>
+                                <span className="sm:ml-0 ml-3.5">é ideal para o ensino.</span>
                             </p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2 opacity-90 transition-opacity hover:opacity-100">
-                                <span className="w-1.5 h-1.5 rounded-full bg-brand-red shrink-0"></span>
-                                Procurando materiais de estudo? Explore a <span className="font-semibold text-brand-red cursor-pointer hover:underline" onClick={() => setSelectedCategories(['Central de Anotações'])}>Central de Anotações</span> para Drives e PDFs.
+                            <p className="text-sm text-gray-600 dark:text-gray-400 flex sm:items-center gap-2 opacity-90 transition-opacity hover:opacity-100 flex-col sm:flex-row">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-brand-red shrink-0"></span>
+                                    <span>Procurando materiais de estudo? Explore a</span>
+                                </div>
+                                <span className="font-semibold text-brand-red cursor-pointer hover:underline sm:ml-0 ml-3.5" onClick={() => setSelectedCategories(['Central de Anotações'])}>Central de Anotações</span>
+                                <span className="sm:ml-0 ml-3.5">para Drives e PDFs.</span>
                             </p>
                         </div>
+
                     </div>
                 </div>
             </header>
 
-            <section className="py-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/50 sticky top-24 z-40 backdrop-blur-sm shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+            <section className="py-4 md:py-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/50 sticky top-24 z-40 backdrop-blur-sm shadow-sm overflow-hidden">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3 md:space-y-4">
+
                     {/* Media Type Filters */}
                     <div className="flex flex-wrap items-center gap-3 pb-4">
                         <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mr-2 flex items-center gap-1">

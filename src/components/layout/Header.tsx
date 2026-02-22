@@ -67,23 +67,26 @@ export function Header() {
                         </Link>
 
                         {/* Desktop Navigation */}
-                        {navLinks.map((link) => {
-                            const isActive = pathname === link.href;
-                            return (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className={`font-medium transition-colors border-b-2 pb-1 ${isActive
-                                        ? link.activeClass
-                                        : `text-gray-600 dark:text-gray-300 border-transparent ${link.hoverClass}`
-                                        }`}
-                                >
-                                    {link.name}
-                                </Link>
-                            );
-                        })}
+                        <div className="hidden lg:flex items-center gap-6">
+                            {navLinks.map((link) => {
+                                const isActive = pathname === link.href;
+                                return (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        className={`font-medium transition-colors border-b-2 pb-1 ${isActive
+                                            ? link.activeClass
+                                            : `text-gray-600 dark:text-gray-300 border-transparent ${link.hoverClass}`
+                                            }`}
+                                    >
+                                        {link.name}
+                                    </Link>
+                                );
+                            })}
+                        </div>
 
-                        <div className="flex items-center gap-2 sm:gap-4">
+                        <div className="flex-1 lg:flex-none flex justify-end items-center gap-2 sm:gap-4">
+
                             {user ? (
                                 <div className="relative">
                                     <button
