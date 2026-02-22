@@ -11,6 +11,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeSanitize from 'rehype-sanitize';
 import { stripMarkdownAndLatex } from '@/lib/utils';
+import { CardPresenceBadge } from './CardPresenceBadge';
 
 export interface MediaCardProps {
     id: string;
@@ -222,6 +223,9 @@ export const MediaCard = React.memo(({
             onMouseLeave={handleMouseLeave}
             onClick={() => router.push(`/arquivo/${id}`)}
         >
+            {/* Real-time Presence Badge (🔥) */}
+            <CardPresenceBadge submissionId={id} />
+
             {/* Hover Preview Overlay */}
             <AnimatePresence>
                 {isHovered && description && (mediaType === 'text' || mediaType === 'pdf') && (

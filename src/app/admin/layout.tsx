@@ -21,6 +21,7 @@ export default function AdminLayout({
         { name: 'Moderação de Reproduções', href: '/admin/reproducoes', icon: 'science' },
         { name: 'Trilhas de Aprendizagem', href: '/admin/trilhas', icon: 'route' },
         { name: 'Narração & TTS', href: '/admin/narracao', icon: 'record_voice_over' },
+        { name: 'Peer Review', href: '/admin/correcoes', icon: 'spellcheck' },
         { name: 'Ranking', href: '/admin/ranking', icon: 'trending_up' },
         { name: 'Oportunidades', href: '/admin/oportunidades', icon: 'event' },
     ];
