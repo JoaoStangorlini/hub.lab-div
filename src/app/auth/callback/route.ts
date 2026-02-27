@@ -39,8 +39,11 @@ export async function GET(request: NextRequest) {
             }
 
             // Ensure redirect is absolute or properly constructed
-            const redirectUrl = new URL(next, request.url);
-            return NextResponse.redirect(redirectUrl);
+            console.log(`Auth Success: Redirecting to ${next}`);
+            const baseUrl = request.nextUrl.origin;
+            const redirectUrl = new URL(next, baseUrl);
+
+            return NextResponse.redirect(redirectUrl.toString());
         }
         console.error('Auth callback: Code exchange failed or no session', error);
     } else {
@@ -48,8 +51,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Error: redirect back to login with a specific error flag
-    const errorUrl = new URL('/login', request.url);
+    const baseUrl = request.nextUrl.origin;
+    const errorUrl = new URL('/login', baseUrl);
     errorUrl.searchParams.set('error', 'auth-code-error');
-    return NextResponse.redirect(errorUrl);
+    return NextResponse.redirect(errorUrl.toString());
 }
 

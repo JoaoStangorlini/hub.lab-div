@@ -316,20 +316,14 @@ export function FormStep() {
 
 
     const uploadToCloudinary = async (file: File) => {
-        const { signature, timestamp, apiKey, cloudName, folder, error } = await generateCloudinarySignature();
-
-        if (error || !signature) {
-            throw new Error(error || "Erro ao gerar assinatura de upload");
-        }
-
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('api_key', apiKey!);
-        formData.append('timestamp', timestamp!.toString());
-        formData.append('signature', signature);
-        formData.append('folder', folder!);
+        formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'ifusp_uploads');
+        formData.append('folder', 'submissions');
 
-        const resourceType = (mediaType === 'image' || mediaType === 'pdf') ? 'image' : 'auto';
+        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+        const resourceType = (mediaType === 'image' || mediaType === 'pdf') ? 'image' : 'video';
+
         const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
             method: 'POST',
             body: formData
@@ -338,7 +332,7 @@ export function FormStep() {
         if (!res.ok) {
             const errData = await res.json();
             console.error("Cloudinary upload error:", errData);
-            throw new Error("Falha no upload seguro");
+            throw new Error("Falha no upload (Erro Cloudinary)");
         }
 
         const data = await res.json();
@@ -997,26 +991,7 @@ export function FormStep() {
                             </div>
                         )}
 
-                        {selectedFiles.length > 0 && selectedFiles.some(f => f.type.includes('pdf')) && (
-                            <button
-                                type="button"
-                                onClick={async () => {
-                                    setIsLoadingOCR(true);
-                                    await new Promise(r => setTimeout(r, 2000));
-                                    setValue('description', 'Extração simulada de OCR: Este é um texto sugerido automaticamente pela leitura IA do PDF.', { shouldDirty: true });
-                                    setIsLoadingOCR(false);
-                                }}
-                                disabled={isLoadingOCR}
-                                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-brand-yellow/80 to-brand-yellow hover:from-brand-yellow/90 hover:to-brand-yellow !text-gray-900 border border-brand-yellow/50 rounded-2xl font-black transition-all shadow-md text-sm mt-4 group"
-                            >
-                                {isLoadingOCR ? (
-                                    <div className="w-5 h-5 border-2 border-gray-900/30 border-t-gray-900 rounded-full animate-spin"></div>
-                                ) : (
-                                    <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">document_scanner</span>
-                                )}
-                                {isLoadingOCR ? 'Processando PDF...' : 'Autopreencher com IA (Simulado)'}
-                            </button>
-                        )}
+                        {/* Autopreencher removed per user request */}
                     </motion.div>
                 )
             }

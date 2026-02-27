@@ -14,6 +14,11 @@ interface Profile {
     bio: string;
     is_usp_member: boolean;
     created_at: string;
+    usp_status?: string;
+    entrance_year?: number;
+    artistic_interests?: string[];
+    education_level?: string;
+    major?: string;
 }
 
 export default function ProfileApprovalPage() {
@@ -73,41 +78,91 @@ export default function ProfileApprovalPage() {
                     <p className="text-gray-500 font-medium">Nenhum perfil pendente para revisão.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-6">
                     {profiles.map(profile => (
-                        <div key={profile.id} className="bg-card-dark border border-white/10 rounded-3xl p-6 flex flex-col md:flex-row gap-6 items-start md:items-center">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <h3 className="text-lg font-bold text-white">{profile.full_name || 'Sem Nome'}</h3>
-                                    <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${profile.is_usp_member ? 'bg-brand-blue/20 text-brand-blue' : 'bg-gray-800 text-gray-400'}`}>
-                                        {profile.is_usp_member ? 'Membro USP' : 'Curioso'}
-                                    </span>
+                        <div key={profile.id} className="bg-card-dark border border-white/10 rounded-3xl p-8 flex flex-col gap-6">
+                            <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+                                <div className="flex-1 space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <h3 className="text-xl font-bold text-white">{profile.full_name || 'Sem Nome'}</h3>
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${profile.is_usp_member ? 'bg-brand-blue/20 text-brand-blue' : 'bg-gray-800 text-gray-400'}`}>
+                                            {profile.is_usp_member ? 'Membro USP' : 'Curioso'}
+                                        </span>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                        <div className="space-y-2">
+                                            <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Informações Básicas</p>
+                                            <div className="flex flex-col gap-1.5">
+                                                <span className="flex items-center gap-2 text-gray-300">
+                                                    <span className="material-symbols-outlined text-sm text-gray-500">mail</span>
+                                                    {profile.email}
+                                                </span>
+                                                <span className="flex items-center gap-2 text-gray-300">
+                                                    <span className="material-symbols-outlined text-sm text-gray-500">apartment</span>
+                                                    {profile.institute || 'N/A'}
+                                                </span>
+                                                {profile.is_usp_member && (
+                                                    <>
+                                                        <span className="flex items-center gap-2 text-gray-300">
+                                                            <span className="material-symbols-outlined text-sm text-gray-500">school</span>
+                                                            {profile.usp_status} ({profile.entrance_year})
+                                                        </span>
+                                                    </>
+                                                )}
+                                                {!profile.is_usp_member && (
+                                                    <>
+                                                        <span className="flex items-center gap-2 text-gray-300">
+                                                            <span className="material-symbols-outlined text-sm text-gray-500">history_edu</span>
+                                                            {profile.education_level} {profile.major ? `- ${profile.major}` : ''}
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Lado Artístico / Interesses</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {profile.artistic_interests?.length ? (
+                                                    profile.artistic_interests.map(interest => (
+                                                        <span key={interest} className="px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] text-gray-400">
+                                                            {interest}
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-gray-600 italic text-[10px]">Nenhum interesse informado</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Biografia / Apresentação</p>
+                                        <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
+                                            <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
+                                                {profile.bio || 'Sem biografia fornecida.'}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p className="text-sm text-gray-400 mb-3 line-clamp-2">{profile.bio || 'Sem biografia fornecida.'}</p>
-                                <div className="flex flex-wrap gap-4 text-xs text-gray-500">
-                                    <span className="flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">apartment</span>
-                                        {profile.institute || 'N/A'}
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">mail</span>
-                                        {profile.email}
-                                    </span>
+
+                                <div className="flex flex-row md:flex-col gap-3 shrink-0 w-full md:w-auto">
+                                    <button
+                                        onClick={() => handleAction(profile.id, 'approved')}
+                                        className="flex-1 md:w-40 py-3 rounded-2xl bg-[#0055ff] text-white font-bold text-sm hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">check</span>
+                                        Aprovar
+                                    </button>
+                                    <button
+                                        onClick={() => handleAction(profile.id, 'rejected')}
+                                        className="flex-1 md:w-40 py-3 rounded-2xl bg-brand-red/10 text-brand-red font-bold text-sm hover:bg-brand-red/20 transition-all flex items-center justify-center gap-2"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">close</span>
+                                        Rejeitar
+                                    </button>
                                 </div>
-                            </div>
-                            <div className="flex gap-3 shrink-0">
-                                <button
-                                    onClick={() => handleAction(profile.id, 'rejected')}
-                                    className="px-6 py-2.5 rounded-2xl bg-brand-red/10 text-brand-red font-bold text-sm hover:bg-brand-red/20 transition-all"
-                                >
-                                    Rejeitar
-                                </button>
-                                <button
-                                    onClick={() => handleAction(profile.id, 'approved')}
-                                    className="px-6 py-2.5 rounded-2xl bg-[#0055ff] text-white font-bold text-sm hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20"
-                                >
-                                    Aprovar
-                                </button>
                             </div>
                         </div>
                     ))}

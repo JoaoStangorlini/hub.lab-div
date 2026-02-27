@@ -24,6 +24,7 @@ export default function AdminLayout({
         { name: 'Peer Review', href: '/admin/correcoes', icon: 'spellcheck' },
         { name: 'Ranking', href: '/admin/ranking', icon: 'trending_up' },
         { name: 'Oportunidades', href: '/admin/oportunidades', icon: 'event' },
+        { name: 'Relatórios de Feedback', href: '/admin/reports', icon: 'flag' },
     ];
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

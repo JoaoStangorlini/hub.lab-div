@@ -94,18 +94,9 @@ const institutes = [
 
 export default function OnboardingModal({ userId, email, onComplete }: OnboardingModalProps) {
     const [isSaving, setIsSaving] = useState(false);
-    const [pseudonyms, setPseudonyms] = useState<any[]>([]);
     const [showAllHobbies, setShowAllHobbies] = useState(false);
-    const [selectedPseudonymId, setSelectedPseudonymId] = useState<string>('');
     const isUspDomain = email.endsWith('@usp.br') || email.endsWith('@alumni.usp.br');
 
-    useEffect(() => {
-        const loadPseudonyms = async () => {
-            const { data } = await supabase.from('pseudonyms').select('*').eq('is_active', true);
-            if (data) setPseudonyms(data);
-        };
-        loadPseudonyms();
-    }, []);
 
     const {
         register,
@@ -185,13 +176,6 @@ export default function OnboardingModal({ userId, email, onComplete }: Onboardin
 
             if (error) throw error;
 
-            // If pseudonym selected, claim it (separate table operation)
-            if (selectedPseudonymId) {
-                await supabase
-                    .from('pseudonyms')
-                    .update({ claimed_by: userId, is_active: false })
-                    .eq('id', selectedPseudonymId);
-            }
 
             toast.success("Perfil enviado para análise!");
             onComplete();
@@ -479,21 +463,6 @@ export default function OnboardingModal({ userId, email, onComplete }: Onboardin
                         </div>
                     </div>
 
-                    {/* === PSEUDÔNIMO (V4.2 — separate table logic) === */}
-                    <div>
-                        <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2 ml-1">Pseudônimo Científico (Opcional)</label>
-                        <select
-                            value={selectedPseudonymId}
-                            onChange={(e) => setSelectedPseudonymId(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 px-4 text-white focus:ring-2 focus:ring-brand-blue/50"
-                        >
-                            <option value="" className="bg-card-dark text-gray-400">Usar Nome Real</option>
-                            {pseudonyms.map(p => (
-                                <option key={p.id} value={p.id} className="bg-card-dark">{p.name}</option>
-                            ))}
-                        </select>
-                        <p className="text-gray-500 text-[10px] mt-1 ml-1">Use um pseudônimo para publicações anônimas no acervo.</p>
-                    </div>
 
                     <div>
                         <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2 ml-1">Bio (Sua história)</label>
