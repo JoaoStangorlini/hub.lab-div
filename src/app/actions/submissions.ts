@@ -35,14 +35,14 @@ export interface FetchParams {
 }
 
 export async function fetchSubmissions({ page, limit, query, categories, mediaTypes, sort, author, is_featured: featured, years }: FetchParams): Promise<{ items: { post: PostDTO }[], hasMore: boolean }> {
-    const serverSupabase = await createServerSupabase();
-    let queryBuilder = serverSupabase
+    const supabaseServer = await createServerSupabase();
+    let queryBuilder = supabaseServer
         .from('submissions')
         .select('*, energy_reactions, atomic_excitation', { count: 'exact' })
         .eq('status', 'aprovado');
 
     if (featured) queryBuilder = queryBuilder.eq('is_featured', true);
-    if (categories && categories.length > 0 && !categories.includes('Todos')) queryBuilder = queryBuilder.in('category', categories);
+    if (categories && categories.length > 0) queryBuilder = queryBuilder.in('category', categories);
     if (author) queryBuilder = queryBuilder.eq('authors', author);
     if (mediaTypes && mediaTypes.length > 0) queryBuilder = queryBuilder.in('media_type', mediaTypes);
 
@@ -66,7 +66,11 @@ export async function fetchSubmissions({ page, limit, query, categories, mediaTy
     queryBuilder = queryBuilder.range(from, to);
 
     const { data: submissions, error, count } = await queryBuilder;
-    if (error || !submissions) return { items: [], hasMore: false };
+    if (error) {
+        console.error("fetchSubmissions SQL Error:", error);
+        return { items: [], hasMore: false };
+    }
+    if (!submissions) return { items: [], hasMore: false };
 
     const items = submissions.map(sub => ({
         post: mapToPostDTO(sub)
@@ -77,10 +81,9 @@ export async function fetchSubmissions({ page, limit, query, categories, mediaTy
 }
 
 export async function fetchTrendingSubmissions(): Promise<{ post: PostDTO }[]> {
-    const serverSupabase = await createServerSupabase();
-    const { data: submissions, error } = await serverSupabase
+    const { data: submissions, error } = await supabase
         .from('submissions')
-        .select('*')
+        .select('*, like_count')
         .eq('status', 'aprovado')
         .order('views', { ascending: false })
         .limit(6);
@@ -93,12 +96,11 @@ export async function fetchTrendingSubmissions(): Promise<{ post: PostDTO }[]> {
 }
 
 export async function getFeaturedSubmissions(limit: number = 10): Promise<{ post: PostDTO }[]> {
-    const serverSupabase = await createServerSupabase();
-    const { data: submissions, error } = await serverSupabase
+    const { data: submissions, error } = await supabase
         .from('submissions')
         .select('*')
-        .eq('is_featured', true)
         .eq('status', 'aprovado')
+        .eq('is_featured', true)
         .order('created_at', { ascending: false })
         .limit(limit);
 
@@ -136,6 +138,36 @@ export async function createPseudonym(name: string) {
 
     if (error) return { error: error.message };
     return { success: true, data };
+}
+
+export async function togglePseudonymActive(id: string, is_active: boolean) {
+    const serverSupabase = await createServerSupabase();
+    const { data: { user } } = await serverSupabase.auth.getUser();
+    if (!user) return { error: 'Unauthorized' };
+
+    const { data, error } = await serverSupabase
+        .from('pseudonyms')
+        .update({ is_active })
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+    if (error) return { error: error.message };
+    return { success: true, data };
+}
+
+export async function deletePseudonym(id: string) {
+    const serverSupabase = await createServerSupabase();
+    const { data: { user } } = await serverSupabase.auth.getUser();
+    if (!user) return { error: 'Unauthorized' };
+
+    const { error } = await serverSupabase
+        .from('pseudonyms')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+    if (error) return { error: error.message };
+    return { success: true };
 }
 
 export const getTrendingTags = unstable_cache(
@@ -372,29 +404,8 @@ export async function fetchUserSubmissions(userId: string): Promise<{ post: Post
 
     if (error || !submissions) return [];
 
-    // Get counts for these submissions
-    const submissionIds = submissions.map(s => s.id);
-    const [likeCounts, commentCounts, saveCounts] = await Promise.all([
-        supabase.from('curtidas').select('submission_id').in('submission_id', submissionIds),
-        supabase.from('comments').select('submission_id').in('submission_id', submissionIds).eq('status', 'aprovado'),
-        supabase.from('saved_posts').select('submission_id').in('submission_id', submissionIds),
-    ]);
-
-    const likeMap: Record<string, number> = {};
-    likeCounts.data?.forEach(row => likeMap[row.submission_id] = (likeMap[row.submission_id] || 0) + 1);
-
-    const commentMap: Record<string, number> = {};
-    commentCounts.data?.forEach(row => commentMap[row.submission_id] = (commentMap[row.submission_id] || 0) + 1);
-
-    const saveMap: Record<string, number> = {};
-    saveCounts.data?.forEach(row => saveMap[row.submission_id] = (saveMap[row.submission_id] || 0) + 1);
-
     return submissions.map(sub => ({
-        post: mapToPostDTO(sub, {
-            likes: likeMap[sub.id] || 0,
-            comments: commentMap[sub.id],
-            saves: saveMap[sub.id]
-        })
+        post: mapToPostDTO(sub)
     }));
 }
 
