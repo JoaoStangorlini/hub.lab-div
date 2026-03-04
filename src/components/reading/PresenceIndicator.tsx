@@ -49,7 +49,7 @@ export function PresenceIndicator({ submissionId }: { submissionId: string }) {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="flex items-center gap-2 px-3 py-1.5 bg-brand-red/10 border border-brand-red/20 rounded-full text-brand-red text-xs font-bold"
+                className="fixed bottom-44 xl:bottom-20 right-4 z-[80] flex items-center gap-2 px-3 py-1.5 bg-brand-red/10 border border-brand-red/20 rounded-full text-brand-red text-xs font-bold shadow-lg backdrop-blur-sm"
             >
                 <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-red opacity-75"></span>

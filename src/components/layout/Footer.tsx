@@ -31,14 +31,15 @@ export function Footer() {
                     <div>
                         <h4 className="font-bold text-gray-900 dark:text-white mb-6 uppercase text-xs tracking-wider border-l-4 border-brand-blue pl-3">Navegação</h4>
                         <ul className="space-y-3">
-                            <li><Link href="/" className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"><span className="material-symbols-outlined text-xs">home</span> Fluxo de Partículas</Link></li>
-                            <li><Link href="/arquivo-labdiv" className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"><span className="material-symbols-outlined text-xs">science</span> Arquivo Lab-Div</Link></li>
+                            <li><Link href="/" className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"><span className="material-symbols-outlined text-xs">grain</span> Fluxo de Partículas</Link></li>
+                            <li><Link href="/arquivo-labdiv" className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"><span className="material-symbols-outlined text-xs">campaign</span> LabDiv</Link></li>
                             <li><Link href="/colisor" className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"><span className="material-symbols-outlined text-xs">hub</span> O Grande Colisor</Link></li>
                             <li><Link href={AppRoutes.WIKI} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"><span className="material-symbols-outlined text-xs">menu_book</span> Wiki Hub</Link></li>
-                            <li><Link href="/trilhas" className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"><span className="material-symbols-outlined text-xs">auto_stories</span> Trilhas</Link></li>
+                            <li><Link href="/trilhas" className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"><span className="material-symbols-outlined text-xs">route</span> Trilhas</Link></li>
                             <li><Link href="/perguntas" className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"><span className="material-symbols-outlined text-xs">help_outline</span> Pergunte a um Cientista</Link></li>
                             <li><Link href="/criadores" className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"><span className="material-symbols-outlined text-xs">groups</span> Criadores</Link></li>
                             <li><Link href="/mapa" className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"><span className="material-symbols-outlined text-xs">map</span> Mapa de Mídia</Link></li>
+                            <li><Link href="/sobre" className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"><span className="material-symbols-outlined text-xs">info</span> Sobre</Link></li>
                             <li><Link href="/admin" className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"><span className="material-symbols-outlined text-xs">admin_panel_settings</span> Painel de Controle</Link></li>
                         </ul>
                     </div>
@@ -69,7 +70,7 @@ export function Footer() {
                         <ul className="space-y-4">
                             <li className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-400">
                                 <span className="material-symbols-outlined text-sm mt-0.5 text-brand-red">email</span>
-                                <a href="mailto:labdiv@usp.br" className="hover:text-brand-red transition-colors">labdiv@usp.br</a>
+                                <a href="mailto:joaopaulostangorlini@usp.br" className="hover:text-brand-red transition-colors">joaopaulostangorlini@usp.br</a>
                             </li>
                             <li className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-400">
                                 <span className="material-symbols-outlined text-sm mt-0.5 text-brand-red">language</span>

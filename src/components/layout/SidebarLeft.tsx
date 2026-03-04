@@ -4,8 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-    LayoutGrid,
-    FlaskConical,
+
+    Megaphone,
     Network,
     BookOpen,
     Route,
@@ -23,15 +23,15 @@ import { Avatar } from '../ui/Avatar';
 import { supabase } from '@/lib/supabase';
 
 const mainLinks = [
-    { name: 'Fluxo', href: '/', icon: <LayoutGrid className="w-6 h-6" /> },
-    { name: 'Lab-Div', href: '/arquivo-labdiv', icon: <FlaskConical className="w-6 h-6" /> },
+    { name: 'Fluxo', href: '/', icon: <span className="material-symbols-outlined text-2xl">grain</span> },
+    { name: 'Lab-Div', href: '/arquivo-labdiv', icon: <Megaphone className="w-6 h-6" /> },
     { name: 'Grande Colisor', href: '/colisor', icon: <Network className="w-6 h-6" /> },
     { name: 'Wiki', href: AppRoutes.WIKI, icon: <BookOpen className="w-6 h-6" /> },
     { name: 'Trilhas', href: '/trilhas', icon: <Route className="w-6 h-6" /> },
     { name: 'Pergunte', href: '/perguntas', icon: <HelpCircle className="w-6 h-6" /> },
     { name: 'Criadores', href: '/criadores', icon: <UserSearch className="w-6 h-6" /> },
     { name: 'Mapa', href: '/mapa', icon: <Map className="w-6 h-6" /> },
-    { name: 'Sobre', href: '/sobre', icon: <HelpCircle className="w-6 h-6" /> },
+    { name: 'Sobre', href: '/sobre', icon: <span className="material-symbols-outlined text-2xl">info</span> },
 ];
 
 const secondaryLinks = [
@@ -172,7 +172,7 @@ export const SidebarLeft = ({ userId }: { userId?: string }) => {
                         <MessageCircle className="w-4 h-4 opacity-60 group-hover:opacity-100" />
                         <span className="font-bold">WhatsApp Direto</span>
                     </a>
-                    <a href="mailto:labdiv@usp.br" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-gray-500 hover:bg-brand-red/10 hover:text-brand-red transition-colors group">
+                    <a href="mailto:joaopaulostangorlini@usp.br" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-gray-500 hover:bg-brand-red/10 hover:text-brand-red transition-colors group">
                         <Mail className="w-4 h-4 opacity-60 group-hover:opacity-100" />
                         <span className="font-bold">Enviar E-mail</span>
                     </a>

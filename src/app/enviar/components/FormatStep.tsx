@@ -63,7 +63,7 @@ export function FormatStep() {
                     </div>
 
                     <a
-                        href="/guia"
+                        href="/wiki/guia-de-boas-praticas"
                         target="_blank"
                         className="group relative overflow-hidden px-8 py-5 rounded-2xl font-bold shadow-xl hover:-translate-y-1 flex items-center gap-3 shrink-0"
                     >
@@ -142,7 +142,7 @@ export function FormatStep() {
                     </div>
                 </div>
                 <a
-                    href="/guia"
+                    href="/wiki/guia-de-boas-praticas"
                     target="_blank"
                     className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-xl font-bold text-xs hover:scale-105 transition-all shadow-md whitespace-nowrap"
                 >

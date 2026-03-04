@@ -41,7 +41,7 @@ export function ReadingToolbar({ submissionTitle, submissionId, authors }: { sub
     };
 
     return (
-        <div className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 ${isFocusMode ? 'focus-toolbar' : ''}`}>
+        <div className={`fixed bottom-28 xl:bottom-8 left-1/2 -translate-x-1/2 z-[90] transition-all duration-500 ${isFocusMode ? 'focus-toolbar' : ''}`}>
             <m.div
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -133,26 +133,7 @@ export function ReadingToolbar({ submissionTitle, submissionId, authors }: { sub
                     active={citeCopied}
                 />
 
-                {/* PDF Export Button */}
-                <ToolbarButton
-                    icon={isExporting ? 'hourglass_empty' : 'picture_as_pdf'}
-                    label={isExporting ? 'Gerando...' : 'PDF'}
-                    onClick={async () => {
-                        if (isExporting) return;
-                        setIsExporting(true);
-                        const loadingToast = toast.loading('Gerando PDF...', { icon: '📄' });
-                        try {
-                            await exportElementToPDF('submission-content', `${submissionTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
-                            toast.success('PDF gerado com sucesso!', { id: loadingToast });
-                        } catch (error) {
-                            toast.error('Erro ao gerar PDF da submissão.', { id: loadingToast });
-                        } finally {
-                            setIsExporting(false);
-                        }
-                    }}
-                    color="gray-500"
-                    active={isExporting}
-                />
+
             </m.div>
         </div>
     );

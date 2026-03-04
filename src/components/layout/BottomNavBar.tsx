@@ -12,18 +12,18 @@ const navItems: (NavItem & { color?: string })[] = [
     { name: 'Fluxo', href: AppRoutes.HOME, icon: 'grain', color: 'brand-blue' },
     { name: 'Colisor', href: AppRoutes.COLISOR, icon: 'auto_awesome', color: 'brand-yellow' },
     { name: 'Lançar', href: AppRoutes.ENVAR, icon: 'rocket_launch', isAction: true, color: 'brand-blue' },
-    { name: 'Laboratório', href: AppRoutes.LAB, icon: 'science', color: 'brand-red' },
+    { name: 'Wiki', href: AppRoutes.WIKI, icon: 'menu_book', color: 'brand-yellow' },
     { name: 'Mais', href: '#', icon: 'add', isDrawerTrigger: true, color: 'brand-blue' },
 ];
 
 const drawerLinks: (NavItem & { color?: string })[] = [
-    { name: 'Laboratório Pessoal', href: AppRoutes.LAB, icon: 'science', isPrimary: true, color: 'brand-red' },
+    { name: 'Laboratório Pessoal', href: AppRoutes.LAB, icon: 'science', isPrimary: true, color: 'brand-blue' },
     { name: 'Pergunte', href: AppRoutes.PERGUNTAS, icon: 'help_outline', color: 'brand-blue' },
-    { name: 'Wiki', href: AppRoutes.WIKI, icon: 'menu_book', color: 'brand-yellow' },
-    { name: 'Trilhas', href: '/trilhas', icon: 'auto_stories', color: 'brand-red' },
+    { name: 'Trilhas', href: '/trilhas', icon: 'route', color: 'brand-red' },
     { name: 'Criadores', href: AppRoutes.CRIADORES, icon: 'person_search', color: 'brand-yellow' },
     { name: 'Mapa', href: AppRoutes.MAPA, icon: 'map', color: 'brand-red' },
-    { name: 'LabDiv', href: AppRoutes.ARQUIVO_LABDIV, icon: 'science', color: 'brand-blue' },
+    { name: 'Sobre', href: '/sobre', icon: 'info', color: 'brand-blue' },
+    { name: 'LabDiv', href: AppRoutes.ARQUIVO_LABDIV, icon: 'campaign', color: 'brand-blue' },
     { name: 'Painel Admin', href: AppRoutes.ADMIN, icon: 'admin_panel_settings', color: 'brand-red' },
 ];
 

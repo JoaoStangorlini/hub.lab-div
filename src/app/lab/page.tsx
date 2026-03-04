@@ -12,6 +12,8 @@ import { parseMediaUrl, getYoutubeThumbnail, getOptimizedUrl } from '@/lib/media
 
 import { User, Grid, Medal, Star, Image as ImageIcon, PlayCircle, FileText, Heart, MessageSquare, Info, Camera, ExternalLink, ShieldCheck, Play } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { RadiationBadge } from '@/components/gamification/RadiationBadge';
+import { RadiationTab } from '@/components/gamification/RadiationTab';
 
 
 
@@ -129,6 +131,7 @@ function LabContent() {
                                 <h1 className="text-2xl sm:text-3xl font-display font-bold text-gray-900 dark:text-white">
                                     {user.user_metadata?.full_name || 'Usuário'}
                                     <span className="ml-2 text-xs font-black uppercase text-brand-blue bg-brand-blue/10 px-2 py-1 rounded">Laboratório Pessoal</span>
+                                    {profile && <RadiationBadge xp={profile.xp || 0} level={profile.level || 1} size="md" showTierName />}
                                 </h1>
 
                                 <div className="flex justify-center sm:justify-start gap-6 pt-1">
@@ -214,6 +217,7 @@ function LabContent() {
                     <div className="flex justify-center border-t border-gray-200 dark:border-gray-800 mb-8 max-w-3xl mx-auto">
                         {[
                             { id: 'publicacoes', label: 'PUBLICAÇÕES', icon: <Grid className="w-4 h-4" /> },
+                            { id: 'radiacao', label: 'RADIAÇÃO', icon: <span className="text-sm">☢️</span> },
                             { id: 'selos', label: 'SELOS', icon: <Medal className="w-4 h-4" /> },
                             { id: 'estrelados', label: 'CONSTELAÇÃO', icon: <Star className="w-4 h-4" /> },
                         ].map((tab) => (
@@ -311,6 +315,10 @@ function LabContent() {
                                     </div>
                                 )}
                             </div>
+                        )}
+
+                        {activeTab === 'radiacao' && profile && (
+                            <RadiationTab profile={{ id: profile.id, xp: profile.xp || 0, level: profile.level || 1 }} />
                         )}
 
                         {activeTab === 'selos' && (

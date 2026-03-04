@@ -27,12 +27,12 @@ import { MainLayoutWrapper } from '@/components/layout/MainLayoutWrapper';
 const wikiCells = [
     // --- Blue Group (Produção e Comunicação) ---
     {
-        id: 'boas-praticas',
+        id: 'guia-de-boas-praticas',
         title: 'Guia de Boas Práticas',
         subtitle: 'Produção, Créditos e Qualidade.',
         icon: <ShieldCheck className="w-8 h-8" />,
         color: 'brand-blue',
-        href: '/wiki/boas-praticas',
+        href: '/wiki/guia-de-boas-praticas',
         description: 'Diretrizes oficiais para produção de mídia: como fotografar, filmar e creditar colaboradores no Hub.',
         details: [
             'Co-autoria e Créditos: Como marcar sua equipe',
@@ -195,7 +195,7 @@ const quizCell = {
 
 // O Síncrotron Search - Slugs fixos para roteamento [slug]/page.tsx
 const slugToPageId: Record<string, string> = {
-    'boas-praticas': 'boas-praticas',
+    'guia-de-boas-praticas': 'guia-de-boas-praticas',
     'calouro': 'calouro',
     'ifusp': 'ifusp',
     'bolsas': 'bolsas',

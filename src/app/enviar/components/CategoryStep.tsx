@@ -89,7 +89,7 @@ export function CategoryStep() {
                     </div>
 
                     <a
-                        href="/guia"
+                        href="/wiki/guia-de-boas-praticas"
                         target="_blank"
                         className="group relative overflow-hidden px-8 py-5 rounded-2xl font-bold shadow-xl hover:-translate-y-1 transition-all flex items-center gap-3 shrink-0"
                     >

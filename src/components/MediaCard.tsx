@@ -199,7 +199,7 @@ export const MediaCard = React.memo(({ post, priority = false, isLikedByUser = f
                         className={`inline-flex items-center justify-center gap-1 rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider shadow-md transition-all hover:shadow-lg whitespace-nowrap shrink-0 ${buttonColorClass}`}
                     >
                         <span className="flex items-center gap-1">
-                            Explorar
+                            Página Completa
                             <ExternalLink className="w-3 h-3" />
                         </span>
                     </Link>
@@ -320,7 +320,7 @@ export const MediaCard = React.memo(({ post, priority = false, isLikedByUser = f
 
                         {displayUrl && <button onClick={(e) => { e.stopPropagation(); setShowDownloadModal(true); }} className="text-gray-700 dark:text-gray-200 hover:text-brand-yellow"><Download className="w-6 h-6" /></button>}
                     </div>
-                    <button onClick={handleSave} className="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-brand-yellow">
+                    <button onClick={(e) => { e.stopPropagation(); handleSave(); }} className="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-brand-yellow">
                         <Star className={`w-6 h-6 ${saved ? 'fill-current text-brand-yellow' : ''}`} />
                         <span className="text-xs font-bold tabular-nums">{saves}</span>
                     </button>

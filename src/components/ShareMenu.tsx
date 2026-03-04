@@ -2,6 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { m, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/lib/supabase';
+import { Avatar } from './ui/Avatar';
+import { useAuth } from '@/providers/AuthProvider';
+import { toast } from 'react-hot-toast';
+import { sendMessage } from '@/app/actions/submissions';
+
+interface FollowedUser {
+    id: string;
+    full_name: string;
+    avatar_url: string | null;
+}
 
 interface ShareMenuProps {
     id: string;
@@ -13,6 +24,46 @@ interface ShareMenuProps {
 export const ShareMenu = ({ id, title, author, onClose }: ShareMenuProps) => {
     const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/arquivo/${id}`;
     const [copied, setCopied] = useState(false);
+    const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
+    const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(true);
+    const { user } = useAuth();
+
+    useEffect(() => {
+        const fetchFollowedUsers = async () => {
+            if (!user?.id) {
+                setIsLoadingSuggestions(false);
+                return;
+            }
+            try {
+                const { data: follows, error } = await supabase
+                    .from('follows')
+                    .select('following_id')
+                    .eq('follower_id', user.id);
+
+                if (error || !follows || follows.length === 0) {
+                    setIsLoadingSuggestions(false);
+                    return;
+                }
+
+                const followingIds = follows.map(f => f.following_id);
+
+                const { data: profiles, error: pError } = await supabase
+                    .from('profiles')
+                    .select('id, full_name, avatar_url')
+                    .in('id', followingIds);
+
+                if (!pError && profiles) {
+                    setFollowedUsers(profiles);
+                }
+            } catch (err) {
+                console.error('Error fetching followed users:', err);
+            } finally {
+                setIsLoadingSuggestions(false);
+            }
+        };
+
+        fetchFollowedUsers();
+    }, [user?.id]);
 
     const handleNativeShare = async () => {
         if (navigator.share) {
@@ -38,6 +89,25 @@ export const ShareMenu = ({ id, title, author, onClose }: ShareMenuProps) => {
             console.error('Failed to copy:', err);
         }
     };
+
+    const [sentTo, setSentTo] = useState<string | null>(null);
+
+    const handleShareToUserAnimated = async (targetUser: FollowedUser) => {
+        setSentTo(targetUser.id);
+        try {
+            const messageText = `📡 Dê uma olhada no post "${title}"\n${url}`;
+            const result = await sendMessage(targetUser.id, messageText, id);
+            if (result.success) {
+                toast.success(`Post enviado para ${targetUser.full_name}!`);
+            } else {
+                toast.error(result.error || 'Erro ao enviar mensagem');
+            }
+        } catch {
+            toast.error('Erro ao enviar mensagem');
+        }
+        setTimeout(() => setSentTo(null), 1500);
+    };
+
 
     const shareOptions = [
         { name: 'WhatsApp', icon: 'chat_bubble', color: 'bg-green-500', link: `https://wa.me/?text=${encodeURIComponent(`${title} — ${author}\n${url}`)}` },
@@ -71,17 +141,68 @@ export const ShareMenu = ({ id, title, author, onClose }: ShareMenuProps) => {
                         </button>
                     </div>
 
-                    {/* Internal Share Section (Placeholder for follows) */}
+                    {/* Internal Share Section */}
                     <div className="mb-6">
                         <p className="text-[10px] font-extrabold uppercase tracking-widest text-gray-400 mb-3">Sugestões Internas</p>
                         <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
-                            <div className="flex flex-col items-center gap-1 min-w-[70px]">
+                            {/* Convidar button always visible */}
+                            <div className="flex flex-col items-center gap-1 min-w-[60px] shrink-0">
                                 <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 border border-dashed border-gray-300 dark:border-gray-700">
                                     <span className="material-symbols-outlined">person_add</span>
                                 </div>
                                 <span className="text-[10px] text-gray-500 text-center">Convidar</span>
                             </div>
-                            <p className="text-xs text-gray-400 italic flex items-center">Acompanhe autores para ver sugestões aqui.</p>
+
+                            {isLoadingSuggestions ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="w-4 h-4 border-2 border-brand-blue border-t-transparent rounded-full animate-spin" />
+                                    <span className="text-xs text-gray-400">Carregando...</span>
+                                </div>
+                            ) : followedUsers.length > 0 ? (
+                                followedUsers.map(fu => {
+                                    const wasSent = sentTo === fu.id;
+                                    return (
+                                        <button
+                                            key={fu.id}
+                                            onClick={() => handleShareToUserAnimated(fu)}
+                                            disabled={wasSent}
+                                            className="flex flex-col items-center gap-1.5 min-w-[64px] shrink-0 group cursor-pointer"
+                                        >
+                                            <m.div
+                                                className="relative"
+                                                animate={wasSent ? {
+                                                    scale: [1, 1.3, 0.9, 1.1, 1],
+                                                    y: [0, -8, 2, -3, 0],
+                                                } : {}}
+                                                transition={{ duration: 0.6, ease: 'easeOut' }}
+                                            >
+                                                <div className={`rounded-full transition-all duration-300 ${wasSent ? 'ring-2 ring-green-500 shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'ring-2 ring-transparent group-hover:ring-brand-blue group-hover:shadow-[0_0_12px_rgba(0,150,255,0.3)]'}`}>
+                                                    <Avatar
+                                                        src={fu.avatar_url}
+                                                        name={fu.full_name || 'Usuário'}
+                                                        size="md"
+                                                        customSize="size-12"
+                                                    />
+                                                </div>
+                                                <m.div
+                                                    className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center transition-all ${wasSent ? 'bg-green-500 opacity-100' : 'bg-brand-blue opacity-0 group-hover:opacity-100'}`}
+                                                    animate={wasSent ? { rotate: [0, -20, 45, 0], scale: [1, 1.4, 1] } : {}}
+                                                    transition={{ duration: 0.5 }}
+                                                >
+                                                    <span className="material-symbols-outlined text-white text-[12px]">
+                                                        {wasSent ? 'check' : 'rocket_launch'}
+                                                    </span>
+                                                </m.div>
+                                            </m.div>
+                                            <span className={`text-[10px] font-bold text-center truncate max-w-[64px] transition-colors ${wasSent ? 'text-green-500' : 'text-gray-500 dark:text-gray-400 group-hover:text-brand-blue'}`}>
+                                                {wasSent ? 'Enviado!' : fu.full_name?.split(' ')[0] || 'Usuário'}
+                                            </span>
+                                        </button>
+                                    );
+                                })
+                            ) : (
+                                <p className="text-xs text-gray-400 italic flex items-center">Acompanhe autores para ver sugestões aqui.</p>
+                            )}
                         </div>
                     </div>
 

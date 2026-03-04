@@ -35,7 +35,7 @@ import {
 
 // --- TECHNICAL DATA SHARD ---
 const pageContent: Record<string, any> = {
-    'boas-praticas': {
+    'guia-de-boas-praticas': {
         title: 'Guia de Boas Práticas',
         subtitle: 'Produção, Créditos e Qualidade Hub',
         icon: <ShieldCheck className="w-12 h-12" />,
@@ -263,7 +263,7 @@ const pageContent: Record<string, any> = {
             { label: 'Dificuldade', value: 'Síncrotron' }
         ],
         actions: [
-            { label: 'Iniciar Quiz', icon: <Zap className="w-4 h-4" />, href: '#' },
+            { label: 'Iniciar Quiz', icon: <Zap className="w-4 h-4" />, href: '/wiki/quiz' },
             { label: 'Ver Ranking', icon: <Telescope className="w-4 h-4" />, href: '#' }
         ]
     },
