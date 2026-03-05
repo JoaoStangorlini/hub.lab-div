@@ -225,7 +225,7 @@ export default function WikiPage() {
 
     return (
         <MainLayoutWrapper>
-            <div className="min-h-screen bg-[#121212] pt-12 pb-12 px-4 overflow-x-hidden">
+            <div className="min-h-screen bg-transparent pt-12 pb-12 px-4 overflow-x-hidden">
                 <div className="max-w-6xl mx-auto">
 
                     {/* --- Elite Header --- */}
@@ -235,7 +235,7 @@ export default function WikiPage() {
                             animate={{ opacity: 1, x: 0 }}
                             className="flex items-center gap-3 mb-8"
                         >
-                            <Link href="/colisor" className="group flex items-center gap-2 text-gray-500 hover:text-white transition-colors text-sm font-bold">
+                            <Link href="/colisor" className="group flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors text-sm font-bold">
                                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                                 Voltar ao Colisor
                             </Link>
@@ -253,7 +253,7 @@ export default function WikiPage() {
                                     </div>
                                     <span className="text-xs font-black uppercase tracking-[0.3em] text-brand-blue">Biblioteca Central</span>
                                 </div>
-                                <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic leading-[0.8] mb-4">
+                                <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic leading-[0.8] mb-4 text-gray-900 dark:text-white">
                                     WIKI <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red via-brand-blue to-brand-yellow">HUB</span>
                                 </h1>
                                 <p className="text-gray-400 text-lg max-w-xl font-medium leading-relaxed">
@@ -289,7 +289,7 @@ export default function WikiPage() {
                                     placeholder="Acesse o conhecimento... (ex: 'Bandejão', 'Plágio', 'Física Médica')"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full h-16 bg-[#1E1E1E] border border-white/5 focus:border-brand-blue/50 rounded-[22px] pl-16 pr-6 text-lg font-medium text-white placeholder:text-gray-600 outline-none transition-all shadow-2xl"
+                                    className="w-full h-16 bg-white/40 dark:bg-[#1E1E1E]/40 backdrop-blur-xl border border-gray-200 dark:border-white/5 focus:border-brand-blue/50 rounded-[22px] pl-16 pr-6 text-lg font-medium text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 outline-none transition-all shadow-2xl"
                                 />
                             </div>
                         </motion.div>
@@ -309,7 +309,7 @@ export default function WikiPage() {
                                 >
                                     <Link
                                         href={cell.href}
-                                        className={`relative block h-full group bg-[#1E1E1E]/40 backdrop-blur-xl border border-white/5 rounded-[40px] p-8 hover:bg-[#1E1E1E] hover:border-${cell.color}/30 transition-all shadow-2xl overflow-hidden ${cell.glow ? 'ring-1 ring-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.05)]' : ''}`}
+                                        className={`relative block h-full group bg-white/40 dark:bg-card-dark/40 backdrop-blur-xl border border-gray-200 dark:border-white/5 rounded-[40px] p-8 hover:bg-white dark:hover:bg-card-dark hover:border-${cell.color}/30 transition-all shadow-2xl overflow-hidden ${cell.glow ? 'ring-1 ring-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.05)]' : ''}`}
                                     >
                                         {/* Background Glow */}
                                         <div className={`absolute -right-20 -top-20 size-64 bg-${cell.color}/5 blur-[100px] group-hover:bg-${cell.color}/10 transition-colors`}></div>
@@ -331,7 +331,7 @@ export default function WikiPage() {
                                             </div>
 
                                             {/* Titles */}
-                                            <h3 className={`text-2xl font-black text-white mb-1 group-hover:text-${cell.color} transition-colors italic uppercase tracking-tighter`}>
+                                            <h3 className={`text-2xl font-black text-gray-900 dark:text-white mb-1 group-hover:text-${cell.color} transition-colors italic uppercase tracking-tighter`}>
                                                 {cell.title}
                                             </h3>
                                             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
@@ -353,7 +353,7 @@ export default function WikiPage() {
                                             </div>
 
                                             {/* Footer Action */}
-                                            <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+                                            <div className="mt-auto pt-6 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
                                                 <span className={`text-[10px] font-black text-${cell.color} uppercase tracking-[0.2em]`}>{cell.cta}</span>
                                                 <div className={`size-8 rounded-full bg-${cell.color}/10 flex items-center justify-center text-${cell.color} group-hover:translate-x-1 transition-transform`}>
                                                     <ChevronRight className="w-4 h-4" />
@@ -396,7 +396,7 @@ export default function WikiPage() {
                                     </div>
                                     <div className="text-center md:text-left">
                                         <div className="flex items-center justify-center md:justify-start gap-4 mb-2">
-                                            <h3 className="text-3xl md:text-4xl font-black text-white italic uppercase tracking-tighter">
+                                            <h3 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white italic uppercase tracking-tighter">
                                                 {quizCell.title}
                                             </h3>
                                             <span className="hidden md:block px-3 py-1 bg-brand-red/20 border border-brand-red/30 text-brand-red text-[10px] font-black uppercase rounded-full">Gamificação</span>
@@ -421,10 +421,10 @@ export default function WikiPage() {
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="text-center py-24 bg-[#1E1E1E]/20 rounded-[40px] border border-dashed border-white/10"
+                            className="text-center py-24 bg-white/20 dark:bg-card-dark/20 rounded-[40px] border border-dashed border-gray-200 dark:border-white/10"
                         >
-                            <Info className="size-16 text-gray-700 mx-auto mb-6" />
-                            <h3 className="text-2xl font-black text-white mb-2 uppercase italic tracking-tighter">Colisão sem resultados</h3>
+                            <Info className="size-16 text-gray-400 dark:text-gray-700 mx-auto mb-6" />
+                            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 uppercase italic tracking-tighter">Colisão sem resultados</h3>
                             <p className="text-gray-500 font-medium">Não encontramos conhecimento com esse padrão. Tente palavras-chave como 'bolsa' ou 'ifusp'.</p>
                             <button
                                 onClick={() => setSearchQuery('')}

@@ -16,27 +16,27 @@ export default function MapClient({ initialItems }: { initialItems: MediaCardPro
     const [items] = useState<MediaCardProps[]>(initialItems);
 
     return (
-        <main className="min-h-screen bg-[#121212] pt-24 pb-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+        <main className="min-h-screen bg-transparent pt-24 pb-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
             <div className="max-w-5xl w-full">
                 <header className="mb-12 text-center">
                     <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-red mb-4">
                         Campus Interativo
                     </h1>
-                    <p className="text-gray-400">
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">
                         Navegue pelas descobertas e registros através da geografia do Instituto.
                     </p>
                 </header>
 
-                <div className="w-full max-w-5xl mx-auto aspect-video rounded-3xl overflow-hidden relative shadow-2xl border border-gray-800">
+                <div className="w-full max-w-5xl mx-auto aspect-video rounded-3xl overflow-hidden relative shadow-2xl border border-gray-200 dark:border-gray-800">
                     <CampusMap items={items} />
                 </div>
 
-                <div className="mt-12 p-6 rounded-2xl bg-[#1E1E1E] border border-gray-800">
-                    <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                <div className="mt-12 p-6 rounded-2xl bg-white/40 dark:bg-card-dark/40 backdrop-blur-md border border-gray-200 dark:border-gray-800 shadow-xl">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                         <HelpCircle className="w-5 h-5 text-brand-yellow" />
                         Como funciona?
                     </h3>
-                    <p className="text-sm text-gray-400 leading-relaxed">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed font-medium">
                         Os pontos no mapa representam locais específicos onde as mídias foram registradas ou eventos ocorreram.
                         Clique em um pino para ver o resumo e acesse a página completa para mergulhar nos detalhes.
                     </p>
