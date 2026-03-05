@@ -72,9 +72,9 @@ body {
   background-attachment: scroll;
 }
 
-/* Optional: Slight dimming for the background symbols in light mode if they are too loud */
+/* Optional: Subtle adjustment for light mode if needed, but removing the wash-out gradient */
 :root:not(.dark) body {
-  background-image: linear-gradient(rgba(248, 250, 252, 0.4), rgba(248, 250, 252, 0.4)), url('/bg-science.svg');
+  /* Symbols are already subtle in the SVG, no extra overlay needed */
 }
 
 /* Performance: CSS-only animation replaces framer-motion in hero (no JS blocking) */

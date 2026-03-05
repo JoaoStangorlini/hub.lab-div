@@ -19,13 +19,13 @@ interface MainLayoutWrapperProps {
  */
 export function MainLayoutWrapper({ children, focusMode = false, userId }: MainLayoutWrapperProps) {
     return (
-        <div className="min-h-screen bg-background-light dark:bg-transparent font-sans text-gray-900 dark:text-gray-100 flex flex-col">
+        <div className="min-h-screen bg-transparent font-sans text-gray-900 dark:text-gray-100 flex flex-col">
             <Header />
 
             {!focusMode ? (
                 <div className="flex-1 w-full max-w-[1920px] mx-auto flex justify-center">
                     {/* Left Sidebar (Desktop) */}
-                    <aside className="hidden xl:block w-[280px] shrink-0 border-r border-gray-200 dark:border-gray-800 bg-background-light dark:bg-transparent">
+                    <aside className="hidden xl:block w-[280px] shrink-0 border-r border-gray-200 dark:border-gray-800 bg-transparent">
                         <div className="sticky top-20">
                             <SidebarLeft userId={userId} />
                         </div>
@@ -37,7 +37,7 @@ export function MainLayoutWrapper({ children, focusMode = false, userId }: MainL
                     </main>
 
                     {/* Right Sidebar (Optional - using a placeholder if needed, or keeping it empty for consistency) */}
-                    <aside className="hidden lg:block w-[320px] shrink-0 px-4 py-8 border-l border-gray-200 dark:border-gray-800 bg-background-light dark:bg-transparent">
+                    <aside className="hidden lg:block w-[320px] shrink-0 px-4 py-8 border-l border-gray-200 dark:border-gray-800 bg-transparent">
                         <div className="sticky top-20">
                             {/* In a real scenario, we might pass SidebarRight content here via props if needed */}
                         </div>
