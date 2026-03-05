@@ -10,13 +10,21 @@ export interface Profile {
     id: string;
     email: string;
     full_name?: string;
+    username?: string;
+    use_nickname?: boolean;
     avatar_url?: string;
     bio?: string;
     institute?: string;
+    xp?: number;
+    level?: number;
     is_usp_member: boolean;
     entrance_year?: number;
+    course?: string;
+    whatsapp?: string;
     lattes_url?: string;
+    usp_proof_url?: string;
     available_to_mentor: boolean;
+    seeking_mentor: boolean;
     education_level?: string;
     school_year?: string;
     objective?: string;
@@ -32,6 +40,7 @@ export interface Profile {
     has_scholarship: boolean;
     seeking_scholarship: boolean;
     interest_in_team: boolean;
+    pending_edits?: any;
     created_at: string;
 }
 

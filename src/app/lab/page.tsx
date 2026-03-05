@@ -13,11 +13,14 @@ import { parseMediaUrl, getYoutubeThumbnail, getOptimizedUrl } from '@/lib/media
 import { User, Grid, Medal, Star, Image as ImageIcon, PlayCircle, FileText, Heart, MessageSquare, Info, Camera, ExternalLink, ShieldCheck, Play } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { RadiationBadge } from '@/components/gamification/RadiationBadge';
+import { EditProfileModal } from '@/components/profile/EditProfileModal';
 import { RadiationTab } from '@/components/gamification/RadiationTab';
+import { Profile } from '@/types';
 
 
 
 import { Avatar } from '@/components/ui/Avatar';
+
 
 function LabContent() {
     const router = useRouter();
@@ -25,7 +28,8 @@ function LabContent() {
     const initialTab = searchParams.get('tab') || 'publicacoes';
 
     const [user, setUser] = useState<any>(null);
-    const [profile, setProfile] = useState<any>(null);
+    const [profile, setProfile] = useState<Profile | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [submissions, setSubmissions] = useState<{ post: PostDTO }[]>([]);
     const [savedPosts, setSavedPosts] = useState<PostDTO[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -49,7 +53,10 @@ function LabContent() {
 
             setProfile(profileData);
 
-
+            // Auto-open Edit Profile Modal if critical info is missing (first visit essentially)
+            if (profileData && !profileData.institute) {
+                setIsEditModalOpen(true);
+            }
 
             const userSubs = await fetchUserSubmissions(session.user.id);
             setSubmissions(userSubs);
@@ -123,7 +130,7 @@ function LabContent() {
                             <div className="relative shrink-0">
                                 <Avatar
                                     src={user.user_metadata?.avatar_url}
-                                    name={user.user_metadata?.full_name || 'Usuário'}
+                                    name={(profile?.use_nickname && profile?.username) ? profile.username : (user.user_metadata?.full_name || 'Usuário')}
                                     size="custom"
                                     customSize="w-32 h-32 sm:w-40 sm:h-40"
                                     xp={profile?.xp}
@@ -131,13 +138,13 @@ function LabContent() {
                                 />
                             </div>
                             <div className="flex-1 text-center sm:text-left space-y-4 sm:pt-2">
-                                <h1 className="text-2xl sm:text-3xl font-display font-bold text-gray-900 dark:text-white">
-                                    {user.user_metadata?.full_name || 'Usuário'}
-                                    <span className="ml-2 text-xs font-black uppercase text-brand-blue bg-brand-blue/10 px-2 py-1 rounded">Laboratório Pessoal</span>
+                                <h1 className="text-2xl sm:text-3xl font-display font-bold text-gray-900 dark:text-white flex flex-wrap items-center gap-2">
+                                    {(profile?.use_nickname && profile?.username) ? profile.username : (user.user_metadata?.full_name || 'Usuário')}
+                                    <span className="text-xs font-black uppercase text-brand-blue bg-brand-blue/10 px-2 py-1 rounded">Laboratório Pessoal</span>
                                     {profile && <RadiationBadge xp={profile.xp || 0} level={profile.level || 1} size="md" showTierName />}
                                 </h1>
 
-                                <div className="flex justify-center sm:justify-start gap-6 pt-1">
+                                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-6 pt-1">
                                     <div className="text-center sm:text-left">
                                         <span className="block text-lg font-bold text-gray-900 dark:text-white">{submissions.length}</span>
                                         <span className="text-sm text-gray-500 dark:text-gray-400">publicações</span>
@@ -146,6 +153,14 @@ function LabContent() {
                                         <span className="block text-lg font-bold text-gray-900 dark:text-white">{unlockedBadges.length}</span>
                                         <span className="text-sm text-gray-500 dark:text-gray-400">selos</span>
                                     </div>
+
+                                    <button
+                                        onClick={() => setIsEditModalOpen(true)}
+                                        className="sm:ml-4 px-4 py-2 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-600 dark:text-gray-300 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">edit</span>
+                                        Editar Perfil
+                                    </button>
                                 </div>
 
                                 <div className="pt-2 text-sm text-gray-600 dark:text-gray-300 font-medium">
@@ -154,6 +169,11 @@ function LabContent() {
                                         {profile?.institute && (
                                             <span className="px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[10px] font-bold rounded uppercase">
                                                 {profile.institute}
+                                            </span>
+                                        )}
+                                        {profile?.course && (
+                                            <span className="px-2 py-0.5 bg-brand-yellow/10 text-brand-yellow text-[10px] font-bold rounded uppercase">
+                                                {profile.course}
                                             </span>
                                         )}
                                         {profile?.role && (
@@ -175,6 +195,12 @@ function LabContent() {
                                             <span className="px-2 py-0.5 bg-green-500/10 text-green-500 text-[10px] font-bold rounded uppercase border border-green-500/20 flex items-center gap-1">
                                                 <ShieldCheck className="w-3 h-3 fill-current" />
                                                 Mentor/Veterano
+                                            </span>
+                                        )}
+                                        {profile?.seeking_mentor && (
+                                            <span className="px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[10px] font-bold rounded uppercase border border-brand-blue/20 flex items-center gap-1">
+                                                <span className="material-symbols-outlined text-[12px]">person_search</span>
+                                                Bixo / Buscando Adotante
                                             </span>
                                         )}
                                         {profile?.lattes_url && (
@@ -426,6 +452,24 @@ function LabContent() {
             <Footer />
 
 
+            {/* Modals */}
+            <EditProfileModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                onSuccess={() => {
+                    const fetchProfile = async () => {
+                        if (user) { // Ensure user is not null before accessing user.id
+                            const { data } = await supabase
+                                .from('profiles')
+                                .select('*')
+                                .eq('id', user.id)
+                                .single();
+                            setProfile(data);
+                        }
+                    };
+                    fetchProfile();
+                }}
+            />
         </div>
     );
 }

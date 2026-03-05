@@ -248,7 +248,8 @@ export function Header() {
                                             <button
                                                 onClick={async () => {
                                                     setProfileMenuOpen(false);
-                                                    await signOut();
+                                                    await signOut('/login');
+                                                    window.location.reload();
                                                 }}
                                                 className="px-4 py-3 text-sm text-brand-red hover:bg-brand-red/10 transition-colors flex items-center gap-2 font-bold w-full text-left"
                                             >

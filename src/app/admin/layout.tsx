@@ -92,7 +92,10 @@ export default function AdminLayout({
 
                 <div className="p-6 border-t border-gray-800 transition-colors relative z-10">
                     <button
-                        onClick={() => signOut('/admin/login')}
+                        onClick={async () => {
+                            await signOut('/login');
+                            window.location.reload();
+                        }}
                         className="flex items-center gap-3 px-4 py-3 w-full text-sm font-medium text-gray-400 rounded-xl hover:bg-gray-800 hover:text-brand-red transition-colors border border-transparent group focus:outline-none"
                     >
                         <span className="material-symbols-outlined text-[20px] text-gray-500 group-hover:text-brand-red transition-colors">logout</span>

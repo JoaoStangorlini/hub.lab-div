@@ -1,7 +1,7 @@
 -- ==========================================================
--- THE GOD SQL v5.0.0 — HUB DE COMUNICAÇÃO CIENTÍFICA (IFUSP)
+-- THE GOD SQL v6.0.0 — HUB DE COMUNICAÇÃO CIENTÍFICA (IFUSP)
 -- ==========================================================
--- Script 100% IDEMPOTENTE. Consolida v4 + todos os newsqls + Radiation System.
+-- Script 100% IDEMPOTENTE. Consolida v5 + bixo/veterano + feedback reports + messages + correcoes admin todos os newsqls + Radiation System.
 -- Pode ser executado múltiplas vezes sem efeito colateral.
 -- ==========================================================
 
@@ -56,10 +56,21 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     school_year TEXT,
     objective TEXT,
     institute TEXT,
+    whatsapp TEXT,
+    course TEXT,
+    seeking_mentor BOOLEAN DEFAULT false,
+    use_nickname BOOLEAN DEFAULT false,
+    usp_proof_url TEXT,
     interests TEXT[] DEFAULT '{}',
     artistic_interests TEXT[] DEFAULT '{}',
-    is_public BOOLEAN DEFAULT false,
+    is_public BOOLEAN DEFAULT true,
     review_status profile_review_status DEFAULT 'pending',
+    seeking_mentor BOOLEAN DEFAULT false,
+    course TEXT,
+    whatsapp TEXT,
+    usp_proof_url TEXT,
+    pending_edits JSONB DEFAULT NULL,
+    use_nickname BOOLEAN DEFAULT false,
     has_scholarship BOOLEAN DEFAULT false,
     seeking_scholarship BOOLEAN DEFAULT false,
     interest_in_team BOOLEAN DEFAULT false,
@@ -285,7 +296,7 @@ CREATE TABLE IF NOT EXISTS public.pseudonyms (
     is_active BOOLEAN DEFAULT true,
     usage_count INTEGER DEFAULT 0,
     user_id UUID REFERENCES auth.users(id),
-    created_at TIMESTAMPTZ DEFAULT now()
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ╔══════════════════════════════════════════════════════════╗
@@ -351,9 +362,9 @@ CREATE TABLE IF NOT EXISTS public.quiz_attempts (
 
 -- 9.1 is_admin (expandido com labdiv adm e moderador)
 CREATE OR REPLACE FUNCTION public.is_admin()
-RETURNS boolean
-LANGUAGE plpgsql
-SECURITY DEFINER
+ RETURNS boolean
+ LANGUAGE plpgsql
+ SECURITY DEFINER
 AS $function$
 BEGIN
     RETURN (
@@ -361,8 +372,8 @@ BEGIN
         auth.jwt() ->> 'role' = 'labdiv adm' OR
         auth.jwt() ->> 'role' = 'moderador' OR
         EXISTS (
-            SELECT 1 FROM public.profiles
-            WHERE id = auth.uid()
+            SELECT 1 FROM public.profiles 
+            WHERE id = auth.uid() 
             AND role IN ('admin', 'labdiv adm', 'moderador')
         )
     );
@@ -386,9 +397,9 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 9.3 Like count trigger function
 CREATE OR REPLACE FUNCTION public.update_submission_like_count()
-RETURNS trigger
-LANGUAGE plpgsql
-SECURITY DEFINER
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
 AS $function$
 DECLARE
     target_id uuid;
@@ -398,10 +409,16 @@ BEGIN
     ELSE
         target_id := NEW.submission_id;
     END IF;
+
     UPDATE public.submissions
-    SET like_count = (SELECT count(*) FROM public.curtidas WHERE submission_id = target_id)
+    SET like_count = (
+        SELECT count(*) FROM public.curtidas WHERE submission_id = target_id
+    )
     WHERE id = target_id;
-    IF TG_OP = 'DELETE' THEN RETURN OLD; END IF;
+
+    IF TG_OP = 'DELETE' THEN
+        RETURN OLD;
+    END IF;
     RETURN NEW;
 END;
 $function$;
@@ -595,61 +612,15 @@ ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.wiki_articles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.entanglement_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.follows ENABLE ROW LEVEL SECURITY;
+
+-- RLS para pseudônimos
 ALTER TABLE public.pseudonyms ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
-
--- Profiles
-DROP POLICY IF EXISTS "Admins manage profiles" ON profiles;
-CREATE POLICY "Admins manage profiles" ON profiles FOR ALL TO public USING (is_admin()) WITH CHECK (is_admin());
-
--- Submissions
-DROP POLICY IF EXISTS "Public can view approved submissions" ON public.submissions;
-CREATE POLICY "Public can view approved submissions" ON public.submissions FOR SELECT USING ((status = 'aprovado') OR public.is_admin() OR (auth.uid() = user_id));
-
-DROP POLICY IF EXISTS "Authenticated users can submitt" ON public.submissions;
-CREATE POLICY "Authenticated users can submitt" ON public.submissions FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
-
--- Follows
-DROP POLICY IF EXISTS "Public follows visibility" ON public.follows;
-CREATE POLICY "Public follows visibility" ON public.follows FOR SELECT TO authenticated USING (true);
-
-DROP POLICY IF EXISTS "Users can follow others" ON public.follows;
-CREATE POLICY "Users can follow others" ON public.follows FOR INSERT TO authenticated WITH CHECK (auth.uid() = follower_id);
-
-DROP POLICY IF EXISTS "Users can unfollow" ON public.follows;
-CREATE POLICY "Users can unfollow" ON public.follows FOR DELETE TO authenticated USING (auth.uid() = follower_id);
-
--- Pseudonyms
-DROP POLICY IF EXISTS "Admins can manage pseudonyms" ON public.pseudonyms;
 DROP POLICY IF EXISTS "Admins can manage all pseudonyms" ON public.pseudonyms;
-CREATE POLICY "Admins can manage all pseudonyms" ON public.pseudonyms FOR ALL TO authenticated
-USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'admin'));
-
+CREATE POLICY "Admins can manage all pseudonyms" ON public.pseudonyms FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'admin'));
 DROP POLICY IF EXISTS "Users can manage own pseudonyms" ON public.pseudonyms;
 CREATE POLICY "Users can manage own pseudonyms" ON public.pseudonyms FOR ALL TO authenticated USING (user_id = auth.uid());
-
 DROP POLICY IF EXISTS "Users can view global active pseudonyms" ON public.pseudonyms;
 CREATE POLICY "Users can view global active pseudonyms" ON public.pseudonyms FOR SELECT TO authenticated USING (user_id IS NULL AND is_active = true);
-
--- Messages
-DROP POLICY IF EXISTS "Users can view their context messages" ON public.messages;
-CREATE POLICY "Users can view their context messages" ON public.messages FOR SELECT TO authenticated USING (auth.uid() = sender_id OR auth.uid() = recipient_id);
-
-DROP POLICY IF EXISTS "Users can send messages" ON public.messages;
-CREATE POLICY "Users can send messages" ON public.messages FOR INSERT TO authenticated WITH CHECK (auth.uid() = sender_id);
-
--- Quiz
-ALTER TABLE public.quiz_questions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.quiz_attempts ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "Public can view quiz questions" ON public.quiz_questions;
-CREATE POLICY "Public can view quiz questions" ON public.quiz_questions FOR SELECT TO authenticated USING (true);
-
-DROP POLICY IF EXISTS "Users can view own attempts" ON public.quiz_attempts;
-CREATE POLICY "Users can view own attempts" ON public.quiz_attempts FOR SELECT TO authenticated USING (auth.uid() = user_id);
-
-DROP POLICY IF EXISTS "Users can log their attempts" ON public.quiz_attempts;
-CREATE POLICY "Users can log their attempts" ON public.quiz_attempts FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 
 -- ╔══════════════════════════════════════════════════════════╗
 -- ║                    13. ÍNDICES                          ║
@@ -864,3 +835,96 @@ INSERT INTO public.quiz_questions (question, options, explanation, points) VALUE
 -- ════════════════════════════════════════════════════════════
 -- FIM DO GOD SQL v5.0.0
 -- ════════════════════════════════════════════════════════════
+
+-- Ensure RLS policy for profiles allows administrators (new and old) to update
+DROP POLICY IF EXISTS "Admins manage profiles" ON profiles;
+CREATE POLICY "Admins manage profiles" ON profiles
+    FOR ALL
+    TO public
+    USING (is_admin())
+    WITH CHECK (is_admin());
+
+
+-- ╔══════════════════════════════════════════════════════════╗
+-- ║               NEW MODULES (v6 Additions)                 ║
+-- ╚══════════════════════════════════════════════════════════╝
+
+-- Tabela de Mensagens para o Emaranhamento
+CREATE TABLE IF NOT EXISTS public.messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    sender_id UUID REFERENCES public.profiles(id) NOT NULL,
+    recipient_id UUID REFERENCES public.profiles(id) NOT NULL,
+    content TEXT NOT NULL,
+    attachment_id TEXT,
+    status TEXT DEFAULT 'sent',
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- RLS para mensagens
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can view their context messages" ON public.messages;
+CREATE POLICY "Users can view their context messages" 
+ON public.messages FOR SELECT 
+TO authenticated 
+USING (auth.uid() = sender_id OR auth.uid() = recipient_id);
+
+DROP POLICY IF EXISTS "Users can send messages" ON public.messages;
+CREATE POLICY "Users can send messages" 
+ON public.messages FOR INSERT 
+TO authenticated 
+WITH CHECK (auth.uid() = sender_id);
+
+
+-- Sistema de Feedback e Relatórios (Bugs/Sugestões)
+CREATE TABLE IF NOT EXISTS public.feedback_reports (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    type TEXT NOT NULL CHECK (type IN ('bug', 'suggestion', 'other')),
+    target_id TEXT, 
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'resolved', 'closed')),
+    admin_notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- RLS para Feedback Reports
+ALTER TABLE public.feedback_reports ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can insert feedback" ON public.feedback_reports;
+CREATE POLICY "Users can insert feedback" ON public.feedback_reports FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can view their own feedback" ON public.feedback_reports;
+CREATE POLICY "Users can view their own feedback" ON public.feedback_reports FOR SELECT TO authenticated USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Admins can manage all feedback" ON public.feedback_reports;
+CREATE POLICY "Admins can manage all feedback" ON public.feedback_reports FOR ALL TO authenticated USING (is_admin());
+
+-- ╔══════════════════════════════════════════════════════════╗
+-- ║         17. STORAGE BUCKETS & POLICIES                   ║
+-- ╚══════════════════════════════════════════════════════════╝
+
+-- Enable storage RLS policies for the enrollment_proofs bucket
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('enrollment_proofs', 'enrollment_proofs', false) 
+ON CONFLICT (id) DO NOTHING;
+
+-- Policy to allow users to upload their own proofs (using the user_id as prefix in filename logic)
+DROP POLICY IF EXISTS "Users can upload their own proofs" ON storage.objects;
+CREATE POLICY "Users can upload their own proofs" 
+ON storage.objects FOR INSERT TO authenticated 
+WITH CHECK ( bucket_id = 'enrollment_proofs' AND (auth.uid() = owner OR auth.uid()::text = SPLIT_PART(name, '_', 1)) );
+
+-- Policy to allow admins to view all proofs
+DROP POLICY IF EXISTS "Admins can view proofs" ON storage.objects;
+CREATE POLICY "Admins can view proofs" 
+ON storage.objects FOR SELECT TO authenticated 
+USING ( bucket_id = 'enrollment_proofs' AND EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin') );
+
+-- Policy to allow users to view their own proofs
+DROP POLICY IF EXISTS "Users can view their own proofs" ON storage.objects;
+CREATE POLICY "Users can view their own proofs" 
+ON storage.objects FOR SELECT TO authenticated 
+USING ( bucket_id = 'enrollment_proofs' AND (auth.uid() = owner OR auth.uid()::text = SPLIT_PART(name, '_', 1)) );

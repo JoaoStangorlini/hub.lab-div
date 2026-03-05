@@ -181,7 +181,7 @@ export const SidebarLeft = ({ userId }: { userId?: string }) => {
             </div>
 
             {/* Secondary/Institutional Links */}
-            <nav className="border-t border-gray-100 dark:border-gray-800 pt-6 flex flex-col gap-1">
+            <nav className="border-t border-gray-100 dark:border-gray-800 pt-6 flex flex-col gap-1 relative z-20">
                 {secondaryLinks.map((link) => (
                     <Link
                         key={link.name}

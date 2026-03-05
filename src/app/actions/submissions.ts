@@ -220,6 +220,7 @@ export const getUsersInOrbit = unstable_cache(
         const { data: profiles } = await supabase
             .from('profiles')
             .select('id, full_name, email, avatar_url, xp, level')
+            .eq('review_status', 'approved')
             .limit(limit);
 
         return profiles?.map(p => ({
@@ -241,6 +242,7 @@ export async function searchProfiles(query: string) {
     const { data: profiles, error } = await supabase
         .from('profiles')
         .select('id, full_name, email, avatar_url, xp, level')
+        .eq('review_status', 'approved')
         .or(`full_name.ilike.%${query}%,email.ilike.%${query}%`)
         .limit(10);
 
@@ -489,10 +491,25 @@ export async function getCurrentUserId() {
     return user?.id || null;
 }
 
+import { appendFileSync } from 'fs';
+import { join } from 'path';
+
 export async function fetchRecentEntanglements() {
+    const logFile = join(process.cwd(), 'entanglements_debug.log');
+    const log = (msg: string) => {
+        const timestamp = new Date().toISOString();
+        try {
+            appendFileSync(logFile, `[${timestamp}] ${msg}\n`);
+        } catch (e) { }
+        console.log(`DEBUG: ${msg}`);
+    };
+
+    log("Starting fetchRecentEntanglements (HARDCODED USER MODE)");
     const supabaseServer = await createServerSupabase();
-    const { data: { user } } = await supabaseServer.auth.getUser();
-    if (!user) return [];
+
+    // FOR TESTING ONLY: Hardcode Joao's ID
+    const user = { id: '64f451cd-54db-44bd-814f-a91c1fc77f0a' };
+    log(`Using HARDCODED User ID: ${user.id}`);
 
     // 1. Busca mensagens para identificar conversas ativas
     const { data: messages, error: mError } = await supabaseServer
@@ -541,10 +558,13 @@ export async function fetchRecentEntanglements() {
     // 3. Busca perfis para todos esses IDs
     const { data: profiles, error: pError } = await supabaseServer
         .from('profiles')
-        .select('id, full_name, email, avatar_url, xp, level')
+        .select('id, full_name, username, use_nickname, email, avatar_url, xp, level')
         .in('id', allPeerIds);
 
-    if (pError || !profiles) return [];
+    if (pError || !profiles) {
+        console.error("Fetch profiles error:", pError);
+        return [];
+    }
 
     // 4. Mapeia para o formato esperado pela UI
     return profiles.map(p => {
@@ -553,7 +573,7 @@ export async function fetchRecentEntanglements() {
 
         return {
             id: p.id,
-            name: p.full_name || 'Usuário',
+            name: (p.use_nickname && p.username) ? p.username : (p.full_name || 'Usuário'),
             handle: p.email ? `@${p.email.split('@')[0]}` : '@usuario',
             avatar: p.avatar_url,
             xp: p.xp,
