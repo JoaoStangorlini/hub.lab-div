@@ -20,6 +20,7 @@ import { ReadingExperienceProvider } from '@/components/reading/ReadingExperienc
 import { ReadingViewManager } from '@/components/reading/ReadingViewManager';
 import { ReadingHistoryTracker } from '@/components/history/ReadingHistoryTracker';
 import { FollowTagButton } from '@/components/engagement/FollowTagButton';
+import { PostQuiz } from '@/components/media/PostQuiz';
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -309,6 +310,18 @@ export default async function ArquivoItemPage({ params }: PageProps) {
                                 )}
                             </div>
                         </div>
+
+                        {/* Interactive Quiz Section */}
+                        {submission.quiz && Array.isArray(submission.quiz) && submission.quiz.length > 0 && (
+                            <div className="mt-8 mb-12">
+                                <PostQuiz
+                                    submissionId={submission.id}
+                                    quiz={submission.quiz}
+                                    authorId={submission.user_id}
+                                    currentUserId={user?.id}
+                                />
+                            </div>
+                        )}
 
                         {/* Interactive Comments */}
                         <CommentsSection

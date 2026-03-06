@@ -45,40 +45,36 @@ const pageContent: Record<string, any> = {
         color: 'brand-blue',
         sections: [
             {
-                title: 'Categorias',
-                content: 'Lab-Div (bloqueada só para membros), Mentorados Lab-Div (caso tenha recebido ajuda de nossas mentorias), Laboratórios, Pesquisadores, Bastidores da Ciência, etc. Escolha a categoria que melhor se encaixe com seu objetivo de comunicação.'
+                title: 'Estrutura em 4 Etapas',
+                content: 'Para tornar o envio menos exaustivo e mais organizado, dividimos o formulário em 4 etapas: [1] Categoria, [2] Formato, [3] Detalhes Básicos (obrigatórios) e [4] Detalhes Complementares (opcionais).'
             },
             {
-                title: 'Formatos',
-                content: 'Aceitamos Imagens (PNG/JPG/GIF), Documentos Técnicos (PDF), Notas de estudo (arquivos nativos como Samsung Notes, etc) e coleções compactadas (ZIP). O limite rígido para upload direto no Hub é de 10MB por arquivo. Para Vídeos, o envio deve ser feito exclusivamente através de Link do YouTube. A plataforma também permite adicionar links externos apontando para pastas do Google Drive, repositórios do GitHub, Notion, etc.'
+                title: 'Etapa 3: Detalhes Básicos (Obrigatórios)',
+                content: 'Aqui você define o título (impactante e específico), o autor principal (seu nome real ou apelido acadêmico), o ano do trabalho e a descrição principal. Se o formato exigir, é nesta etapa que você faz o upload dos arquivos (máx 10MB) ou insere o link do YouTube.'
             },
             {
-                title: 'Apelidos',
-                content: 'Seu nome de exibição no Hub pode ser seu nome real ou um apelido acadêmico que você já use. A regra é simples: mantenha o respeito e o bom senso. Nomes ofensivos, preconceituosos ou que tentem se passar por entidades oficiais do instituto serão banidos. A integridade da nossa comunidade vem em primeiro lugar.'
+                title: 'Etapa 4: Detalhes Complementares (Opcionais)',
+                content: 'Esta nova etapa permite enriquecer sua contribuição sem pressa. Você pode adicionar WhatsApp para contato, Tags para facilitar a busca, Coautores que participaram do projeto, Links Externos (Drive, GitHub, Notion), Detalhes Técnicos (ISO, Câmera, Software) e um Depoimento pessoal sobre o trabalho.'
             },
             {
-                title: 'Links Externos',
-                content: 'Em links externos diga que pode mandar um link do drive, repositorio git, notion, canva, pdf maior que 10mbs ou algo que complemente a publicacao. Além das referências bibliográficas, este campo é a ferramenta ideal para contornar o limite de 10MB. Utilize-o para anexar links de pastas do Google Drive com datasets pesados, repositórios de código no GitHub, páginas do Notion ou links de vídeos do YouTube. Certifique-se de que os links estejam com as permissões abertas para leitura.'
+                title: 'Por que preencher o opcional?',
+                content: 'Campos como "Detalhes Técnicos" ajudam outros alunos a aprenderem seu método. "Tags" aumentam a visibilidade da sua pesquisa no Hub. "Coautores" garantem que todos os envolvidos recebam o devido crédito técnico e acadêmico.'
             },
             {
-                title: 'Detalhes Técnicos',
-                content: 'Este campo deve ser usado para descrever os bastidores da criação. Detalhe as técnicas de redação utilizadas, especificações de equipamento (como a lente e câmera escolhidas), configurações técnicas como ISO e velocidade do obturador, além de softwares utilizados para edição e pós-processamento. A transparência técnica fortalece o rigor do seu trabalho.'
+                title: 'Apelidos e Identidade',
+                content: 'No passo 3, você pode optar por usar um Apelido Acadêmico. Ele será seu nome de exibição público. Nomes ofensivos ou que tentem se passar por entidades oficiais não são permitidos. A integridade da comunidade vem em primeiro lugar.'
             },
             {
-                title: 'Descrição',
-                content: 'O corpo do texto deve ser claro, conciso e acessível. Use parágrafos curtos e destaque conceitos-chave para facilitar a absorção de radiação informativa.'
+                title: 'Links Externos e Grandes Arquivos',
+                content: 'O limite de upload direto é 10MB. Para datasets pesados, PDFs extensos ou códigos, utilize o campo "Link Externo" na Etapa 4, apontando para Google Drive, GitHub ou similares. Certifique-se de que os links tenham permissão de leitura.'
             },
             {
-                title: 'Título',
-                content: 'Crie títulos de impacto que gerem curiosidade técnica. Evite generalismos; seja específico sobre qual fenômeno ou conceito está sendo abordado.'
+                title: 'Mini Quiz: Gamificação e Engajamento',
+                content: 'Na Etapa 4, você pode criar um Mini Quiz (até 2 perguntas) sobre o seu conteúdo. Leitores que acertarem as respostas ganham XP no Hub. É uma ótima forma de garantir que sua mensagem foi compreendida e de recompensar a comunidade pela atenção.'
             },
             {
                 title: 'Creative Commons',
-                content: 'Todo conteúdo no Hub é, por padrão, CC-BY-SA. Isso garante que o conhecimento circule livremente, mantendo os créditos devidos aos autores originais.'
-            },
-            {
-                title: 'Dicas de Vídeos/Fotos',
-                content: 'Não é permitido o upload direto de arquivos de vídeo no Hub, independentemente do tamanho. Todo conteúdo em vídeo deve ser hospedado no YouTube e compartilhado através do link oficial. Isso garante que o conteúdo seja carregado instantaneamente e com a máxima qualidade possível para o público universitário.'
+                content: 'Todo conteúdo no Hub é, por padrão, CC-BY-SA. Isso garante que o conhecimento circule livremente, mantendo os créditos devidos aos autores originais. Você confirma essa adesão na Etapa 3.'
             }
         ],
         dates: [],

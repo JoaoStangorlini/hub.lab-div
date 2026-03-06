@@ -50,16 +50,28 @@ export function useFormAutoSave<T extends FieldValues>(
             if (timerRef.current) clearTimeout(timerRef.current);
 
             timerRef.current = setTimeout(() => {
-                const payload = JSON.stringify({
-                    timestamp: Date.now(),
-                    data: value
-                });
-
                 try {
+                    // Safe stringify to handle potential circular structures or non-serializable objects
+                    const payload = JSON.stringify({
+                        timestamp: Date.now(),
+                        data: value
+                    }, (key, val) => {
+                        if (key === 'ref' || val instanceof HTMLElement) return undefined;
+                        return val;
+                    });
+
                     localStorage.setItem(key, payload);
                 } catch (e) {
+                    console.warn("AutoSave failed:", e);
                     // 🛡️ [GOLDEN MASTER] Storage Resilience Fallback
-                    memoryFallbackRef.current = payload;
+                    // Only store if we can serialize it
+                    try {
+                        const fallbackPayload = JSON.stringify({
+                            timestamp: Date.now(),
+                            data: value
+                        }, (k, v) => (k === 'ref' || v instanceof HTMLElement) ? undefined : v);
+                        memoryFallbackRef.current = fallbackPayload;
+                    } catch (err) { }
 
                     // Solo aviso visual una vez si falla el storage real
                     if (!window.sessionStorage.getItem('storage-fallback-warned')) {

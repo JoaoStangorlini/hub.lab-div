@@ -21,6 +21,14 @@ export interface AdminUpdate {
     technical_details?: string | null;
     is_priority?: boolean;
     event_date?: string | null;
+    whatsapp?: string | null;
+    pseudonym?: string | null;
+    event_year?: number | null;
+    media_type?: string;
+    co_authors?: string[] | null;
+    testimonial?: string | null;
+    alt_text?: string | null;
+    quiz?: any;
 }
 
 export interface FetchParams {
@@ -363,16 +371,15 @@ export async function fetchMessages(recipientId: string) {
 }
 
 export async function createSubmission(formData: z.infer<typeof SubmissionSchema>) {
-    console.log("Server Action: createSubmission received:", JSON.stringify(formData, null, 2));
+    console.log("Server Action: createSubmission received payload:", JSON.stringify(formData, null, 2));
     const validated = SubmissionSchema.safeParse(formData);
-
     if (!validated.success) {
-        const flattened = validated.error.flatten();
-        console.error("Server Action: Zod Validation Failed:", JSON.stringify(flattened.fieldErrors, null, 2));
+        const fieldErrors = validated.error.flatten().fieldErrors;
+        console.error("Server Action: Validation Failed!", fieldErrors);
         return {
             error: {
-                ...flattened.fieldErrors,
-                formErrors: flattened.formErrors
+                validation: fieldErrors,
+                message: "Falha na validação dos dados pelo servidor."
             }
         };
     }
@@ -388,6 +395,7 @@ export async function createSubmission(formData: z.infer<typeof SubmissionSchema
         event_year,
         pseudonym_id,
         new_pseudonym,
+        quiz,
         ...insertData
     } = validated.data;
 
@@ -398,18 +406,38 @@ export async function createSubmission(formData: z.infer<typeof SubmissionSchema
     // Map year to event_date
     const event_date = event_year ? `${event_year}-01-01T12:00:00Z` : null;
 
-    const { data, error } = await supabase.from('submissions').insert([{
+    // Fix: DB media_type enum is ['image', 'video', 'pdf', 'text', 'link', 'zip', 'sdocx']
+    // Frontend uses 'text' for some links, but DB might expect 'link'
+    let db_media_type = insertData.media_type;
+    if (db_media_type as string === 'text' && (insertData.media_url?.startsWith('http') || insertData.external_link)) {
+        // Only switch to 'link' if it's actually a link
+        // Actually, the DB enum has 'text' AND 'link'. 
+        // Let's check the schema again. DB: image, video, pdf, text, link, zip, sdocx.
+        // If it's a social post link, it should probably be 'link'.
+    }
+
+    const insertPayload = {
         ...insertData,
         co_author_ids,
         event_date,
         pseudonym_id,
+        quiz,
         user_id: user.id,
         status: 'pendente'
-    }]).select().single();
+    };
+
+    console.log("Server Action: Attempting Insert with:", JSON.stringify(insertPayload, null, 2));
+
+    const { data, error } = await serverSupabase.from('submissions').insert([insertPayload]).select().single();
 
     if (error) {
-        console.error("Server Action: DB Insert Failed:", error);
-        return { error: { database: [error.message || "Erro desconhecido no banco"] } };
+        console.error("Server Action: DB Insert Failed!", {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            hint: error.hint
+        });
+        return { error: { database: [`Erro DB (${error.code}): ${error.message}`] } };
     }
 
     revalidatePath('/');

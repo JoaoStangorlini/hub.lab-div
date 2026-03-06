@@ -6,7 +6,7 @@ export const SubmissionSchema = z.object({
     description: z.string().min(10, "Descrição muito curta").max(2000),
     category: z.string().min(1, "Categoria é obrigatória"),
     authors: z.string().min(2, "Autores são obrigatórios"),
-    media_type: z.enum(['image', 'video', 'pdf', 'text', 'zip', 'sdocx']),
+    media_type: z.enum(['image', 'video', 'pdf', 'text', 'link', 'zip', 'sdocx']),
     media_url: z.string().min(1, "URL de mídia é obrigatória"), // Can be JSON string or single URL
     tags: z.array(z.string()).max(10, "Máximo de 10 tags permitidas").default([]),
     location_name: z.string().optional().nullable(),
@@ -26,6 +26,7 @@ export const SubmissionSchema = z.object({
     new_pseudonym: z.string().max(30).optional().nullable(),
     read_guide: z.boolean().optional(),
     accepted_cc: z.boolean().optional(),
+    quiz: z.array(z.any()).default([]), // jsonb: [{id, question, options, correct_option}]
 });
 
 // Reaction/Engagement Schema

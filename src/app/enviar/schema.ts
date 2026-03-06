@@ -18,7 +18,13 @@ export const submissionSchema = z.object({
     event_year: z.string().min(4, 'Selecione o ano').default(new Date().getFullYear().toString()),
     pseudonym_id: z.string().uuid().optional(),
     new_pseudonym: z.string().max(30, 'Apelido muito longo').optional(),
-    co_authors: z.array(z.any()).default([])
+    co_authors: z.array(z.any()).default([]),
+    quiz: z.array(z.object({
+        id: z.string(),
+        question: z.string().min(5, 'Pergunta muito curta').max(200, 'Pergunta muito longa'),
+        options: z.array(z.string().min(1, 'Opção não pode ser vazia')).length(4, 'Deve ter exatamente 4 opções'),
+        correct_option: z.coerce.number().min(0).max(3)
+    })).max(2, 'Máximo de 2 perguntas').optional().default([])
 });
 
 export type SubmissionFormData = z.infer<typeof submissionSchema>;

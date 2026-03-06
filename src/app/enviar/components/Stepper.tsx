@@ -11,7 +11,8 @@ interface StepperProps {
 const steps: { id: SubmissionStep; label: string }[] = [
     { id: 'category', label: 'Categoria' },
     { id: 'format', label: 'Formato' },
-    { id: 'form', label: 'Detalhes' },
+    { id: 'basic', label: 'Detalhes' },
+    { id: 'optional', label: 'Extras' },
 ];
 
 export function Stepper({ currentStep }: StepperProps) {
@@ -22,7 +23,7 @@ export function Stepper({ currentStep }: StepperProps) {
         <div className="w-full max-w-md mx-auto">
             <div className="flex justify-between items-center mb-4">
                 <span className="text-xs font-black uppercase tracking-widest text-brand-blue dark:text-brand-yellow">
-                    Passo {currentIndex + 1} de {steps.length}: {steps[currentIndex].label}
+                    Passo {currentIndex + 1} de {steps.length}: {steps[currentIndex]?.label || '...'}
                 </span>
                 <span className="text-xs font-bold text-gray-400">
                     {Math.round(progress)}% Concluído

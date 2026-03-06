@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { MediaCard } from '@/components/MediaCard';
 import { AdminSubmissionLightbox } from '@/components/AdminSubmissionLightbox';
-import { CATEGORIES } from '@/app/enviar/constants';
+import { CATEGORIES, FORMATS } from '@/app/enviar/constants';
 import toast from 'react-hot-toast';
 import { useNotify } from '@/hooks/useNotify';
 import { z } from 'zod';
@@ -284,6 +284,15 @@ export default function AdminSubmissionsPage() {
             tags: editingItem.tags,
             media_url: editingItem.mediaUrl,
             external_link: editingItem.externalLink,
+            technical_details: editingItem.technicalDetails,
+            whatsapp: editingItem.whatsapp,
+            pseudonym: editingItem.pseudonym,
+            event_year: editingItem.eventYear,
+            media_type: editingItem.format,
+            co_authors: editingItem.coAuthors,
+            testimonial: editingItem.testimonial,
+            alt_text: editingItem.altText,
+            quiz: editingItem.quiz,
         }), {
             loading: 'Salvando alterações...',
             success: 'Alterações salvas com sucesso!',
@@ -464,18 +473,78 @@ export default function AdminSubmissionsPage() {
                                         className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-gray-900 dark:text-white py-2.5 px-4 focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue text-sm"
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Categoria</label>
-                                    <select
-                                        value={editingItem.category}
-                                        onChange={e => setEditingItem({ ...editingItem, category: e.target.value })}
-                                        className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-gray-900 dark:text-white py-2.5 px-4 focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue text-sm"
-                                    >
-                                        {CATEGORIES.map(cat => (
-                                            <option key={cat.id} value={cat.id}>{cat.title}</option>
-                                        ))}
-                                    </select>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Categoria</label>
+                                        <select
+                                            value={editingItem.category}
+                                            onChange={e => setEditingItem({ ...editingItem, category: e.target.value })}
+                                            className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-gray-900 dark:text-white py-2.5 px-4 focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue text-sm"
+                                        >
+                                            {CATEGORIES.map(cat => (
+                                                <option key={cat.id} value={cat.id}>{cat.title}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Formato</label>
+                                        <select
+                                            value={editingItem.format}
+                                            onChange={e => setEditingItem({ ...editingItem, format: e.target.value })}
+                                            className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-gray-900 dark:text-white py-2.5 px-4 focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue text-sm"
+                                        >
+                                            {FORMATS.map(f => (
+                                                <option key={f.id} value={f.id}>{f.title}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Pseudônimo (Apelido)</label>
+                                        <input
+                                            type="text"
+                                            value={editingItem.pseudonym || ''}
+                                            onChange={e => setEditingItem({ ...editingItem, pseudonym: e.target.value })}
+                                            className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-gray-900 dark:text-white py-2.5 px-4 focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue text-sm"
+                                            placeholder="Deixe vazio se nome real"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Ano do Trabalho</label>
+                                        <input
+                                            type="number"
+                                            value={editingItem.eventYear || ''}
+                                            onChange={e => setEditingItem({ ...editingItem, eventYear: parseInt(e.target.value) })}
+                                            className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-gray-900 dark:text-white py-2.5 px-4 focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue text-sm"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">WhatsApp de Contato</label>
+                                    <input
+                                        type="text"
+                                        value={editingItem.whatsapp || ''}
+                                        onChange={e => setEditingItem({ ...editingItem, whatsapp: e.target.value })}
+                                        className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-gray-900 dark:text-white py-2.5 px-4 focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue text-sm"
+                                        placeholder="Ex: 11 99999-9999"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Co-autores (separados por vírgula)</label>
+                                    <input
+                                        type="text"
+                                        value={editingItem.coAuthors ? editingItem.coAuthors.join(', ') : ''}
+                                        onChange={e => {
+                                            const array = e.target.value.split(',').map(s => s.trim()).filter(s => s !== '');
+                                            setEditingItem({ ...editingItem, coAuthors: array });
+                                        }}
+                                        className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-gray-900 dark:text-white py-2.5 px-4 focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue text-sm"
+                                    />
+                                </div>
+
                                 <div className="space-y-2">
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Tags (separadas por vírgula)</label>
                                     <input
@@ -510,13 +579,54 @@ export default function AdminSubmissionsPage() {
                                                 type="text"
                                                 value={Array.isArray(editingItem.mediaUrl) ? editingItem.mediaUrl.join(', ') : editingItem.mediaUrl}
                                                 onChange={e => {
-                                                    setEditingItem({ ...editingItem, mediaUrl: e.target.value });
+                                                    const val = e.target.value;
+                                                    setEditingItem({ ...editingItem, mediaUrl: val.includes(',') ? val.split(',').map(s => s.trim()) : val });
                                                     setImageError(false);
                                                 }}
                                                 className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-gray-900 dark:text-white py-2.5 px-4 focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue text-sm"
                                             />
                                         </div>
                                     </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Texto Alternativo (Alt Text)</label>
+                                    <input
+                                        type="text"
+                                        value={editingItem.altText || ''}
+                                        onChange={e => setEditingItem({ ...editingItem, altText: e.target.value })}
+                                        className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-gray-900 dark:text-white py-2.5 px-4 focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue text-sm"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Link Externo</label>
+                                    <input
+                                        type="text"
+                                        value={editingItem.externalLink || ''}
+                                        onChange={e => setEditingItem({ ...editingItem, externalLink: e.target.value })}
+                                        className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-gray-900 dark:text-white py-2.5 px-4 focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue text-sm"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Detalhes Técnicos / Bastidores</label>
+                                    <textarea
+                                        rows={2}
+                                        value={editingItem.technicalDetails || ''}
+                                        onChange={e => setEditingItem({ ...editingItem, technicalDetails: e.target.value })}
+                                        className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-gray-900 dark:text-white py-2.5 px-4 focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue text-sm resize-none"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Depoimento do Autor</label>
+                                    <textarea
+                                        rows={2}
+                                        value={editingItem.testimonial || ''}
+                                        onChange={e => setEditingItem({ ...editingItem, testimonial: e.target.value })}
+                                        className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-gray-900 dark:text-white py-2.5 px-4 focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue text-sm resize-none"
+                                    />
                                 </div>
 
                                 <div className="space-y-2">

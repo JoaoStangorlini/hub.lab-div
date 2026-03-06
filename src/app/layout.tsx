@@ -38,7 +38,7 @@ import { AuthProvider } from "@/providers/AuthProvider";
  * V4.0.0 Layout - Protocol Apocalypse Certified
  */
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:8080'),
   title: "Hub de Comunicação Científica do Lab-Div",
   description: "Um projeto para melhorar a comunicação do IF-USP e reunir em um FLUXO interativo o arquivo de material de divulgação do Lab-Div e de toda a comunidade — de dentro e fora do instituto.",
   openGraph: {

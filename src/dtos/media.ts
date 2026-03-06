@@ -43,6 +43,14 @@ export interface AdminPostDTO extends PostDTO {
     aiStatus?: string;
     whatsapp?: string;
     eventDate?: string;
+    // New fields for expansion
+    quiz?: any;
+    testimonial?: string;
+    altText?: string;
+    coAuthors?: string[];
+    pseudonym?: string;
+    eventYear?: number;
+    format?: string; // media_type
 }
 
 /**
@@ -104,5 +112,12 @@ export function mapToAdminPostDTO(submission: any, counts?: { likes?: number, sa
         aiStatus: submission.ai_status,
         whatsapp: submission.whatsapp,
         eventDate: submission.event_date ? String(submission.event_date) : undefined,
+        quiz: submission.quiz,
+        testimonial: submission.testimonial,
+        altText: submission.alt_text || submission.ai_suggested_alt,
+        coAuthors: submission.co_authors,
+        pseudonym: submission.pseudonym,
+        eventYear: submission.event_year,
+        format: submission.media_type,
     };
 }

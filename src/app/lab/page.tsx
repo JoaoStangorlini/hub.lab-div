@@ -41,96 +41,101 @@ function LabContent() {
 
     useEffect(() => {
         const loadData = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                router.push('/login');
-                return;
-            }
-            setCurrentUser(session.user);
-
-            // Fetch current user's profile (for authorization)
-            const { data: currProfile } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
-            setCurrentUserProfile(currProfile);
-
-            // Determine target user
-            const targetUserId = searchParams.get('user') || session.user.id;
-            const isViewingOwn = targetUserId === session.user.id;
-
-            // Fetch viewed profile
-            const { data: profileData } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', targetUserId)
-                .single();
-
-            setViewedProfile(profileData);
-
-            // Auto-open Edit Profile Modal if critical info is missing (first visit essentially)
-            if (isViewingOwn && profileData && !profileData.institute && !profileData.course && !profileData.bio) {
-                setIsEditModalOpen(true);
-            }
-
-            const targetSubId = targetUserId;
-            const userSubs = await fetchUserSubmissions(targetSubId);
-            setSubmissions(userSubs);
-
-            // Fetch saved/starred posts
-            const { data: saves } = await supabase
-                .from('saves')
-                .select('submission_id')
-                .eq('user_id', session.user.id);
-
-            if (saves && saves.length > 0) {
-                const ids = saves.map(s => s.submission_id);
-                const { data: savedSubs } = await supabase
-                    .from('submissions')
-                    .select('id, title, authors, description, media_url, media_type, category, status, like_count, comment_count, save_count, view_count, created_at, is_featured')
-                    .in('id', ids)
-                    .eq('status', 'aprovado');
-
-                if (savedSubs) {
-                    setSavedPosts(savedSubs.map(s => ({
-                        id: s.id,
-                        title: s.title,
-                        authors: s.authors,
-                        description: s.description || '',
-                        mediaUrl: s.media_url,
-                        mediaType: s.media_type,
-                        category: s.category,
-                        status: s.status,
-                        likeCount: s.like_count || 0,
-                        commentCount: s.comment_count || 0,
-                        saveCount: s.save_count || 0,
-                        viewCount: s.view_count || 0,
-                        createdAt: s.created_at,
-                        isFeatured: s.is_featured || false,
-                    })));
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) {
+                    router.push('/login');
+                    return;
                 }
-            }
+                setCurrentUser(session.user);
 
-            // Fetch adoption status if viewing another profile
-            if (targetUserId !== session.user.id) {
-                const { data: adoptionData } = await supabase
-                    .from('adoptions')
-                    .select('status')
-                    .eq('mentor_id', session.user.id)
-                    .eq('freshman_id', targetUserId)
+                // Fetch current user's profile (for authorization)
+                const { data: currProfile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
                     .maybeSingle();
 
-                if (adoptionData) {
-                    setAdoptionStatus(adoptionData.status as any);
+                setCurrentUserProfile(currProfile);
+
+                // Determine target user
+                const targetUserId = searchParams.get('user') || session.user.id;
+                const isViewingOwn = targetUserId === session.user.id;
+
+                // Fetch viewed profile
+                const { data: profileData } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', targetUserId)
+                    .maybeSingle();
+
+                setViewedProfile(profileData);
+
+                // Auto-open Edit Profile Modal if critical info is missing (first visit essentially)
+                if (isViewingOwn && profileData && !profileData.institute && !profileData.course && !profileData.bio) {
+                    setIsEditModalOpen(true);
+                }
+
+                const targetSubId = targetUserId;
+                const userSubs = await fetchUserSubmissions(targetSubId);
+                setSubmissions(userSubs || []);
+
+                // Fetch saved/starred posts
+                const { data: saves } = await supabase
+                    .from('saves')
+                    .select('submission_id')
+                    .eq('user_id', session.user.id);
+
+                if (saves && saves.length > 0) {
+                    const ids = saves.map(s => s.submission_id);
+                    const { data: savedSubs } = await supabase
+                        .from('submissions')
+                        .select('id, title, authors, description, media_url, media_type, category, status, like_count, comment_count, save_count, view_count, created_at, is_featured')
+                        .in('id', ids)
+                        .eq('status', 'aprovado');
+
+                    if (savedSubs) {
+                        setSavedPosts(savedSubs.map(s => ({
+                            id: s.id,
+                            title: s.title,
+                            authors: s.authors,
+                            description: s.description || '',
+                            mediaUrl: s.media_url,
+                            mediaType: s.media_type,
+                            category: s.category,
+                            status: s.status,
+                            likeCount: s.like_count || 0,
+                            commentCount: s.comment_count || 0,
+                            saveCount: s.save_count || 0,
+                            viewCount: s.view_count || 0,
+                            createdAt: s.created_at,
+                            isFeatured: s.is_featured || false,
+                        })));
+                    }
+                }
+
+                // Fetch adoption status if viewing another profile
+                if (targetUserId !== session.user.id) {
+                    const { data: adoptionData } = await supabase
+                        .from('adoptions')
+                        .select('status')
+                        .eq('mentor_id', session.user.id)
+                        .eq('freshman_id', targetUserId)
+                        .maybeSingle();
+
+                    if (adoptionData) {
+                        setAdoptionStatus(adoptionData.status as any);
+                    } else {
+                        setAdoptionStatus(null);
+                    }
                 } else {
                     setAdoptionStatus(null);
                 }
-            } else {
-                setAdoptionStatus(null);
+            } catch (error) {
+                console.error("Error loading lab data:", error);
+            } finally {
+                setIsLoading(false);
             }
-
-            setIsLoading(false);
         };
         loadData();
     }, [router, searchParams]);
@@ -218,10 +223,10 @@ function LabContent() {
                                                     }}
                                                     disabled={!!adoptionStatus}
                                                     className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-lg ${adoptionStatus === 'approved'
-                                                            ? 'bg-green-500 text-white cursor-default'
-                                                            : adoptionStatus === 'pending'
-                                                                ? 'bg-gray-400 text-white cursor-default'
-                                                                : 'bg-brand-yellow text-black hover:bg-brand-yellow/90 shadow-brand-yellow/20'
+                                                        ? 'bg-green-500 text-white cursor-default'
+                                                        : adoptionStatus === 'pending'
+                                                            ? 'bg-gray-400 text-white cursor-default'
+                                                            : 'bg-brand-yellow text-black hover:bg-brand-yellow/90 shadow-brand-yellow/20'
                                                         }`}
                                                 >
                                                     <span className="material-symbols-outlined text-sm">

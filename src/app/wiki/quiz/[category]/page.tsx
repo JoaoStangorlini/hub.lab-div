@@ -9,7 +9,8 @@ import { submitQuizResults } from '@/app/actions/gamification';
 import { Brain, Zap, ArrowRight, CheckCircle2, XCircle, AlertCircle, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
-export default function RadiationQuizPage({ params }: { params: { category: string } }) {
+export default function RadiationQuizPage({ params }: { params: Promise<{ category: string }> }) {
+    const { category } = React.use(params);
     const [questions, setQuestions] = useState<QuizQuestion[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [score, setScore] = useState(0);
@@ -19,24 +20,32 @@ export default function RadiationQuizPage({ params }: { params: { category: stri
     const [isFinished, setIsFinished] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const category = params.category;
     const isGeral = category === 'geral';
 
     useEffect(() => {
         const fetchQuestions = async () => {
+            setLoading(true);
             // Determine query based on category
             let query = supabase.from('quiz_questions').select('*');
 
             if (!isGeral) {
-                // Fetch up to 10 questions for a specific category
+                // Fetch questions for a specific category
                 query = query.eq('category', category).limit(10);
                 const { data, error } = await query;
-                if (data) setQuestions(data);
+                if (data) {
+                    // Shuffle specific category to avoid same order every time
+                    const shuffled = [...data].sort(() => 0.5 - Math.random());
+                    setQuestions(shuffled);
+                }
             } else {
-                // Teste Geral: fetch 10 random questions from unlocked categories
-                // Note: For now, we fetch a bunch and shuffle them in memory or rely on a randomized RPC if needed.
-                // Doing it simply for now: limit 10 (needs to be truly random in production, but we'll fetch limit 30 and shuffle)
-                const { data, error } = await query.neq('category', 'ifusp').neq('category', 'instituto').neq('category', 'pesquisa').neq('category', 'carreira').limit(50);
+                // Teste Geral: fetch random questions from unlocked categories
+                const { data, error } = await query
+                    .neq('category', 'ifusp')
+                    .neq('category', 'instituto')
+                    .neq('category', 'pesquisa')
+                    .neq('category', 'carreira')
+                    .limit(50);
+
                 if (data) {
                     const shuffled = data.sort(() => 0.5 - Math.random()).slice(0, 10);
                     setQuestions(shuffled);
@@ -48,14 +57,14 @@ export default function RadiationQuizPage({ params }: { params: { category: stri
     }, [category, isGeral]);
 
     const handleOptionSelect = (optionIndex: number) => {
-        if (showExplanation) return;
+        if (showExplanation || !questions[currentIndex]) return;
         setSelectedOption(optionIndex);
         setShowExplanation(true);
 
-        const isCorrect = questions[currentIndex].options[optionIndex].isCorrect;
+        const isCorrect = questions[currentIndex].correct_option === optionIndex;
         if (isCorrect) {
             setScore(prev => prev + 1);
-            setXpAccumulated(prev => prev + questions[currentIndex].points);
+            setXpAccumulated(prev => prev + (questions[currentIndex].points || 10));
         }
     };
 
@@ -200,9 +209,9 @@ export default function RadiationQuizPage({ params }: { params: { category: stri
                             </h2>
 
                             <div className="space-y-4 relative z-10 flex-1">
-                                {currentQuestion.options.map((option, idx) => {
+                                {currentQuestion.options.map((optionText, idx) => {
                                     const isSelected = selectedOption === idx;
-                                    const isCorrect = option.isCorrect;
+                                    const isCorrect = currentQuestion.correct_option === idx;
                                     const showAsCorrect = showExplanation && isCorrect;
                                     const showAsWrong = showExplanation && isSelected && !isCorrect;
 
@@ -218,7 +227,7 @@ export default function RadiationQuizPage({ params }: { params: { category: stri
                                                             'bg-white/2 border-white/5 text-gray-400 hover:border-white/20 hover:bg-white/5'}
                                             `}
                                         >
-                                            <span className="font-bold">{option.text}</span>
+                                            <span className="font-bold">{optionText}</span>
                                             {showAsCorrect && <CheckCircle2 className="w-5 h-5 shrink-0" />}
                                             {showAsWrong && <XCircle className="w-5 h-5 shrink-0" />}
                                         </button>
@@ -235,9 +244,9 @@ export default function RadiationQuizPage({ params }: { params: { category: stri
                                         className="mt-8 pt-8 border-t border-white/5"
                                     >
                                         <div className="flex items-start gap-4 mb-6">
-                                            <AlertCircle className={`w-5 h-5 shrink-0 ${currentQuestion.options[selectedOption!].isCorrect ? 'text-green-500' : 'text-red-500'}`} />
+                                            <AlertCircle className={`w-5 h-5 shrink-0 ${selectedOption === currentQuestion.correct_option ? 'text-green-500' : 'text-red-500'}`} />
                                             <p className="text-sm text-gray-400 leading-relaxed font-medium">
-                                                {currentQuestion.explanation}
+                                                {currentQuestion.explanation || (selectedOption === currentQuestion.correct_option ? 'Resposta correta! Você extraiu radiação.' : 'Resposta incorreta. Estude mais a Wiki para estabilizar seu sinal.')}
                                             </p>
                                         </div>
 

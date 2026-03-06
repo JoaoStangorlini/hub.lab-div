@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type SubmissionStep = 'category' | 'format' | 'form';
+export type SubmissionStep = 'category' | 'format' | 'basic' | 'optional';
 
 interface SubmissionState {
     currentStep: SubmissionStep;
@@ -20,6 +20,8 @@ interface SubmissionState {
     selectedFiles: File[];
 
     // Setters
+    watchedValues: any;
+    setWatchedValues: (values: any) => void;
     setStep: (step: SubmissionStep) => void;
     setCategory: (category: string) => void;
     setMediaType: (type: 'image' | 'video' | 'pdf' | 'zip' | 'sdocx' | 'text' | '') => void;
@@ -55,6 +57,8 @@ export const useSubmissionStore = create<SubmissionState>((set) => ({
     testimonial: '',
     selectedFiles: [],
 
+    watchedValues: {},
+    setWatchedValues: (values) => set({ watchedValues: values }),
     setStep: (step) => set({ currentStep: step }),
     setCategory: (category) => set({ category }),
     setMediaType: (mediaType) => set({ mediaType }),

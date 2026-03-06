@@ -139,12 +139,5 @@ export const FORMATS = [
         description: 'Postagem direta em Markdown. Máx 10MB.',
         icon: 'article',
         color: 'brand-blue'
-    },
-    {
-        id: 'other',
-        title: 'Outros',
-        description: 'Outros tipos de arquivos. Máx 10MB.',
-        icon: 'more_horiz',
-        color: 'gray-500'
     }
 ];

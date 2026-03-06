@@ -10,7 +10,7 @@ export function FormatStep() {
 
     const handleNext = () => {
         if (selectedFormat) {
-            setStep('form');
+            setStep('basic');
         }
     };
 

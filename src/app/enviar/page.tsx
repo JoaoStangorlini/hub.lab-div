@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { useSubmissionStore } from '@/store/useSubmissionStore';
 import { MainLayoutWrapper } from '@/components/layout/MainLayoutWrapper';
@@ -72,6 +73,21 @@ export default function SubmitPage() {
                             </div>
                             Sair do Envio
                         </button>
+
+                        {/* Branding */}
+                        <div className="flex items-center gap-3">
+                            <div className="relative">
+                                <Image src="/labdiv-logo.png" alt="Hub Lab-Div" width={32} height={32} className="relative w-8 h-8 object-contain rounded-lg" priority />
+                            </div>
+                            <div className="flex flex-col leading-none">
+                                <div className="text-lg font-[900] tracking-tighter uppercase flex items-center gap-0.5">
+                                    <span className="text-gray-900 dark:text-white">HUB</span>
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red via-brand-blue to-brand-yellow">LAB-DIV</span>
+                                </div>
+                                <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Instituto de Física</span>
+                            </div>
+                        </div>
+
                         <div className="hidden md:block w-64 lg:w-80">
                             <Stepper currentStep={currentStep} />
                         </div>
@@ -104,17 +120,39 @@ export default function SubmitPage() {
 
                         <div className="relative">
                             <AnimatePresence mode="wait" initial={false}>
-                                <motion.div
-                                    key={currentStep}
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                                >
-                                    {currentStep === 'category' && <CategoryStep />}
-                                    {currentStep === 'format' && <FormatStep />}
-                                    {currentStep === 'form' && <FormStep />}
-                                </motion.div>
+                                {currentStep === 'category' && (
+                                    <motion.div
+                                        key="category"
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <CategoryStep />
+                                    </motion.div>
+                                )}
+                                {currentStep === 'format' && (
+                                    <motion.div
+                                        key="format"
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <FormatStep />
+                                    </motion.div>
+                                )}
+                                {(currentStep === 'basic' || currentStep === 'optional') && (
+                                    <motion.div
+                                        key="form-wizard"
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <FormStep />
+                                    </motion.div>
+                                )}
                             </AnimatePresence>
                         </div>
                     </div>

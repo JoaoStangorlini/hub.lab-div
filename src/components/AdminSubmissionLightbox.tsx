@@ -198,7 +198,7 @@ export function AdminSubmissionLightbox({
                 </div>
 
                 {/* Details Section */}
-                <div className="w-full lg:w-[400px] xl:w-[450px] shrink-0 bg-white dark:bg-gray-900 p-6 md:p-8 overflow-y-auto flex flex-col gap-6 max-h-[50vh] lg:max-h-full border-t lg:border-t-0 lg:border-l border-gray-100 dark:border-gray-800">
+                <div className="w-full lg:w-[400px] xl:w-[450px] shrink-0 bg-white dark:bg-gray-900 p-6 md:p-8 overflow-y-auto space-y-6 max-h-[50vh] lg:max-h-full border-t lg:border-t-0 lg:border-l border-gray-100 dark:border-gray-800">
                     <div className="flex flex-wrap items-center gap-2">
                         {statusType === 'aprovado' && (
                             <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-bold tracking-wide uppercase">
@@ -212,6 +212,9 @@ export function AdminSubmissionLightbox({
                         )}
                         <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-300 rounded-full text-xs font-bold tracking-wide uppercase">
                             {item.category}
+                        </span>
+                        <span className="px-3 py-1 bg-brand-blue/10 text-brand-blue rounded-full text-[10px] font-bold tracking-wide uppercase">
+                            Formato: {item.format || item.mediaType}
                         </span>
                         {item.isFeatured && (
                             <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold tracking-wide uppercase">
@@ -228,19 +231,97 @@ export function AdminSubmissionLightbox({
                         <div className="size-10 rounded-full bg-brand-blue/20 flex items-center justify-center text-brand-blue font-bold text-sm uppercase shrink-0">
                             {item.authors.substring(0, 2)}
                         </div>
-                        <div className="flex flex-col">
-                            <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">Autor</span>
-                            <span className="text-sm font-bold text-gray-900 dark:text-white">{item.authors}</span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400">Enviado em: {formatDate(item.createdAt)}</span>
+                        <div className="flex-1 flex flex-col">
+                            <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">Autor Principal</span>
+                            <span className="text-sm font-bold text-gray-900 dark:text-white">
+                                {item.authors}
+                                {item.pseudonym && <span className="text-[10px] font-normal text-brand-blue ml-2 italic">(Usa Pseudônimo: {item.pseudonym})</span>}
+                            </span>
+                            <span className="text-xs text-slate-500 dark:text-slate-400">Ano: {item.eventYear || 'N/A'} • Enviado: {formatDate(item.createdAt)}</span>
                         </div>
                     </div>
 
+                    {item.coAuthors && item.coAuthors.length > 0 && (
+                        <div className="space-y-2">
+                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Co-autores</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {item.coAuthors.map((ca, i) => (
+                                    <span key={i} className="px-2 py-1 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg text-xs text-gray-600 dark:text-gray-300">
+                                        {ca}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {item.whatsapp && (
+                        <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/30 rounded-xl">
+                            <span className="material-symbols-outlined text-green-500 text-lg">call</span>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-bold text-green-600 dark:text-green-500 uppercase tracking-widest">WhatsApp</span>
+                                <span className="text-xs font-bold text-gray-900 dark:text-white">{item.whatsapp}</span>
+                            </div>
+                        </div>
+                    )}
+
                     {item.description && item.mediaType !== 'text' && (
-                        <div className="flex-1">
-                            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2 uppercase tracking-wide">Descrição do Trabalho</h3>
+                        <div className="space-y-2">
+                            <h3 className="text-xs font-black text-gray-900 dark:text-white mb-2 uppercase tracking-widest border-l-2 border-brand-red pl-2">Descrição do Trabalho</h3>
                             <div className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none">
                                 <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>{item.description}</ReactMarkdown>
                             </div>
+                        </div>
+                    )}
+
+                    {item.altText && (
+                        <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Texto Alternativo (Acessibilidade)</h3>
+                            <p className="text-xs text-gray-600 dark:text-gray-300 italic">"{item.altText}"</p>
+                        </div>
+                    )}
+
+                    {item.testimonial && (
+                        <div className="p-4 bg-brand-yellow/5 border border-brand-yellow/20 rounded-2xl relative mt-4 mb-2">
+                            <div className="absolute top-0 right-0 p-2 opacity-10">
+                                <Quote className="w-8 h-8 text-brand-yellow" />
+                            </div>
+                            <h3 className="text-[10px] font-black text-brand-yellow uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                <span className="material-symbols-outlined text-sm">comment</span>
+                                Depoimento do Autor
+                            </h3>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed italic">
+                                "{item.testimonial}"
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Quiz Section */}
+                    {item.quiz && Array.isArray(item.quiz) && item.quiz.length > 0 ? (
+                        <div className="p-4 bg-brand-blue/5 border border-brand-blue/10 rounded-2xl space-y-4">
+                            <h3 className="text-[10px] font-black text-brand-blue uppercase tracking-widest flex items-center gap-2">
+                                <span className="material-symbols-outlined text-lg">quiz</span>
+                                Mini Quiz de Engajamento
+                            </h3>
+                            <div className="space-y-4">
+                                {item.quiz.map((q: any, i: number) => (
+                                    <div key={i} className="space-y-2 pb-3 border-b border-brand-blue/5 last:border-0">
+                                        <p className="text-xs font-bold text-gray-900 dark:text-white">{i + 1}. {q.question}</p>
+                                        <div className="grid grid-cols-1 gap-1.5">
+                                            {q.options?.map((opt: string, oi: number) => (
+                                                <div key={oi} className={`text-[10px] px-2.5 py-1.5 rounded-lg border flex items-center justify-between ${oi === q.correct_option ? 'bg-green-500/10 border-green-500/30 text-green-600 font-bold' : 'bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-gray-500'}`}>
+                                                    <span>{opt}</span>
+                                                    {oi === q.correct_option && <span className="material-symbols-outlined text-xs">check_circle</span>}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="p-4 border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-2xl flex flex-col items-center justify-center gap-2 opacity-60">
+                            <span className="material-symbols-outlined text-gray-400">quiz</span>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sem Quiz cadastrado</span>
                         </div>
                     )}
 

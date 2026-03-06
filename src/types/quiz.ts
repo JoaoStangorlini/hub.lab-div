@@ -1,12 +1,8 @@
-export interface QuizOption {
-    text: string;
-    isCorrect: boolean;
-}
-
 export interface QuizQuestion {
     id: string;
     question: string;
-    options: QuizOption[];
+    options: string[];
+    correct_option: number;
     explanation?: string;
     points: number;
     category?: string;
@@ -19,3 +15,12 @@ export interface QuizAttempt {
     xp_awarded: number;
     created_at: string;
 }
+
+export interface SubmissionQuizQuestion {
+    id: string;
+    question: string;
+    options: string[];
+    correct_option: number; // 0-3
+}
+
+export type SubmissionQuiz = SubmissionQuizQuestion[];
