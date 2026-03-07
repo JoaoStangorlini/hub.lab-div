@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'react-hot-toast';
-import { Loader2, X, User, FileText, Globe, Link, Building2, ShieldCheck, Star, Mail, Phone, FileUp } from 'lucide-react';
+import { Loader2, X, User, FileText, Globe, Link, Building2, ShieldCheck, Star, Mail, Phone, FileUp, Info } from 'lucide-react';
 import { updateProfile, getProfileWithPseudonyms, uploadEnrollmentProof } from '@/app/actions/profiles';
 import { getUserPseudonyms, createPseudonym } from '@/app/actions/submissions';
 import { Profile } from '@/types';
@@ -16,8 +17,9 @@ const profileSchema = z.object({
     bio: z.string().max(160, "Bio muito longa (máx 160)").default(''),
     username: z.string().max(30, "Apelido muito longo").default(''),
     use_nickname: z.boolean().default(false),
-    institute: z.string().default(''),
-    course: z.string().default(''),
+    institute: z.string().min(1, "Selecione um instituto"),
+    other_institute: z.string().optional(),
+    course: z.string().min(1, "Informe seu curso"),
     whatsapp: z.string().optional(),
     entrance_year: z.string().optional(),
     artistic_interests_str: z.string().default(''),
@@ -25,6 +27,14 @@ const profileSchema = z.object({
     new_nickname: z.string().max(30).default(''),
     available_to_mentor: z.boolean().default(false),
     seeking_mentor: z.boolean().default(false),
+}).refine((data) => {
+    if (data.institute === 'Outros' && (!data.other_institute || data.other_institute.trim() === '')) {
+        return false;
+    }
+    return true;
+}, {
+    message: "Informe o nome do instituto",
+    path: ["other_institute"]
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -41,6 +51,7 @@ export function EditProfileModal({ isOpen, onClose, onSuccess }: EditProfileModa
     const [pseudonyms, setPseudonyms] = useState<any[]>([]);
     const [isCreatingNickname, setIsCreatingNickname] = useState(false);
     const [currentStatus, setCurrentStatus] = useState<'pending' | 'approved' | 'rejected'>('approved');
+    const [showHobbiesHelp, setShowHobbiesHelp] = useState(false);
 
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema) as any,
@@ -51,6 +62,7 @@ export function EditProfileModal({ isOpen, onClose, onSuccess }: EditProfileModa
             username: '',
             use_nickname: false,
             institute: '',
+            other_institute: '',
             course: '',
             whatsapp: '',
             entrance_year: '',
@@ -68,6 +80,10 @@ export function EditProfileModal({ isOpen, onClose, onSuccess }: EditProfileModa
     const useNickname = watch('use_nickname');
     const seekingMentor = watch('seeking_mentor');
     const availableToMentor = watch('available_to_mentor');
+    const selectedInstitute = watch('institute');
+
+    const institutes = ['IF-USP', 'IME-USP', 'IQ-USP', 'FFLCH-USP', 'Outros'];
+    const ifCourses = ['Bacharelado', 'Licenciatura', 'Física Médica'];
 
     useEffect(() => {
         if (isOpen) {
@@ -101,7 +117,15 @@ export function EditProfileModal({ isOpen, onClose, onSuccess }: EditProfileModa
             setValue('bio', profile.bio || '');
             setValue('username', profile.username || '');
             setValue('use_nickname', profile.use_nickname || false);
-            setValue('institute', profile.institute || '');
+
+            if (profile.institute && ['IF-USP', 'IME-USP', 'IQ-USP', 'FFLCH-USP'].includes(profile.institute)) {
+                setValue('institute', profile.institute);
+                setValue('other_institute', '');
+            } else if (profile.institute) {
+                setValue('institute', 'Outros');
+                setValue('other_institute', profile.institute);
+            }
+
             setValue('course', profile.course || '');
             setValue('whatsapp', profile.whatsapp || '');
             setValue('entrance_year', profile.entrance_year?.toString() || new Date().getFullYear().toString());
@@ -159,10 +183,11 @@ export function EditProfileModal({ isOpen, onClose, onSuccess }: EditProfileModa
         }
 
         // Remove new_nickname and email (read-only) and map fields to profileData
-        const { new_nickname, email, artistic_interests_str, entrance_year, ...restData } = data;
+        const { new_nickname, email, artistic_interests_str, entrance_year, other_institute, ...restData } = data;
 
         const updatedProfileData = {
             ...restData,
+            institute: data.institute === 'Outros' ? other_institute : data.institute,
             usp_proof_url: proofUrl,
             entrance_year: entrance_year ? parseInt(entrance_year, 10) : null,
             artistic_interests: artistic_interests_str
@@ -405,23 +430,56 @@ export function EditProfileModal({ isOpen, onClose, onSuccess }: EditProfileModa
                                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 flex items-center gap-2">
                                     <Building2 className="w-3 h-3" /> Instituto
                                 </label>
-                                <input
+                                <select
                                     {...register('institute')}
-                                    className="w-full bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 rounded-2xl px-4 py-3 text-sm focus:border-brand-blue/50 outline-none transition-all"
-                                    placeholder="Ex: IFUSP"
-                                />
+                                    className="w-full bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 rounded-2xl px-4 py-3 text-sm focus:border-brand-blue/50 outline-none transition-all appearance-none cursor-pointer"
+                                >
+                                    <option value="" disabled>Selecione seu instituto</option>
+                                    {institutes.map(inst => (
+                                        <option key={inst} value={inst}>{inst}</option>
+                                    ))}
+                                </select>
+                                {errors.institute && <p className="text-[10px] text-brand-red font-bold uppercase ml-1">{errors.institute.message}</p>}
                             </div>
+
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 flex items-center gap-2">
-                                    <Globe className="w-3 h-3" /> Curso
+                                    <Globe className="w-3 h-3" /> {selectedInstitute === 'IF-USP' ? 'Curso na Física' : 'Nome do Curso'}
                                 </label>
-                                <input
-                                    {...register('course')}
-                                    className="w-full bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 rounded-2xl px-4 py-3 text-sm focus:border-brand-blue/50 outline-none transition-all"
-                                    placeholder="Ex: Bacharelado em Física"
-                                />
+                                {selectedInstitute === 'IF-USP' ? (
+                                    <select
+                                        {...register('course')}
+                                        className="w-full bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 rounded-2xl px-4 py-3 text-sm focus:border-brand-blue/50 outline-none transition-all appearance-none cursor-pointer"
+                                    >
+                                        <option value="" disabled>Selecione seu curso</option>
+                                        {ifCourses.map(course => (
+                                            <option key={course} value={course}>{course}</option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <input
+                                        {...register('course')}
+                                        className="w-full bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 rounded-2xl px-4 py-3 text-sm focus:border-brand-blue/50 outline-none transition-all"
+                                        placeholder="Ex: Bacharelado em Física"
+                                    />
+                                )}
+                                {errors.course && <p className="text-[10px] text-brand-red font-bold uppercase ml-1">{errors.course.message}</p>}
                             </div>
                         </div>
+
+                        {selectedInstitute === 'Outros' && (
+                            <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 flex items-center gap-2">
+                                    <Building2 className="w-3 h-3" /> Qual o nome do seu Instituto/Escola?
+                                </label>
+                                <input
+                                    {...register('other_institute')}
+                                    className="w-full bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 rounded-2xl px-4 py-3 text-sm focus:border-brand-blue/50 outline-none transition-all border-brand-yellow/30"
+                                    placeholder="Ex: Poli, EACH, Escola Secundária, etc."
+                                />
+                                {errors.other_institute && <p className="text-[10px] text-brand-red font-bold uppercase ml-1">{errors.other_institute.message}</p>}
+                            </div>
+                        )}
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
@@ -434,15 +492,57 @@ export function EditProfileModal({ isOpen, onClose, onSuccess }: EditProfileModa
                                     placeholder="(11) 98765-4321"
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 flex items-center gap-2">
-                                    <Star className="w-3 h-3" /> Hobbies e Artes
+                            <div className="space-y-2 relative">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Star className="w-3 h-3" /> Hobbies e Artes
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onMouseEnter={() => setShowHobbiesHelp(true)}
+                                        onMouseLeave={() => setShowHobbiesHelp(false)}
+                                        onClick={() => setShowHobbiesHelp(!showHobbiesHelp)}
+                                        className="p-1 hover:bg-brand-blue/10 rounded-full transition-colors text-brand-blue group"
+                                    >
+                                        <Info className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                                    </button>
                                 </label>
                                 <input
                                     {...register('artistic_interests_str')}
-                                    className="w-full bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 rounded-2xl px-4 py-3 text-sm focus:border-brand-blue/50 outline-none transition-all"
-                                    placeholder="Ex: Desenho, Música, RPG"
+                                    className="w-full bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 rounded-2xl px-4 py-3 text-sm focus:border-brand-blue/50 outline-none transition-all placeholder:text-gray-400"
+                                    placeholder="Ex: Fotografia analógica, RPG de mesa, Design de interfaces, Tocar violão..."
                                 />
+
+                                <AnimatePresence>
+                                    {showHobbiesHelp && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                                            className="absolute left-0 right-0 z-50 mt-2 p-5 bg-white dark:bg-[#252525] border border-gray-200 dark:border-white/10 rounded-3xl shadow-2xl backdrop-blur-xl"
+                                        >
+                                            <div className="space-y-3">
+                                                <p className="text-[10px] text-gray-900 dark:text-white leading-relaxed font-bold uppercase tracking-tight">
+                                                    Não sabe o que colocar? Pense no que você faz para descansar a mente:
+                                                </p>
+                                                <ul className="space-y-2 text-[10px] text-gray-500 font-mono list-none">
+                                                    <li>• <span className="text-brand-blue font-black">Artes:</span> Fotografia, Desenho, Pintura, Música, Escrita, Cinema.</li>
+                                                    <li>• <span className="text-brand-blue font-black">Jogos:</span> RPG, Boardgames, Videogames, Xadrez, Card games.</li>
+                                                    <li>• <span className="text-brand-blue font-black">Tech & Maker:</span> Arduino, Impressão 3D, Robótica, Game Dev, Design.</li>
+                                                    <li>• <span className="text-brand-blue font-black">Outros:</span> Trilhas, Ciclismo, Escalada, Leitura, Astronomia, Culinária.</li>
+                                                </ul>
+                                                <div className="pt-2 border-t border-gray-100 dark:border-white/5">
+                                                    <p className="text-[9px] text-brand-blue font-black uppercase tracking-tighter italic text-center">
+                                                        O Hub é sobre quem você é, não apenas o Lattes!
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Tooltip Arrow */}
+                                            <div className="absolute -top-1 right-6 w-2 h-2 bg-white dark:bg-[#252525] rotate-45 border-l border-t border-gray-200 dark:border-white/10" />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
                         </div>
 
