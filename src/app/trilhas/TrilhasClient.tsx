@@ -8,6 +8,7 @@ import { Zap, Atom, Microscope, Binary, LayoutGrid, Timer, Layers, ShieldCheck, 
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'react-hot-toast';
+import { useSearch } from '@/providers/SearchProvider';
 
 const AXIS_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
     bach: { label: 'Bacharelado', color: '#00A3FF', icon: Atom },
@@ -41,6 +42,23 @@ interface Trail {
     prerequisites: string[] | null;
 }
 
+function HighlightText({ text, highlight }: { text: string; highlight: string }) {
+    if (!highlight.trim()) return <>{text}</>;
+    const regex = new RegExp(`(${highlight})`, 'gi');
+    const parts = text.split(regex);
+    return (
+        <span>
+            {parts.map((part, i) =>
+                part.toLowerCase() === highlight.toLowerCase() ? (
+                    <mark key={i} className="bg-brand-yellow font-black text-black px-0.5 rounded-sm shadow-[0_0_10px_#FFD700]">{part}</mark>
+                ) : (
+                    <span key={i}>{part}</span>
+                )
+            )}
+        </span>
+    );
+}
+
 export default function TrilhasClient({
     initialTrails,
     cursandoTrails = [],
@@ -58,6 +76,7 @@ export default function TrilhasClient({
     const [visibleCount, setVisibleCount] = useState(9); // Pagination: 3x3 block
     const [visibleCountDash, setVisibleCountDash] = useState(6);
     const [completedIds, setCompletedIds] = useState<string[]>(initialCompletedIds);
+    const { query } = useSearch();
     const [cursandoIds, setCursandoIds] = useState<string[]>(cursandoTrails.map(t => t.id));
     const [isUpdating, setIsUpdating] = useState<string | null>(null);
     const [isSyncing, setIsSyncing] = useState(false);
@@ -107,9 +126,10 @@ export default function TrilhasClient({
             const axisMatch = !axisFilter || t.axis === axisFilter;
             const categoryMatch = !categoryFilter || t.effectiveCategory === categoryFilter;
             const semesterMatch = !semesterFilter || t.excitation_level === semesterFilter;
-            return axisMatch && categoryMatch && semesterMatch;
+            const searchMatch = !query || t.title.toLowerCase().includes(query.toLowerCase()) || (t.course_code && t.course_code.toLowerCase().includes(query.toLowerCase()));
+            return axisMatch && categoryMatch && semesterMatch && searchMatch;
         });
-    }, [initialTrails, axisFilter, categoryFilter, semesterFilter, userProfile]);
+    }, [initialTrails, axisFilter, categoryFilter, semesterFilter, userProfile, query]);
 
     // Dashboard Stats Logic
     const stats = useMemo(() => {
@@ -754,7 +774,7 @@ export default function TrilhasClient({
                                                         style={{ '--hover-color': axisCfg.color } as React.CSSProperties}
                                                     >
                                                         <span className="group-hover:text-[var(--hover-color)] transition-colors">
-                                                            {trail.title}
+                                                            <HighlightText text={trail.title} highlight={query} />
                                                         </span>
                                                     </h2>
                                                     {trail.description && (
