@@ -51,7 +51,7 @@ export function SobreClient({ initialTestimonials }: SobreClientProps) {
                     <p className="text-gray-600 dark:text-gray-400 flex-1 leading-relaxed">
                         O coração do projeto é a construção de um grande Arquivo visual. Capturamos o cotidiano dos laboratórios, o maquinário e os bastidores das pesquisas de forma profissional. Nosso objetivo é ter um banco de imagens institucionais de alta qualidade, pronto para suprir demandas de jornalistas, designers e pesquisadores.
                     </p>
-                    <Link href="/arquivo-labdiv" className="mt-6 text-brand-blue font-semibold hover:underline flex items-center gap-1">
+                    <Link href="/arquivo-labdiv" className="mt-6 text-brand-yellow font-semibold hover:underline flex items-center gap-1">
                         Explore o acervo <ArrowRight className="w-4 h-4" />
                     </Link>
                 </div>
@@ -182,29 +182,16 @@ export function SobreClient({ initialTestimonials }: SobreClientProps) {
                     <div className="h-px bg-gradient-to-r from-brand-blue/20 via-brand-red/20 to-transparent w-full mb-8"></div>
                 </div>
 
-                <div className="glass-card rounded-3xl p-10 hover:border-brand-blue/20 transition-all group h-full flex flex-col hover:shadow-lg">
-                    <div className="size-12 rounded-2xl bg-brand-blue/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                        <Star className="text-brand-blue w-6 h-6" />
+                <div className="glass-card rounded-3xl p-10 hover:border-brand-red/20 transition-all group h-full flex flex-col hover:shadow-lg">
+                    <div className="size-12 rounded-2xl bg-brand-red/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <Star className="text-brand-red w-6 h-6" />
                     </div>
                     <h4 className="text-xl font-black uppercase italic tracking-tight mb-4">Grande Colisor</h4>
                     <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-1">
                         Muito mais que um site, uma rede. O Colisor integra iniciativas como o Parque CienTec, o Boletim Supernova e o DigitalLab, conectando espaços físicos e projetos de extensão do IFUSP e da USP em um só mapa de visibilidade.
                     </p>
-                    <Link href="/colisor" className="text-[10px] font-black uppercase tracking-widest text-brand-blue flex items-center gap-2 group/link">
+                    <Link href="/colisor" className="text-[10px] font-black uppercase tracking-widest text-brand-red flex items-center gap-2 group/link">
                         Explorar Colisor <ArrowRight className="size-3 group-hover/link:translate-x-1 transition-transform" />
-                    </Link>
-                </div>
-
-                <div className="glass-card rounded-3xl p-10 hover:border-brand-red/20 transition-all group h-full flex flex-col hover:shadow-lg">
-                    <div className="size-12 rounded-2xl bg-brand-red/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                        <ExternalLink className="text-brand-red w-6 h-6" />
-                    </div>
-                    <h4 className="text-xl font-black uppercase italic tracking-tight mb-4">Mapa de Mídia</h4>
-                    <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-1">
-                        A geolocalização da ciência. Através do Mapa, visualizamos o alcance das nossas produções e a localização dos laboratórios, transformando dados brutos em um panorama visual do impacto científico do Instituto.
-                    </p>
-                    <Link href="/mapa" className="text-[10px] font-black uppercase tracking-widest text-brand-red flex items-center gap-2 group/link">
-                        Ver Impacto no Mapa <ArrowRight className="size-3 group-hover/link:translate-x-1 transition-transform" />
                     </Link>
                 </div>
 
@@ -223,14 +210,14 @@ export function SobreClient({ initialTestimonials }: SobreClientProps) {
 
                 <div className="glass-card rounded-3xl p-10 hover:border-brand-blue/20 transition-all group h-full flex flex-col hover:shadow-lg">
                     <div className="size-12 rounded-2xl bg-brand-blue/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                        <BookOpen className="text-brand-blue w-6 h-6" />
+                        <ExternalLink className="text-brand-blue w-6 h-6" />
                     </div>
-                    <h4 className="text-xl font-black uppercase italic tracking-tight mb-4">Wiki do IFUSP</h4>
+                    <h4 className="text-xl font-black uppercase italic tracking-tight mb-4">Mapa de Mídia</h4>
                     <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-1">
-                        A enciclopédia colaborativa do Instituto de Física. Uma base de conhecimento construída pela comunidade com anotações, guias de sobrevivência, explicações sobre o funcionamento do instituto, seus departamentos, laboratórios e a vida acadêmica no dia a dia.
+                        A geolocalização da ciência. Através do Mapa, visualizamos o alcance das nossas produções e a localização dos laboratórios, transformando dados brutos em um panorama visual do impacto científico do Instituto.
                     </p>
-                    <Link href="/wiki" className="text-[10px] font-black uppercase tracking-widest text-brand-blue flex items-center gap-2 group/link">
-                        Explorar Wiki <ArrowRight className="size-3 group-hover/link:translate-x-1 transition-transform" />
+                    <Link href="/mapa" className="text-[10px] font-black uppercase tracking-widest text-brand-blue flex items-center gap-2 group/link">
+                        Ver Impacto no Mapa <ArrowRight className="size-3 group-hover/link:translate-x-1 transition-transform" />
                     </Link>
                 </div>
 
@@ -244,6 +231,32 @@ export function SobreClient({ initialTestimonials }: SobreClientProps) {
                     </p>
                     <Link href="/trilhas" className="text-[10px] font-black uppercase tracking-widest text-brand-red flex items-center gap-2 group/link">
                         Ver Trilhas <ArrowRight className="size-3 group-hover/link:translate-x-1 transition-transform" />
+                    </Link>
+                </div>
+
+                <div className="glass-card rounded-3xl p-10 hover:border-brand-yellow/20 transition-all group h-full flex flex-col hover:shadow-lg">
+                    <div className="size-12 rounded-2xl bg-brand-yellow/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <span className="material-symbols-outlined text-brand-yellow text-2xl">science</span>
+                    </div>
+                    <h4 className="text-xl font-black uppercase italic tracking-tight mb-4">Laboratório Pessoal</h4>
+                    <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-1">
+                        Seu espaço privado no Hub. Reúna suas publicações, acompanhe seu nível de radiação (XP), gerencie suas trilhas em andamento e visualize seu impacto na comunidade científica do IFUSP — tudo em um único painel personalizado.
+                    </p>
+                    <Link href="/lab" className="text-[10px] font-black uppercase tracking-widest text-brand-yellow flex items-center gap-2 group/link">
+                        Acessar Lab <ArrowRight className="size-3 group-hover/link:translate-x-1 transition-transform" />
+                    </Link>
+                </div>
+
+                <div className="glass-card rounded-3xl p-10 hover:border-brand-blue/20 transition-all group h-full flex flex-col hover:shadow-lg">
+                    <div className="size-12 rounded-2xl bg-brand-blue/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <BookOpen className="text-brand-blue w-6 h-6" />
+                    </div>
+                    <h4 className="text-xl font-black uppercase italic tracking-tight mb-4">Wiki do IFUSP</h4>
+                    <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-1">
+                        A enciclopédia colaborativa do Instituto de Física. Uma base de conhecimento construída pela comunidade com anotações, guias de sobrevivência, explicações sobre o funcionamento do instituto, seus departamentos, laboratórios e a vida acadêmica no dia a dia.
+                    </p>
+                    <Link href="/wiki" className="text-[10px] font-black uppercase tracking-widest text-brand-blue flex items-center gap-2 group/link">
+                        Explorar Wiki <ArrowRight className="size-3 group-hover/link:translate-x-1 transition-transform" />
                     </Link>
                 </div>
             </div>
@@ -262,7 +275,7 @@ export function SobreClient({ initialTestimonials }: SobreClientProps) {
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                             <div className="max-w-2xl">
                                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white flex items-center gap-4 mb-3">
-                                    <div className="w-12 h-12 bg-brand-yellow text-black rounded-2xl flex items-center justify-center shadow-lg shadow-brand-yellow/20">
+                                    <div className="w-12 h-12 bg-brand-red text-white rounded-2xl flex items-center justify-center shadow-lg shadow-brand-red/20">
                                         <Star className="w-7 h-7" />
                                     </div>
                                     Impacto e Conquistas
@@ -273,7 +286,7 @@ export function SobreClient({ initialTestimonials }: SobreClientProps) {
                             </div>
                             <Link
                                 href="/?category=Impacto e Conquistas"
-                                className="bg-brand-yellow text-black px-8 py-4 rounded-2xl font-bold hover:shadow-xl hover:-translate-y-1 transition-all flex items-center gap-2 group whitespace-nowrap"
+                                className="bg-brand-red text-white px-8 py-4 rounded-2xl font-bold hover:shadow-xl hover:-translate-y-1 transition-all flex items-center gap-2 group whitespace-nowrap"
                             >
                                 Ver todas as conquistas
                                 <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />

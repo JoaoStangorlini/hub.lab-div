@@ -23,14 +23,15 @@ import { Avatar } from '../ui/Avatar';
 import { supabase } from '@/lib/supabase';
 
 const mainLinks = [
-    { name: 'Fluxo', href: '/', icon: <span className="material-symbols-outlined text-2xl">grain</span> },
-    { name: 'Lab-Div', href: '/arquivo-labdiv', icon: <Megaphone className="w-6 h-6" /> },
-    { name: 'Grande Colisor', href: '/colisor', icon: <Network className="w-6 h-6" /> },
-    { name: 'Wiki', href: AppRoutes.WIKI, icon: <BookOpen className="w-6 h-6" /> },
-    { name: 'Trilhas', href: '/trilhas', icon: <Route className="w-6 h-6" /> },
-    { name: 'Pergunte', href: '/perguntas', icon: <HelpCircle className="w-6 h-6" /> },
-    { name: 'Mapa', href: '/mapa', icon: <Map className="w-6 h-6" /> },
-    { name: 'Sobre', href: '/sobre', icon: <span className="material-symbols-outlined text-2xl">info</span> },
+    { name: 'Fluxo', href: '/', icon: <span className="material-symbols-outlined text-2xl">grain</span>, color: 'brand-blue' },
+    { name: 'Lab-Div', href: '/arquivo-labdiv', icon: <Megaphone className="w-6 h-6" />, color: 'brand-yellow' },
+    { name: 'Grande Colisor', href: '/colisor', icon: <Network className="w-6 h-6" />, color: 'brand-red' },
+    { name: 'Wiki', href: AppRoutes.WIKI, icon: <BookOpen className="w-6 h-6" />, color: 'brand-blue' },
+    { name: 'Trilhas', href: '/trilhas', icon: <Route className="w-6 h-6" />, color: 'brand-red' },
+    { name: 'Pergunte', href: '/perguntas', icon: <HelpCircle className="w-6 h-6" />, color: 'brand-yellow' },
+    { name: 'Mapa', href: '/mapa', icon: <Map className="w-6 h-6" />, color: 'brand-blue' },
+    { name: 'Lab Pessoal', href: '/lab', icon: <span className="material-symbols-outlined text-2xl">science</span>, color: 'brand-yellow' },
+    { name: 'Sobre', href: '/sobre', icon: <span className="material-symbols-outlined text-2xl">info</span>, color: 'brand-red' },
 ];
 
 const secondaryLinks = [
@@ -74,13 +75,22 @@ export const SidebarLeft = ({ userId }: { userId?: string }) => {
             <nav className="flex flex-col gap-1">
                 {mainLinks.map((link) => {
                     const isActive = pathname === link.href;
+                    const colorMap: Record<string, { bg: string; text: string; border: string; hoverBorder: string }> = {
+                        'brand-blue': { bg: 'bg-brand-blue/10', text: 'text-brand-blue', border: 'border-l-brand-blue', hoverBorder: 'hover:border-l-brand-blue' },
+                        'brand-red': { bg: 'bg-brand-red/10', text: 'text-brand-red', border: 'border-l-brand-red', hoverBorder: 'hover:border-l-brand-red' },
+                        'brand-yellow': { bg: 'bg-brand-yellow/10', text: 'text-brand-yellow', border: 'border-l-brand-yellow', hoverBorder: 'hover:border-l-brand-yellow' },
+                    };
+                    const c = colorMap[link.color] || colorMap['brand-blue'];
                     return (
                         <Link
                             key={link.href}
                             href={link.href}
-                            className={`flex items-center gap-4 px-4 py-3 rounded-2xl transition-all group ${isActive ? 'bg-brand-blue/10 text-brand-blue' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'}`}
+                            className={`flex items-center gap-4 px-4 py-3 rounded-2xl transition-all group border-l-[3px] ${isActive
+                                ? `${c.bg} ${c.text} ${c.border}`
+                                : `border-l-transparent ${c.hoverBorder} text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white`
+                                }`}
                         >
-                            <span className={`transition-transform group-hover:scale-110 ${isActive ? 'text-brand-blue' : ''}`}>
+                            <span className={`transition-transform group-hover:scale-110 ${isActive ? c.text : ''}`}>
                                 {link.icon}
                             </span>
                             <span className={`font-bold text-base ${isActive ? 'text-gray-900 dark:text-white' : ''}`}>
@@ -95,7 +105,7 @@ export const SidebarLeft = ({ userId }: { userId?: string }) => {
             <div className="px-4 mt-4">
                 <Link
                     href="/emaranhamento"
-                    className={`flex items-center gap-4 px-4 py-3 rounded-2xl transition-all group mb-4 ${pathname === '/emaranhamento' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'}`}
+                    className={`flex items-center gap-4 px-4 py-3 rounded-2xl transition-all group mb-4 border-l-[3px] ${pathname === '/emaranhamento' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20 border-l-brand-blue' : 'border-l-transparent hover:border-l-brand-blue text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'}`}
                 >
                     <Network className="w-6 h-6 group-hover:scale-110 transition-transform" />
                     <div className="flex flex-col overflow-hidden">
