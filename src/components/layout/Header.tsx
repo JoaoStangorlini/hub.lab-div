@@ -40,6 +40,56 @@ export function Header() {
 
     const [user, setUser] = useState<UserMinimalDTO | null>(null);
     const { user: authUser } = useAuth();
+    const [matchCount, setMatchCount] = useState(0);
+    const [currentMatch, setCurrentMatch] = useState(0);
+    const inputRef = React.useRef<HTMLInputElement>(null);
+    const lastFindQuery = React.useRef<string>('');
+
+    // Debounced F3 Search Logic
+    useEffect(() => {
+        if (!query.trim() || query === lastFindQuery.current) {
+            if (!query.trim()) {
+                setMatchCount(0);
+                setCurrentMatch(0);
+                lastFindQuery.current = '';
+            }
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            const input = inputRef.current;
+            const start = input?.selectionStart;
+            const end = input?.selectionEnd;
+
+            // @ts-ignore
+            const found = window.find(query, false, false, true, false, true, false);
+            lastFindQuery.current = query;
+
+            if (found) {
+                setCurrentMatch(1);
+                const bodyText = document.body.innerText || '';
+                try {
+                    const matches = bodyText.match(new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'));
+                    setMatchCount(matches ? matches.length : 0);
+                } catch (e) {
+                    setMatchCount(0);
+                }
+            } else {
+                setMatchCount(0);
+                setCurrentMatch(0);
+            }
+
+            // Restore focus and cursor position
+            if (input) {
+                input.focus();
+                if (typeof start === 'number' && typeof end === 'number') {
+                    input.setSelectionRange(start, end);
+                }
+            }
+        }, 400); // 400ms debounce to ensure smooth typing while find-in-page runs
+
+        return () => clearTimeout(timer);
+    }, [query]);
 
     // Search Suggestions
     const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
@@ -153,13 +203,43 @@ export function Header() {
                     <div className="flex-1 max-w-2xl relative group hidden md:block" id="search-container">
                         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-blue transition-colors">search</span>
                         <input
+                            ref={inputRef}
                             type="text"
                             placeholder={placeholder}
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    if (query.trim()) {
+                                        const forward = !e.shiftKey;
+                                        // @ts-ignore
+                                        const found = window.find(query, false, !forward, true, false, true, false);
+
+                                        if (found) {
+                                            setCurrentMatch(prev => {
+                                                if (forward) return prev < matchCount ? prev + 1 : 1;
+                                                return prev > 1 ? prev - 1 : matchCount;
+                                            });
+                                        } else {
+                                            // Wrap around
+                                            // @ts-ignore
+                                            window.find(query, false, !forward, true, false, true, true);
+                                            setCurrentMatch(forward ? 1 : matchCount);
+                                        }
+                                        inputRef.current?.focus();
+                                    }
+                                }
+                            }}
                             onFocus={() => setSuggestionsVisible(true)}
-                            className="w-full bg-gray-100 dark:bg-white/5 border-none rounded-2xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-brand-blue/30 outline-none transition-all dark:text-white"
+                            className="w-full bg-gray-100 dark:bg-white/5 border-none rounded-2xl py-3 pl-12 pr-16 text-sm focus:ring-2 focus:ring-brand-blue/30 outline-none transition-all dark:text-white"
                         />
+                        {query && matchCount > 0 && (
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 px-2 py-1 bg-brand-blue/10 rounded-lg pointer-events-none">
+                                <span className="text-[10px] font-black text-brand-blue/80 uppercase tracking-tighter">
+                                    {currentMatch}/{matchCount}
+                                </span>
+                            </div>
+                        )}
 
                         {/* Search Suggestions Dropdown V8.0 - CSS Animation for Performance */}
                         {isSuggestionsVisible && (isSearchLoading || suggestions.length > 0) && (

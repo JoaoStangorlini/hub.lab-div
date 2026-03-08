@@ -205,8 +205,8 @@ export async function stopImpersonation() {
 export async function toggleProfileVisibility(profileId: string, isVisible: boolean) {
     if (!await checkIsAdmin()) return { error: 'Não autorizado' };
 
-    const adminClient = createAdminSupabase();
-    const { error } = await adminClient
+    const supabase = await createServerSupabase();
+    const { error } = await supabase
         .from('profiles')
         .update({ is_visible: isVisible })
         .eq('id', profileId);
@@ -221,8 +221,8 @@ export async function toggleProfileVisibility(profileId: string, isVisible: bool
 export async function toggleLabdivMember(profileId: string, isLabdiv: boolean) {
     if (!await checkIsAdmin()) return { error: 'Não autorizado' };
 
-    const adminClient = createAdminSupabase();
-    const { error } = await adminClient
+    const supabase = await createServerSupabase();
+    const { error } = await supabase
         .from('profiles')
         .update({ is_labdiv: isLabdiv })
         .eq('id', profileId);
@@ -236,17 +236,25 @@ export async function toggleLabdivMember(profileId: string, isLabdiv: boolean) {
 export async function updateProfileAsAdmin(profileId: string, updates: Partial<Profile>) {
     if (!await checkIsAdmin()) return { error: 'Não autorizado' };
 
-    const adminClient = createAdminSupabase();
-    const { error } = await adminClient
+    const supabase = await createServerSupabase();
+    const { error } = await supabase
         .from('profiles')
         .update({
             full_name: updates.full_name,
             username: updates.username,
             bio: updates.bio,
             institute: updates.institute,
+            course: updates.course,
+            whatsapp: updates.whatsapp,
+            entrance_year: updates.entrance_year,
+            lattes_url: updates.lattes_url,
+            artistic_interests: updates.artistic_interests,
             role: updates.role,
             is_labdiv: updates.is_labdiv,
-            is_visible: updates.is_visible
+            is_visible: updates.is_visible,
+            available_to_mentor: updates.available_to_mentor,
+            seeking_mentor: updates.seeking_mentor,
+            review_status: updates.review_status
         })
         .eq('id', profileId);
 
@@ -254,6 +262,7 @@ export async function updateProfileAsAdmin(profileId: string, updates: Partial<P
 
     revalidatePath('/admin/papeis');
     revalidatePath('/lab');
+    revalidatePath(`/autor/${profileId}`);
     return { success: true };
 }
 

@@ -17,32 +17,35 @@ async function getTrailData(id: string) {
     if (trailError || !trail) return null;
 
     // Fetch initial batch of materials (limit 6 for v2 architecture)
-    const { data: materials } = await supabase
+    const { data: materials, count: totalMaterials, error: matError } = await supabase
         .from('trail_submissions')
         .select(`
-            id,
+            trail_id,
             topic_index,
             sort_order,
-            submissions (
+            submissions!inner (
                 id,
                 title,
                 authors,
+                description,
                 media_type,
                 media_url,
-                description,
-                course_code,
-                academic_unit
+                created_at,
+                views,
+                like_count,
+                status
             )
-        `)
+        `, { count: 'exact' })
         .eq('trail_id', id)
+        .eq('submissions.status', 'aprovado')
         .order('sort_order', { ascending: true })
         .limit(6);
 
-    // Get total count for pagination visibility
-    const { count: totalMaterials } = await supabase
-        .from('trail_submissions')
-        .select('id', { count: 'exact', head: true })
-        .eq('trail_id', id);
+    if (matError) {
+        console.error(' [DEBUG] matError:', matError);
+    }
+
+
 
     // Resolve prerequisite trail names
     let prerequisiteTrails: { course_code: string; title: string; id: string }[] = [];
@@ -106,7 +109,7 @@ async function getTrailData(id: string) {
         materials: materials?.map((m: any) => ({
             ...m.submissions,
             topic_index: m.topic_index,
-            submission_link_id: m.id
+            submission_link_id: `${m.trail_id}-${m.submissions.id}`
         })) || [],
         totalMaterials: totalMaterials || 0,
         userProgress: userProgress || null,

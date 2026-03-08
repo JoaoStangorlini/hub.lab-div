@@ -88,21 +88,21 @@ export default function TrailDetailsClient({
             const { data, error } = await supabase
                 .from('trail_submissions')
                 .select(`
-                    id,
+                    trail_id,
                     topic_index,
                     sort_order,
-                    submissions (
+                    submissions!inner (
                         id,
                         title,
                         authors,
                         media_type,
                         media_url,
                         description,
-                        course_code,
-                        academic_unit
+                        status
                     )
                 `)
                 .eq('trail_id', trail.id)
+                .eq('submissions.status', 'aprovado')
                 .order('sort_order', { ascending: true })
                 .range(materials.length, materials.length + 5);
 
@@ -110,7 +110,7 @@ export default function TrailDetailsClient({
                 const newItems = data.map((m: any) => ({
                     ...m.submissions,
                     topic_index: m.topic_index,
-                    submission_link_id: m.id
+                    submission_link_id: `${m.trail_id}-${m.submissions.id}`
                 }));
                 setMaterials(prev => [...prev, ...newItems]);
             }
@@ -536,7 +536,7 @@ export default function TrailDetailsClient({
                             {materials.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {materials.map((item: any) => {
-                                        const isOriginalSubject = item.course_code === trail.course_code;
+                                        const isOriginalSubject = !item.course_code || item.course_code === trail.course_code;
                                         return (
                                             <motion.div
                                                 key={item.submission_link_id}
@@ -558,7 +558,7 @@ export default function TrailDetailsClient({
                                                             <span className="font-mono text-[9px] text-[#00A3FF] uppercase font-bold tracking-tighter">
                                                                 {item.media_type}
                                                             </span>
-                                                            {!isOriginalSubject && (
+                                                            {!isOriginalSubject && item.course_code && (
                                                                 <span className="font-mono text-[8px] px-1.5 py-0.5 bg-gray-800 text-gray-400 rounded border border-gray-700">
                                                                     Via: {item.course_code}
                                                                 </span>

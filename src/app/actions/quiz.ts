@@ -106,3 +106,94 @@ export async function checkQuizStatus(submissionId: string) {
         response: data
     };
 }
+
+// ─── Admin: Save/Update Quiz ────────────────────────────────────
+import { z } from 'zod';
+
+const QuizQuestionSchema = z.object({
+    id: z.string(),
+    question: z.string().min(3, 'Pergunta muito curta'),
+    options: z.array(z.string().min(1)).length(4, 'Cada pergunta deve ter 4 opções'),
+    correct_option: z.number().min(0).max(3),
+});
+
+const SaveQuizSchema = z.object({
+    submissionId: z.string().uuid(),
+    questions: z.array(QuizQuestionSchema).min(1, 'O quiz precisa de pelo menos 1 pergunta'),
+});
+
+export async function saveSubmissionQuiz(submissionId: string, questions: any[]) {
+    const parsed = SaveQuizSchema.safeParse({ submissionId, questions });
+    if (!parsed.success) {
+        return { success: false, error: parsed.error.issues[0]?.message || 'Dados inválidos.' };
+    }
+
+    const supabase = await createServerSupabase();
+
+    // Auth check
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+        return { success: false, error: 'Não autenticado.' };
+    }
+
+    // Admin role check
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+    if (!profile || (profile.role !== 'admin' && profile.role !== 'moderator')) {
+        return { success: false, error: 'Permissão negada. Somente administradores podem gerenciar quizzes.' };
+    }
+
+    // Save quiz to submissions table
+    const { error: updateError } = await supabase
+        .from('submissions')
+        .update({ quiz: parsed.data.questions })
+        .eq('id', submissionId);
+
+    if (updateError) {
+        console.error('Error saving quiz:', updateError);
+        return { success: false, error: 'Erro ao salvar quiz no banco de dados.' };
+    }
+
+    revalidatePath(`/arquivo/${submissionId}`);
+    revalidatePath('/admin/acervo');
+
+    return { success: true };
+}
+
+export async function deleteSubmissionQuiz(submissionId: string) {
+    const supabase = await createServerSupabase();
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+        return { success: false, error: 'Não autenticado.' };
+    }
+
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+    if (!profile || (profile.role !== 'admin' && profile.role !== 'moderator')) {
+        return { success: false, error: 'Permissão negada.' };
+    }
+
+    const { error } = await supabase
+        .from('submissions')
+        .update({ quiz: null })
+        .eq('id', submissionId);
+
+    if (error) {
+        console.error('Error deleting quiz:', error);
+        return { success: false, error: 'Erro ao remover quiz.' };
+    }
+
+    revalidatePath(`/arquivo/${submissionId}`);
+    revalidatePath('/admin/acervo');
+
+    return { success: true };
+}

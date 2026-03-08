@@ -29,6 +29,8 @@ const profileSchema = z.object({
     new_nickname: z.string().max(30).default(''),
     available_to_mentor: z.boolean().default(false),
     seeking_mentor: z.boolean().default(false),
+    is_labdiv: z.boolean().optional(),
+    is_visible: z.boolean().optional(),
 }).refine((data) => {
     if (data.institute === 'Outros' && (!data.other_institute || data.other_institute.trim() === '')) {
         return false;
@@ -75,6 +77,8 @@ export function EditProfileModal({ isOpen, onClose, onSuccess, adminMode = false
             new_nickname: '',
             available_to_mentor: false,
             seeking_mentor: false,
+            is_labdiv: false,
+            is_visible: true,
         }
     });
 
@@ -154,6 +158,8 @@ export function EditProfileModal({ isOpen, onClose, onSuccess, adminMode = false
             setValue('lattes_url', profile.lattes_url || '');
             setValue('available_to_mentor', profile.available_to_mentor || false);
             setValue('seeking_mentor', profile.seeking_mentor || false);
+            setValue('is_labdiv', profile.is_labdiv || false);
+            setValue('is_visible', profile.is_visible ?? true);
             setProfileData(profile);
             setPseudonyms(pNames);
         }
@@ -274,14 +280,22 @@ export function EditProfileModal({ isOpen, onClose, onSuccess, adminMode = false
                                 <div className="flex items-center justify-between">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-brand-red">Membro Lab-Div</span>
                                     <label className="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" checked={profileData?.is_labdiv} onChange={() => profileData && setProfileData({ ...profileData, is_labdiv: !profileData.is_labdiv })} className="sr-only peer" />
+                                        <input
+                                            type="checkbox"
+                                            {...register('is_labdiv')}
+                                            className="sr-only peer"
+                                        />
                                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none dark:bg-gray-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-red"></div>
                                     </label>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-brand-red">Visibilidade</span>
                                     <label className="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" checked={profileData?.is_visible} onChange={() => profileData && setProfileData({ ...profileData, is_visible: !profileData.is_visible })} className="sr-only peer" />
+                                        <input
+                                            type="checkbox"
+                                            {...register('is_visible')}
+                                            className="sr-only peer"
+                                        />
                                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none dark:bg-gray-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-red"></div>
                                     </label>
                                 </div>

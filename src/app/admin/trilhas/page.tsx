@@ -41,7 +41,10 @@ export default function AdminTrilhasPage() {
                     return { ...trail, submissions_count: count || 0 };
                 })
             );
-            setTrails(trailsWithCounts);
+
+            // Ordenar por número de submissões (decrescente)
+            const sortedTrails = trailsWithCounts.sort((a, b) => (b.submissions_count || 0) - (a.submissions_count || 0));
+            setTrails(sortedTrails);
         }
         setIsLoading(false);
     }
@@ -158,6 +161,15 @@ export default function AdminTrilhasPage() {
                                         <span className="text-[10px] text-gray-400">
                                             {new Date(trail.created_at).toLocaleDateString('pt-BR')}
                                         </span>
+                                        <a
+                                            href={`/trilhas/${trail.id}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-[10px] font-black uppercase tracking-wider text-gray-400 hover:text-[#0055ff] transition-colors flex items-center gap-1 ml-auto"
+                                        >
+                                            <span className="material-symbols-outlined text-[14px]">visibility</span>
+                                            Ver Conteúdo
+                                        </a>
                                     </div>
                                 </div>
                                 <button

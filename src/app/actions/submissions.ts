@@ -229,6 +229,7 @@ export const getUsersInOrbit = unstable_cache(
             .from('profiles')
             .select('id, full_name, email, avatar_url, xp, level')
             .eq('review_status', 'approved')
+            .eq('is_visible', true)
             .limit(limit);
 
         return profiles?.map(p => ({
@@ -251,6 +252,7 @@ export async function searchProfiles(query: string) {
         .from('profiles')
         .select('id, full_name, email, avatar_url, xp, level')
         .eq('review_status', 'approved')
+        .eq('is_visible', true)
         .or(`full_name.ilike.%${query}%,email.ilike.%${query}%`)
         .limit(10);
 

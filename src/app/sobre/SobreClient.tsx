@@ -21,7 +21,7 @@ export function SobreClient({ initialTestimonials }: SobreClientProps) {
                     O que é o <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-brand-red to-brand-yellow">Hub de Comunicação</span>?
                 </h1>
                 <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-                    Um ecossistema digital criado pelo Lab-Div para centralizar, organizar e potencializar a divulgação científica produzida no Instituto de Física da USP.
+                    Um ecossistema digital criado pelo Lab-Div que reúne a divulgação científica do Instituto de Física da USP em um <strong>Fluxo</strong> interativo — indo além da simples vitrine para promover engajamento real com a comunidade. Também conecta o IFUSP como fonte colaborativa de anotações e conhecimento sobre o instituto, seus cursos e sua história, através das abas <strong>Wiki</strong>, <strong>Trilhas</strong>, <strong>Lab-Div</strong>, <strong>Colisor</strong>, <strong>Perguntas</strong> e <strong>Mapa</strong>.
                 </p>
             </div>
 
