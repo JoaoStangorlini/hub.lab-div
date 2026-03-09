@@ -8,14 +8,14 @@ env:
   - variable: NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
     value: "ifusp_uploads"
   - variable: ADMIN_PASSWORD
-    value: "labdiv-tecla56"
+    secret: ADMIN_PASSWORD
   - variable: RESEND_API_KEY
-    value: "re_KWALhNHv_9rj3WmMxAGwdBtqkrnZj6NZb"
+    secret: RESEND_API_KEY
   - variable: ADMIN_EMAIL
-    value: "joaopaulostangorlini@usp.br"
+    secret: ADMIN_EMAIL
   - variable: CLOUDINARY_API_KEY
-    value: "YOUR_CLOUDINARY_API_KEY_HERE"
+    secret: CLOUDINARY_API_KEY
   - variable: CLOUDINARY_API_SECRET
-    value: "YOUR_CLOUDINARY_API_SECRET_HERE"
+    secret: CLOUDINARY_API_SECRET
   - variable: ADMIN_SECRET_KEY
-    value: "labdiv-tecla56"
+    secret: ADMIN_SECRET_KEY

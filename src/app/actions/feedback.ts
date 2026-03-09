@@ -32,17 +32,22 @@ export async function submitFeedback(formData: FormData) {
         }
     }
 
+    // Get current user if any
+    const { data: { user } } = await supabase.auth.getUser();
+
     const { data, error } = await supabase
         .from('feedback_reports')
         .insert([
             {
+                user_id: user?.id || null,
                 type,
                 description,
                 screenshot_url,
                 metadata: {
-                    user_email: userEmail,
+                    user_email: userEmail || user?.email,
                     user_agent: formData.get('user_agent'),
-                    url: formData.get('url')
+                    url: formData.get('url'),
+                    platform: 'web'
                 }
             }
         ]);
@@ -53,5 +58,15 @@ export async function submitFeedback(formData: FormData) {
     }
 
     revalidatePath('/admin/reports');
+
+    // Notify Admins
+    const { sendAdminNotification } = await import('@/lib/notifications');
+    await sendAdminNotification({
+        type: 'bug_report',
+        userName: userEmail || 'Anônimo',
+        content: description,
+        url: formData.get('url') as string
+    });
+
     return { success: true };
 }

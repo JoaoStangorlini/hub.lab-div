@@ -12,6 +12,9 @@ interface FollowedUser {
     id: string;
     full_name: string;
     avatar_url: string | null;
+    xp?: number;
+    level?: number;
+    is_labdiv?: boolean;
 }
 
 interface ShareMenuProps {
@@ -49,7 +52,7 @@ export const ShareMenu = ({ id, title, author, onClose }: ShareMenuProps) => {
 
                 const { data: profiles, error: pError } = await supabase
                     .from('profiles')
-                    .select('id, full_name, avatar_url')
+                    .select('id, full_name, avatar_url, xp, level, is_labdiv')
                     .in('id', followingIds);
 
                 if (!pError && profiles) {
@@ -182,6 +185,9 @@ export const ShareMenu = ({ id, title, author, onClose }: ShareMenuProps) => {
                                                         name={fu.full_name || 'Usuário'}
                                                         size="md"
                                                         customSize="size-12"
+                                                        xp={fu.xp}
+                                                        level={fu.level}
+                                                        isLabDiv={fu.is_labdiv}
                                                     />
                                                 </div>
                                                 <m.div

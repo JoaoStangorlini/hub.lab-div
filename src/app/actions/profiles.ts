@@ -5,6 +5,7 @@ import { createAdminSupabase } from '@/lib/supabase/admin';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { Profile, Freshman } from '@/types';
+import { sendAdminNotification } from '@/lib/notifications';
 
 async function checkIsAdmin() {
     const supabase = await createServerSupabase();
@@ -65,6 +66,13 @@ export async function updateProfile(updates: Partial<Profile>) {
 
     revalidatePath('/lab');
     revalidatePath('/admin/profiles');
+
+    // Notify Admins
+    await sendAdminNotification({
+        type: 'profile_update',
+        userName: data.full_name || user.email?.split('@')[0] || 'Novo Usuário'
+    });
+
     return { success: true, data };
 }
 
@@ -330,7 +338,7 @@ export async function fetchFreshmenForAdoption() {
 
     let query = supabase
         .from('profiles')
-        .select('id, full_name, username, use_nickname, avatar_url, course, institute, entrance_year, bio, whatsapp, email')
+        .select('id, full_name, username, use_nickname, avatar_url, course, institute, entrance_year, bio, whatsapp, email, xp, level, is_labdiv')
         .eq('seeking_mentor', true)
         .eq('review_status', 'approved');
 
@@ -357,7 +365,7 @@ export async function fetchMyAdoptedFreshmen() {
     const { data: adoptions, error } = await supabase
         .from('adoptions')
         .select(`
-            freshman:profiles!freshman_id(id, full_name, username, use_nickname, avatar_url, course, institute, entrance_year, bio, whatsapp, email)
+            freshman:profiles!freshman_id(id, full_name, username, use_nickname, avatar_url, course, institute, entrance_year, bio, whatsapp, email, xp, level, is_labdiv)
         `)
         .eq('mentor_id', user.id)
         .eq('status', 'approved');

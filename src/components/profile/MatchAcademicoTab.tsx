@@ -130,6 +130,9 @@ export function MatchAcademicoTab({ isMentor }: MatchAcademicoTabProps) {
                                     src={freshman.avatar_url}
                                     name={freshman.use_nickname ? freshman.username : freshman.full_name}
                                     size="md"
+                                    xp={freshman.xp}
+                                    level={freshman.level}
+                                    isLabDiv={freshman.is_labdiv}
                                 />
                                 <div className="flex-1 min-w-0">
                                     <h3 className="font-display font-bold text-gray-900 dark:text-white truncate">

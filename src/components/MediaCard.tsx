@@ -179,6 +179,7 @@ export const MediaCard = React.memo(({ post, priority = false, isLikedByUser = f
                         className="border-2 border-white dark:border-[#1E1E1E] shadow-sm hover:scale-110 transition-transform duration-300"
                         xp={post.authorXp}
                         level={post.authorLevel}
+                        isLabDiv={post.authorIsLabDiv}
                     />
                     <Link
                         href={post.authors.startsWith('@') ? `/?collection=${encodeURIComponent(post.authors)}` : `/?autor=${encodeURIComponent(post.authors)}`}

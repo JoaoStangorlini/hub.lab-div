@@ -23,6 +23,7 @@ export interface UserMinimalDTO {
     email: string;
     xp?: number;
     level?: number;
+    is_labdiv?: boolean;
 }
 
 export interface SearchSuggestion {

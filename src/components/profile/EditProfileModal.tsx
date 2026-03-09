@@ -487,6 +487,20 @@ export function EditProfileModal({ isOpen, onClose, onSuccess, adminMode = false
                                         </div>
                                     );
                                 })()}
+
+                                {/* Admin Only: Lab-Div Member Toggle */}
+                                {adminMode && (
+                                    <div className="p-4 bg-brand-yellow/5 border border-brand-yellow/10 rounded-2xl flex items-center justify-between group transition-all">
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-xs font-black uppercase tracking-tight text-brand-yellow">Membro do Lab-Div</span>
+                                            <span className="text-[9px] text-gray-500 font-medium italic">Privilégio Administrativo: Exibe selo dourado no perfil</span>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" {...register('is_labdiv')} className="sr-only peer" />
+                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none dark:bg-gray-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-yellow"></div>
+                                        </label>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

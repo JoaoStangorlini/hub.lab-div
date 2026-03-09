@@ -20,6 +20,7 @@ interface SidebarAuthor {
     avatar: string | null;
     xp?: number;
     level?: number;
+    is_labdiv?: boolean;
 }
 
 interface SidebarRightProps {
@@ -244,6 +245,7 @@ export const SidebarRight = ({ tags: propTags, authors: propAuthors }: SidebarRi
                                                 customSize="size-10"
                                                 xp={user.xp}
                                                 level={user.level}
+                                                isLabDiv={user.is_labdiv}
                                             />
                                             <div className="flex flex-col overflow-hidden">
                                                 <span className="text-xs font-bold text-gray-900 dark:text-white truncate max-w-[100px]" title={user.name}>{user.name}</span>

@@ -152,7 +152,7 @@ export function Header() {
         setUser(baseUser);
         supabase
             .from('profiles')
-            .select('xp, level, avatar_url, full_name')
+            .select('xp, level, avatar_url, full_name, is_labdiv')
             .eq('id', authUser.id)
             .single()
             .then(({ data: profile }) => {
@@ -163,6 +163,7 @@ export function Header() {
                         avatar_url: profile.avatar_url || prev.avatar_url,
                         xp: profile.xp || 0,
                         level: profile.level || 1,
+                        is_labdiv: profile.is_labdiv || false,
                     } : prev);
                 }
             });
@@ -303,6 +304,7 @@ export function Header() {
                                                 customSize="w-10 h-10"
                                                 xp={user.xp}
                                                 level={user.level}
+                                                isLabDiv={user.is_labdiv}
                                             />
                                         </button>
 

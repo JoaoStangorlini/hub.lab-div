@@ -23,6 +23,7 @@ export interface PostDTO {
     avatarUrl?: string;
     authorXp?: number;
     authorLevel?: number;
+    authorIsLabDiv?: boolean;
     priority?: boolean;
     location_lat?: number;
     location_lng?: number;
@@ -90,6 +91,7 @@ export function mapToPostDTO(submission: any, counts?: { likes?: number, saves?:
         avatarUrl: avatarUrl || profile.avatar_url || submission.avatar_url,
         authorXp: profile.xp,
         authorLevel: profile.level,
+        authorIsLabDiv: profile.is_labdiv,
         location_lat: typeof submission.location_lat === 'number' ? submission.location_lat : undefined,
         location_lng: typeof submission.location_lng === 'number' ? submission.location_lng : undefined,
         location_name: submission.location_name,

@@ -165,6 +165,7 @@ function LabContent() {
                                 customSize="w-32 h-32 sm:w-40 sm:h-40"
                                 xp={viewedProfile?.xp}
                                 level={viewedProfile?.level}
+                                isLabDiv={viewedProfile?.is_labdiv}
                             />
                         </div>
                         <div className="flex-1 text-center sm:text-left space-y-4 sm:pt-2">
@@ -249,13 +250,19 @@ function LabContent() {
                                             {viewedProfile.course}
                                         </span>
                                     )}
+                                    {viewedProfile?.is_labdiv && (
+                                        <span className="px-2 py-0.5 bg-brand-yellow text-black text-[10px] font-black rounded uppercase flex items-center gap-1 shadow-sm shadow-brand-yellow/20">
+                                            <ShieldCheck className="w-3 h-3" />
+                                            Membro Lab-Div
+                                        </span>
+                                    )}
                                     {viewedProfile?.role && (
-                                        <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-500 text-[10px] font-bold rounded uppercase">
-                                            {viewedProfile.role}
+                                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase ${viewedProfile.role === 'admin' ? 'bg-brand-red text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
+                                            {viewedProfile.role === 'admin' ? 'Admin' : viewedProfile.role}
                                         </span>
                                     )}
                                     {viewedProfile?.is_usp_member && viewedProfile?.entrance_year && (
-                                        <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-400 text-[10px] font-bold rounded uppercase">
+                                        <span className="px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[10px] font-bold rounded uppercase">
                                             Ingresso: {viewedProfile.entrance_year}
                                         </span>
                                     )}

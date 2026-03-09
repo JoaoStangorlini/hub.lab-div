@@ -47,7 +47,7 @@ export async function fetchSubmissions({ page, limit, query, categories, mediaTy
     const supabaseServer = await createServerSupabase();
     let queryBuilder = supabaseServer
         .from('submissions')
-        .select('*, profiles(avatar_url, xp, level), energy_reactions, atomic_excitation', { count: 'exact' })
+        .select('*, profiles(avatar_url, xp, level, is_labdiv), energy_reactions, atomic_excitation', { count: 'exact' })
         .eq('status', 'aprovado');
 
     if (featured) queryBuilder = queryBuilder.eq('is_featured', true);
@@ -93,7 +93,7 @@ export const fetchTrendingSubmissions = unstable_cache(
     async (): Promise<{ post: PostDTO }[]> => {
         const { data: submissions, error } = await supabase
             .from('submissions')
-            .select('*, profiles(avatar_url, xp, level), like_count')
+            .select('*, profiles(avatar_url, xp, level, is_labdiv), like_count')
             .eq('status', 'aprovado')
             .order('views', { ascending: false })
             .limit(6);
@@ -104,7 +104,7 @@ export const fetchTrendingSubmissions = unstable_cache(
             post: mapToPostDTO(sub)
         }));
     },
-    ['trending-submissions-v1'],
+    ['trending-submissions-v2'],
     { revalidate: 60 }
 );
 
@@ -112,7 +112,7 @@ export const getFeaturedSubmissions = unstable_cache(
     async (limit: number = 10): Promise<{ post: PostDTO }[]> => {
         const { data: submissions, error } = await supabase
             .from('submissions')
-            .select('*, profiles(avatar_url, xp, level)')
+            .select('*, profiles(avatar_url, xp, level, is_labdiv)')
             .eq('status', 'aprovado')
             .eq('is_featured', true)
             .order('created_at', { ascending: false })
@@ -124,7 +124,7 @@ export const getFeaturedSubmissions = unstable_cache(
             post: mapToPostDTO(sub)
         }));
     },
-    ['featured-submissions-v1'],
+    ['featured-submissions-v2'],
     { revalidate: 60 }
 );
 
@@ -219,7 +219,7 @@ export const getSidebarTags = unstable_cache(
         }));
         return Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([name, count]) => ({ name, count }));
     },
-    ['sidebar-tags-v1'],
+    ['sidebar-tags-v2'],
     { revalidate: 60 }
 );
 
@@ -227,7 +227,7 @@ export const getUsersInOrbit = unstable_cache(
     async (limit = 5) => {
         const { data: profiles } = await supabase
             .from('profiles')
-            .select('id, full_name, email, avatar_url, xp, level')
+            .select('id, full_name, email, avatar_url, xp, level, is_labdiv')
             .eq('review_status', 'approved')
             .eq('is_visible', true)
             .limit(limit);
@@ -238,10 +238,11 @@ export const getUsersInOrbit = unstable_cache(
             handle: p.email ? `@${p.email.split('@')[0]}` : '@usuario',
             avatar: p.avatar_url,
             xp: p.xp,
-            level: p.level
+            level: p.level,
+            is_labdiv: p.is_labdiv
         })) || [];
     },
-    ['users-in-orbit-v1'],
+    ['users-in-orbit-v2'],
     { revalidate: 60 }
 );
 
@@ -250,7 +251,7 @@ export async function searchProfiles(query: string) {
 
     const { data: profiles, error } = await supabase
         .from('profiles')
-        .select('id, full_name, email, avatar_url, xp, level')
+        .select('id, full_name, email, avatar_url, xp, level, is_labdiv')
         .eq('review_status', 'approved')
         .eq('is_visible', true)
         .or(`full_name.ilike.%${query}%,email.ilike.%${query}%`)
@@ -267,7 +268,8 @@ export async function searchProfiles(query: string) {
         handle: p.email ? `@${p.email.split('@')[0]}` : '@colaborador',
         avatar: p.avatar_url,
         xp: p.xp,
-        level: p.level
+        level: p.level,
+        is_labdiv: p.is_labdiv
     })) || [];
 }
 
@@ -445,13 +447,22 @@ export async function createSubmission(formData: z.infer<typeof SubmissionSchema
     revalidatePath('/');
     revalidatePath('/admin/pendentes');
 
+    // Notify Admins
+    const { sendAdminNotification } = await import('@/lib/notifications');
+    await sendAdminNotification({
+        type: 'submission',
+        title: data.title,
+        authors: data.authors,
+        category: data.category || 'Geral'
+    });
+
     return { success: true, data };
 }
 
 export async function fetchUserSubmissions(userId: string): Promise<{ post: PostDTO }[]> {
     const { data: submissions, error } = await supabase
         .from('submissions')
-        .select('*, profiles(avatar_url, xp, level), energy_reactions, atomic_excitation')
+        .select('*, profiles(avatar_url, xp, level, is_labdiv), energy_reactions, atomic_excitation')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
@@ -588,7 +599,7 @@ export async function fetchRecentEntanglements() {
     // 3. Busca perfis para todos esses IDs
     const { data: profiles, error: pError } = await supabaseServer
         .from('profiles')
-        .select('id, full_name, username, use_nickname, email, avatar_url, xp, level')
+        .select('id, full_name, username, use_nickname, email, avatar_url, xp, level, is_labdiv')
         .in('id', allPeerIds);
 
     if (pError || !profiles) {
@@ -608,6 +619,7 @@ export async function fetchRecentEntanglements() {
             avatar: p.avatar_url,
             xp: p.xp,
             level: p.level,
+            is_labdiv: p.is_labdiv,
             lastMessage: conv?.lastMessage,
             lastAt: conv?.lastAt,
             isFollowed

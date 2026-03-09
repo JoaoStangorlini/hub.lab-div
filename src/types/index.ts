@@ -60,6 +60,7 @@ export interface Freshman {
     email?: string;
     xp?: number;
     level?: number;
+    is_labdiv?: boolean;
 }
 
 export interface Submission {

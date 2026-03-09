@@ -2,9 +2,9 @@ import { Resend } from 'resend';
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
-const adminEmail = process.env.ADMIN_EMAIL || 'joao@stangorlini.com';
+const adminEmail = process.env.ADMIN_EMAIL || 'joaopaulostangorlini@usp.br';
 
-export type NotificationType = 'submission' | 'question' | 'comment';
+export type NotificationType = 'submission' | 'question' | 'comment' | 'profile_update' | 'bug_report';
 
 interface NotificationData {
     type: NotificationType;
@@ -15,6 +15,8 @@ interface NotificationData {
     userName?: string;
     content?: string;
     submissionTitle?: string;
+    details?: string;
+    url?: string;
 }
 
 export async function sendAdminNotification(data: NotificationData) {
@@ -25,16 +27,16 @@ export async function sendAdminNotification(data: NotificationData) {
 
     let subject = '';
     let emailTemplate = '';
-    let dashboardLink = 'https://hub-labdiv--hub-lab-div-f7f28.us-east4.hosted.app/admin';
+    let dashboardLink = 'https://hub.labdiv.if.usp.br/admin';
 
     switch (data.type) {
         case 'submission':
-            subject = `Nº de Submissão Pendente: ${data.title}`;
+            subject = `📦 Hub: Nova Submissão - ${data.title}`;
             dashboardLink = 'https://hub.labdiv.if.usp.br/admin/acervo';
             emailTemplate = `
                 <h2 style="color: #1a1a1a; margin-top: 0; font-size: 20px;">Nova submissão aguardando análise</h2>
-                <p style="color: #4a5568; line-height: 1.6; font-size: 15px;">Um novo material científico foi submetido ao Hub e precisa da sua aprovação para se tornar público.</p>
-                <div style="background-color: #f8fafc; border-left: 4px solid #004282; padding: 16px; margin: 24px 0; border-radius: 4px;">
+                <p style="color: #4a5568; line-height: 1.6; font-size: 15px;">Um novo material científico foi submetido ao Hub e precisa da sua aprovação.</p>
+                <div style="background-color: #f8fafc; border-left: 4px solid #3B82F6; padding: 16px; margin: 24px 0; border-radius: 4px;">
                     <p style="margin: 0 0 8px 0; font-size: 14px;"><strong style="color: #1a1a1a;">Autor(es):</strong> <span style="color: #4a5568;">${data.authors}</span></p>
                     <p style="margin: 0 0 8px 0; font-size: 14px;"><strong style="color: #1a1a1a;">Título:</strong> <span style="color: #4a5568;">${data.title}</span></p>
                     <p style="margin: 0; font-size: 14px;"><strong style="color: #1a1a1a;">Categoria:</strong> <span style="color: #4a5568;">${data.category}</span></p>
@@ -42,27 +44,50 @@ export async function sendAdminNotification(data: NotificationData) {
             break;
 
         case 'question':
-            subject = `Hub Lab-Div: Pergunta de ${data.userName}`;
+            subject = `❓ Hub: Pergunta de ${data.userName}`;
             dashboardLink = 'https://hub.labdiv.if.usp.br/admin/perguntas';
             emailTemplate = `
                 <h2 style="color: #1a1a1a; margin-top: 0; font-size: 20px;">Nova Pergunta Científica</h2>
-                <p style="color: #4a5568; line-height: 1.6; font-size: 15px;">O usuário <strong>${data.userName}</strong> enviou uma nova dúvida no Pergunte a um Cientista.</p>
+                <p style="color: #4a5568; line-height: 1.6; font-size: 15px;">O usuário <strong>${data.userName}</strong> enviou uma nova dúvida.</p>
                 <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; margin: 24px 0; border-radius: 8px; font-style: italic; color: #2d3748;">
                     "${data.question}"
                 </div>`;
             break;
 
         case 'comment':
-            subject = `Hub Lab-Div: Comentário pendente de ${data.userName}`;
+            subject = `💬 Hub: Comentário de ${data.userName}`;
             dashboardLink = 'https://hub.labdiv.if.usp.br/admin';
             emailTemplate = `
-                <h2 style="color: #1a1a1a; margin-top: 0; font-size: 20px;">Comentário recebido</h2>
+                <h2 style="color: #1a1a1a; margin-top: 0; font-size: 20px;">Novo Comentário</h2>
                 <p style="color: #4a5568; line-height: 1.6; font-size: 15px;">O usuário <strong>${data.userName}</strong> comentou no material <strong>${data.submissionTitle}</strong>.</p>
                 <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; margin: 24px 0; border-radius: 8px; font-style: italic; color: #2d3748;">
                     "${data.content}"
                 </div>`;
             break;
 
+        case 'profile_update':
+            subject = `👤 Hub: Atualização de Perfil - ${data.userName}`;
+            dashboardLink = 'https://hub.labdiv.if.usp.br/admin/papeis';
+            emailTemplate = `
+                <h2 style="color: #1a1a1a; margin-top: 0; font-size: 20px;">Perfil Editado</h2>
+                <p style="color: #4a5568; line-height: 1.6; font-size: 15px;">O usuário <strong>${data.userName}</strong> atualizou suas informações de perfil e aguarda revisão.</p>
+                <div style="background-color: #f8fafc; border-left: 4px solid #FFB300; padding: 16px; margin: 24px 0; border-radius: 4px;">
+                    <p style="margin: 0; font-size: 14px;"><strong style="color: #1a1a1a;">Usuário:</strong> <span style="color: #4a5568;">${data.userName}</span></p>
+                </div>`;
+            break;
+
+        case 'bug_report':
+            subject = `🚨 Hub: Report de Bug - ${data.userName || 'Anônimo'}`;
+            dashboardLink = 'https://hub.labdiv.if.usp.br/admin/reports';
+            emailTemplate = `
+                <h2 style="color: #1a1a1a; margin-top: 0; font-size: 20px;">Anomalia Reportada (Bug/Feedback)</h2>
+                <p style="color: #4a5568; line-height: 1.6; font-size: 15px;">Um novo report foi enviado através do módulo de emergência.</p>
+                <div style="background-color: #FEF2F2; border: 1px solid #FEE2E2; padding: 20px; margin: 24px 0; border-radius: 8px; color: #991B1B;">
+                    <strong style="display: block; margin-bottom: 8px; text-transform: uppercase; font-size: 12px;">Descrição:</strong>
+                    "${data.content}"
+                </div>
+                <p style="font-size: 12px; color: #718096;">URL: ${data.url || 'N/A'}</p>`;
+            break;
     }
 
     const finalHtml = `

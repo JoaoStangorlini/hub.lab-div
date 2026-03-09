@@ -30,7 +30,7 @@ export function CategoryStep() {
 
     const handleNext = () => {
         if (selectedCategory) {
-            const isRestricted = selectedCategory === 'Lab-Div' && !['admin', 'labdiv', 'moderador', 'labdiv adm'].includes(userRole || '');
+            const isRestricted = selectedCategory === 'Lab-Div' && !['admin', 'labdiv', 'moderator', 'labdiv adm'].includes(userRole || '');
             if (!isRestricted) {
                 setStep('format');
             }
@@ -106,7 +106,7 @@ export function CategoryStep() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {CATEGORIES.map((cat, idx) => {
                     const isSelected = selectedCategory === cat.id;
-                    const isRestricted = cat.id === 'Lab-Div' && !['admin', 'labdiv', 'moderador', 'labdiv adm'].includes(userRole || '');
+                    const isRestricted = cat.id === 'Lab-Div' && !['admin', 'labdiv', 'moderator', 'labdiv adm'].includes(userRole || '');
 
                     return (
                         <motion.button
@@ -164,7 +164,7 @@ export function CategoryStep() {
             <div className="flex justify-end pt-8">
                 <button
                     onClick={handleNext}
-                    disabled={!selectedCategory || (selectedCategory === 'Lab-Div' && !['admin', 'labdiv', 'moderador', 'labdiv adm'].includes(userRole || ''))}
+                    disabled={!selectedCategory || (selectedCategory === 'Lab-Div' && !['admin', 'labdiv', 'moderator', 'labdiv adm'].includes(userRole || ''))}
                     className="bg-brand-blue text-white px-10 py-4 rounded-2xl font-bold shadow-xl flex items-center gap-2 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                 >
                     Próximo Passo: Formato

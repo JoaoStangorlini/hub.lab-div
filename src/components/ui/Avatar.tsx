@@ -13,6 +13,7 @@ interface AvatarProps {
     customSize?: string;
     xp?: number;
     level?: number;
+    isLabDiv?: boolean;
 }
 
 const sizeClasses = {
@@ -33,7 +34,7 @@ const badgeSizeClasses = {
     custom: 'size-4 text-[10px]',
 };
 
-export const Avatar = ({ src, name = 'Usuário', size = 'md', className = '', customSize, xp, level }: AvatarProps) => {
+export const Avatar = ({ src, name = 'Usuário', size = 'md', className = '', customSize, xp, level, isLabDiv }: AvatarProps) => {
     const [error, setError] = useState(false);
 
     // Tier calculations
@@ -76,14 +77,34 @@ export const Avatar = ({ src, name = 'Usuário', size = 'md', className = '', cu
         );
     };
 
+    // Construct the split ring style
+    const ringStyle = isLabDiv ? {
+        background: `conic-gradient(
+            from 270deg,
+            #3B82F6 0deg,
+            #FFB300 90deg,
+            #E63946 180deg,
+            ${tier?.hex || '#6B7280'} 180deg 360deg
+        )`
+    } : tier ? {
+        backgroundColor: tier.hex
+    } : {
+        backgroundColor: '#D1D5DB' // gray-300
+    };
+
     return (
         <div className={`relative shrink-0 ${sizeClass} ${className}`}>
+            {/* The Ring Container */}
             <div
-                className={`w-full h-full rounded-full overflow-hidden border-[3px] flex items-center justify-center transition-all
-                    ${tier ? `${tier.borderColor} ${isDarkMatter ? 'shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 'shadow-md'}` : 'border-gray-200 dark:border-gray-800'}
+                className={`w-full h-full rounded-full p-[3px] transition-all
+                    ${isDarkMatter ? 'shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 'shadow-md'}
                 `}
+                style={ringStyle}
             >
-                {renderContent()}
+                {/* The Inner Content */}
+                <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white dark:bg-[#121212]">
+                    {renderContent()}
+                </div>
             </div>
 
             {/* Tier Badge / Seal */}

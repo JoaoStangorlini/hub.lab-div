@@ -27,7 +27,7 @@ interface Profile {
 
 const ROLES = [
     { value: 'user', label: 'Usuário Padrão', color: 'gray-500' },
-    { value: 'moderador', label: 'Moderador', color: 'brand-yellow' },
+    { value: 'moderator', label: 'Moderador', color: 'brand-yellow' },
     { value: 'admin', label: 'Administrador Geral', color: 'brand-red' }
 ];
 
