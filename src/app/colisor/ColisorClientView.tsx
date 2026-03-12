@@ -233,6 +233,40 @@ export function ColisorClientView({ oportunidades }: ColisorClientViewProps) {
                         </a>
                     </div>
 
+                    {/* BIFUSP Card */}
+                    <div className="bg-white dark:bg-card-dark rounded-[32px] p-8 border border-gray-100 dark:border-gray-800 shadow-xl shadow-gray-200/5 hover:-translate-y-1 transition-transform group relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <span className="material-symbols-outlined text-6xl text-brand-blue">library_books</span>
+                        </div>
+                        <div className="w-16 h-16 bg-brand-blue/10 rounded-2xl flex items-center justify-center mb-6">
+                            <span className="material-symbols-outlined text-4xl text-brand-blue">library_books</span>
+                        </div>
+                        <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight mb-3">BIFUSP</h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
+                            A Biblioteca do Instituto de Física. Um acervo vasto de livros, periódicos e teses, oferecendo suporte essencial para o estudo e a pesquisa acadêmica de excelência.
+                        </p>
+                        <a href="https://portal.if.usp.br/biblioteca/" target="_blank" rel="noopener noreferrer" className="text-brand-blue font-black flex items-center gap-2 group-hover:underline text-sm">
+                            Acessar Biblioteca <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    </div>
+
+                    {/* Lab Demo Card */}
+                    <div className="bg-white dark:bg-card-dark rounded-[32px] p-8 border border-gray-100 dark:border-gray-800 shadow-xl shadow-gray-200/5 hover:-translate-y-1 transition-transform group relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <span className="material-symbols-outlined text-6xl text-brand-red">rocket_launch</span>
+                        </div>
+                        <div className="w-16 h-16 bg-brand-red/10 rounded-2xl flex items-center justify-center mb-6">
+                            <span className="material-symbols-outlined text-4xl text-brand-red">rocket_launch</span>
+                        </div>
+                        <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight mb-3">Lab Demo</h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
+                            Laboratório de Demonstrações Ernst Wolfgang Hamburger. Espaço dedicado à experimentação física e demonstrações lúdicas que aproximam a ciência do cotidiano.
+                        </p>
+                        <a href="https://portal.if.usp.br/demonstracoes/" target="_blank" rel="noopener noreferrer" className="text-brand-red font-black flex items-center gap-2 group-hover:underline text-sm">
+                            Ver Experimentos <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    </div>
+
                     {/* DigitalLab */}
                     <div className="bg-white dark:bg-card-dark rounded-[32px] p-8 border border-gray-100 dark:border-gray-800 shadow-xl shadow-gray-200/5 hover:-translate-y-1 transition-transform group relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">

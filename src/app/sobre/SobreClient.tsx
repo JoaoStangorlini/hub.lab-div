@@ -273,62 +273,6 @@ export function SobreClient({ initialTestimonials }: SobreClientProps) {
             </div>
 
 
-            {/* Dynamic Impacto e Conquistas Section */}
-            <div className="space-y-12">
-                <div
-                    className="glass-card rounded-[40px] p-8 md:p-12 shadow-xl relative overflow-hidden"
-                >
-                    {/* Decorative background icon */}
-                    <div className="absolute top-0 right-0 p-8 opacity-5">
-                        <Award size={220} className="rotate-12" />
-                    </div>
-
-                    <div className="relative z-10">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-                            <div className="max-w-2xl">
-                                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white flex items-center gap-4 mb-3">
-                                    <div className="w-12 h-12 bg-brand-red text-white rounded-2xl flex items-center justify-center shadow-lg shadow-brand-red/20">
-                                        <Star className="w-7 h-7" />
-                                    </div>
-                                    Impacto e Conquistas
-                                </h2>
-                                <p className="text-gray-500 dark:text-gray-400 text-lg leading-relaxed">
-                                    Resultados alcançados, prêmios e histórias de sucesso que inspiram a nossa comunidade.
-                                </p>
-                            </div>
-                            <Link
-                                href="/?category=Impacto e Conquistas"
-                                className="bg-brand-red text-white px-8 py-4 rounded-2xl font-bold hover:shadow-xl hover:-translate-y-1 transition-all flex items-center gap-2 group whitespace-nowrap"
-                            >
-                                Ver todas as conquistas
-                                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                            </Link>
-                        </div>
-
-                        {/* Content Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {initialTestimonials.length > 0 ? (
-                                initialTestimonials.map((item) => (
-                                    <div key={item.post.id}>
-                                        <MediaCard post={item.post} />
-                                    </div>
-                                ))
-                            ) : (
-                                Array.from({ length: 4 }).map((_, i) => (
-                                    <div
-                                        key={`placeholder-${i}`}
-                                        className="aspect-[3/4] rounded-3xl bg-gray-50 dark:bg-background-dark/50 border border-gray-100 dark:border-gray-800 flex flex-col items-center justify-center text-gray-300 relative group/card overflow-hidden"
-                                    >
-                                        <Award size={48} className="mb-3 group-hover/card:scale-110 transition-transform duration-500" />
-                                        <span className="text-[10px] uppercase font-bold tracking-[0.2em]">Conquista em breve</span>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
 
             {/* Mapeamento Arquitetural: Atual e Futuro */}
             <div className="space-y-8 mt-20 mb-20 px-4 md:px-0">
@@ -672,6 +616,63 @@ export function SobreClient({ initialTestimonials }: SobreClientProps) {
                                 <h4 className="font-bold text-brand-blue mb-2 relative z-10">Integração Google Drive</h4>
                                 <p className="text-xs text-slate-400 flex-1 relative z-10">Conectividade nativa com Google Drive para armazenamento e visualização direta de materiais de estudo e anotações.</p>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            {/* Dynamic Impacto e Conquistas Section */}
+            <div className="space-y-12 mb-20">
+                <div
+                    className="glass-card rounded-[40px] p-8 md:p-12 shadow-xl relative overflow-hidden"
+                >
+                    {/* Decorative background icon */}
+                    <div className="absolute top-0 right-0 p-8 opacity-5">
+                        <Award size={220} className="rotate-12" />
+                    </div>
+
+                    <div className="relative z-10">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                            <div className="max-w-2xl">
+                                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white flex items-center gap-4 mb-3">
+                                    <div className="w-12 h-12 bg-brand-red text-white rounded-2xl flex items-center justify-center shadow-lg shadow-brand-red/20">
+                                        <Star className="w-7 h-7" />
+                                    </div>
+                                    Impacto e Conquistas
+                                </h2>
+                                <p className="text-gray-500 dark:text-gray-400 text-lg leading-relaxed">
+                                    Resultados alcançados, prêmios e histórias de sucesso que inspiram a nossa comunidade.
+                                </p>
+                            </div>
+                            <Link
+                                href="/?category=Impacto e Conquistas"
+                                className="bg-brand-red text-white px-8 py-4 rounded-2xl font-bold hover:shadow-xl hover:-translate-y-1 transition-all flex items-center gap-2 group whitespace-nowrap"
+                            >
+                                Ver todas as conquistas
+                                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                            </Link>
+                        </div>
+
+                        {/* Content Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {initialTestimonials.length > 0 ? (
+                                initialTestimonials.map((item) => (
+                                    <div key={item.post.id}>
+                                        <MediaCard post={item.post} />
+                                    </div>
+                                ))
+                            ) : (
+                                Array.from({ length: 4 }).map((_, i) => (
+                                    <div
+                                        key={`placeholder-${i}`}
+                                        className="aspect-[3/4] rounded-3xl bg-gray-50 dark:bg-background-dark/50 border border-gray-100 dark:border-gray-800 flex flex-col items-center justify-center text-gray-300 relative group/card overflow-hidden"
+                                    >
+                                        <Award size={48} className="mb-3 group-hover/card:scale-110 transition-transform duration-500" />
+                                        <span className="text-[10px] uppercase font-bold tracking-[0.2em]">Conquista em breve</span>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
